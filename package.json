@@ -1,0 +1,27 @@
+{
+	"name": "wintry-mod",
+	"type": "module",
+	"scripts": {
+		"build": "bun run scripts/build.ts",
+		"serve": "bun run scripts/serve.ts --adb"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^1.9.4",
+		"@swc/core": "^1.9.3",
+		"@types/bun": "latest",
+		"@types/yargs-parser": "^21.0.3",
+		"chalk": "^5.3.0",
+		"esbuild": "^0.24.0",
+		"type-fest": "^4.30.0",
+		"yargs-parser": "^21.1.1"
+	},
+	"peerDependencies": {
+		"typescript": "^5.0.0"
+	},
+	"dependencies": {
+		"@marshift/strawberry": "^1.5.1",
+		"@swc/helpers": "^0.5.15",
+		"es-toolkit": "^1.29.0",
+		"strict-event-emitter": "^0.5.1"
+	}
+}
