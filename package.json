@@ -19,7 +19,6 @@
 		"typescript": "^5.0.0"
 	},
 	"dependencies": {
-		"@marshift/strawberry": "^1.5.1",
 		"@swc/helpers": "^0.5.15",
 		"es-toolkit": "^1.29.0",
 		"strict-event-emitter": "^0.5.1"

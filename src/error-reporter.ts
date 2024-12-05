@@ -24,7 +24,7 @@ function maybeAlertError(error: unknown) {
     const stackTrace = getStackTrace(error);
 
     hookDefineProperty(window, "alert", (alert: typeof window.alert) => {
-        alert(`Bunny crashed due to an error: ${stackTrace}`);
+        alert(`Wintry failed due to an error: ${stackTrace}`);
     });
 
     // TODO: If alert is not available, try calling the native alert directly

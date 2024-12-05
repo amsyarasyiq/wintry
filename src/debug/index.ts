@@ -1,4 +1,4 @@
-import { after } from "@marshift/strawberry";
+import { after } from "../patcher";
 
 let socket: WebSocket;
 
@@ -26,7 +26,7 @@ export function connectToDebugger(url: string) {
  * @internal
  */
 export function patchLogHook() {
-    const unpatch = after<any, any>(globalThis, "nativeLoggingHook", ([message, level]: unknown[]) => {
+    const unpatch = after(globalThis, "nativeLoggingHook", ([message, level]: unknown[]) => {
         if (socket?.readyState === WebSocket.OPEN) {
             socket.send(JSON.stringify({ message, level }));
         }

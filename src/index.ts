@@ -1,9 +1,9 @@
-import { instead } from "@marshift/strawberry";
 import hookDefineProperty from "./utils/objects";
 import { internal_getDefiner } from "./metro/internal/modules";
 import { initializeMetro } from "./metro/internal";
 import { connectToDebugger, patchLogHook } from "./debug";
 import reportErrorOnInitialization from "./error-reporter";
+import { instead } from "./patcher";
 
 export let hasIndexInitialized = false;
 
