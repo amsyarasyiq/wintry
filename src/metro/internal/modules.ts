@@ -3,6 +3,7 @@ import { onUntil } from "../../utils/events";
 import { getAllCachedModuleIds, markExportsFlags, onceCacheReady } from "./caches";
 import { filterExports } from "../api";
 import { metroEventEmitter } from "./events";
+import { hasIndexInitialized } from "../..";
 
 // TODO: Remove the global exposure
 export const moduleRegistry = (window.modules = new Map<number, ModuleState>());
@@ -123,10 +124,12 @@ export function waitFor<A extends unknown[]>(
             return false;
         }
 
-        // TODO: This is pretty slow, we should only do this after bundle index is initialized
-        for (const state of moduleRegistry.values()) {
-            if (state.module?.exports && filter(state.module?.exports, state.id, true)) {
-                if (checkState(state)) return () => void 0; // Can't cancel this anymore
+        // Only check the already loaded modules if the index has been initialized
+        if (hasIndexInitialized) {
+            for (const state of moduleRegistry.values()) {
+                if (state.module?.exports && filter(state.module?.exports, state.id, true)) {
+                    if (checkState(state)) return () => void 0; // Can't cancel this anymore
+                }
             }
         }
 

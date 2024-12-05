@@ -5,6 +5,7 @@ import { isBadModuleExports, moduleRegistry } from "./modules";
 import { lazyDestructure } from "../../utils/lazy";
 import { requireModule } from "..";
 import { metroEventEmitter } from "./events";
+import { hasIndexInitialized } from "../..";
 
 const { ClientInfoModule, MMKVModule } = lazyDestructure(() => require("../../native"));
 
@@ -110,10 +111,13 @@ export function* iterateModulesForCache(uniq: string, fullLookup: boolean) {
         yield [id, exports];
     }
 
-    for (const id of moduleRegistry.keys()) {
+    for (const [id, state] of moduleRegistry) {
         let exports: any;
         try {
             if (isModuleBlacklisted(id)) continue;
+            if (__DEV__ && !state.initialized && !hasIndexInitialized)
+                throw new Error(`Module '${id}' is getting forcefully initialized before the index module!`);
+
             exports = requireModule(id);
         } catch {}
 

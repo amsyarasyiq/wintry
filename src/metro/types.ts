@@ -132,19 +132,29 @@ export type FilterCheckDef<A extends unknown[]> = (
     args: A,
     module: any,
     moduleId: number,
-    isDefaultChecked: boolean,
+    isDefaultCheck: boolean,
 ) => boolean;
 
 export interface FilterFn<A extends unknown[]> {
-    (m: any, id: number, isDefaultChecked: boolean): boolean;
+    (exports: any, id: number, isDefaultCheck: boolean): boolean;
     filter: FilterCheckDef<A>;
     raw: boolean;
     uniq: string;
 }
 
 export interface FilterDefinition<A extends unknown[]> {
+    /**
+     * Returns a filter that checks for all and default (ESM) exports.
+     * Use {@link FilterDefinition.raw} to get a filter that does not check for default exports.
+     */
     (...args: A): FilterFn<A>;
+    /**
+     * Returns a raw filter that does not check for default exports.
+     */
     raw(...args: A): FilterFn<A>;
+    /**
+     * Returns the unique identifier of the filter.
+     */
     buildUniq(args: A): string;
 }
 

@@ -27,12 +27,9 @@ export const byStoreName = createFilterDefinition<[string]>(
 );
 
 export const byFilePath = createFilterDefinition<[string, boolean]>(
-    // module return depends on defaultCheck. if true, it'll return module.default, otherwise the whole module
-    // unlike filters like byName, defaultCheck doesn't affect the return since we don't rely on exports, but only its ID
-    // one could say that this is technically a hack, since defaultCheck is meant for filtering exports
-    ([path, exportDefault], _, id, isDefaultCheck) =>
-        exportDefault === isDefaultCheck && moduleRegistry.get(id)?.meta.filePath === path,
-    ([path, exportDefault]) => `wintry.metro.byFilePath(${path},${exportDefault})`,
+    ([path, resolveToDefault], _, id, isDefaultCheck) =>
+        resolveToDefault === isDefaultCheck && moduleRegistry.get(id)?.meta.filePath === path,
+    ([path, resolveToDefault]) => `wintry.metro.byFilePath(${path},${resolveToDefault})`,
 );
 
 export const byMutableProp = createFilterDefinition<[string]>(

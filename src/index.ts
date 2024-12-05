@@ -4,6 +4,7 @@ import { internal_getDefiner } from "./metro/internal/modules";
 import { initializeMetro } from "./metro/internal";
 import { connectToDebugger, patchLogHook } from "./debug";
 import {} from "./metro/api";
+export let hasIndexInitialized = false;
 
 // This is a blocking function!
 async function initialize() {
@@ -15,8 +16,16 @@ async function initialize() {
         connectToDebugger("ws://localhost:9090");
 
         console.log("Wintry initialized!");
+
+        return () => {
+            hasIndexInitialized = true;
+
+            console.log("Index module loaded!");
+        };
     } catch (e) {
+        return () => {
         if (e instanceof Error) console.error(e.stack);
+        };
     }
 }
 
@@ -34,7 +43,7 @@ function onceIndexRequired(runFactory: any) {
     });
 
     const startDiscord = async () => {
-        await initialize();
+        const afterInit = await initialize();
 
         unpatchHook();
         runFactory();
@@ -44,6 +53,8 @@ function onceIndexRequired(runFactory: any) {
                 batchedBridge.__callFunction(...args);
             }
         }
+
+        afterInit();
     };
 
     startDiscord();
