@@ -3,7 +3,7 @@ import type { FilterFn } from "./types";
 import { isNotNil, TimeoutError } from "es-toolkit";
 import { createLazyModule } from "./lazy";
 import { moduleRegistry, waitFor } from "./internal/modules";
-import { byFilePath, byName, byProps, byStoreName } from "./filters";
+import { byDisplayName, byFilePath, byName, byProps, byStoreName, byTypeName } from "./filters";
 import { metroEventEmitter } from "./internal/events";
 
 /**
@@ -153,37 +153,37 @@ export function findByNameAll(name: string, expDefault = true) {
     return findAll(expDefault ? byName(name) : byName.raw(name));
 }
 
-// export function findByDisplayName(name: string, expDefault = true) {
-//     return find(expDefault ? byDisplayName(name) : byDisplayName.byRaw(name));
-// }
+export function findByDisplayName(name: string, expDefault = true) {
+    return find(expDefault ? byDisplayName(name) : byDisplayName.raw(name));
+}
 
-// export function findByDisplayNameAsync(name: string, expDefault = true) {
-//     return findAsync(expDefault ? byDisplayName(name) : byDisplayName.byRaw(name));
-// }
+export function findByDisplayNameAsync(name: string, expDefault = true) {
+    return findAsync(expDefault ? byDisplayName(name) : byDisplayName.raw(name));
+}
 
-// export function findByDisplayNameImmediate(name: string, expDefault = true) {
-//     return findImmediate(expDefault ? byDisplayName(name) : byDisplayName.byRaw(name));
-// }
+export function findByDisplayNameImmediate(name: string, expDefault = true) {
+    return findImmediate(expDefault ? byDisplayName(name) : byDisplayName.raw(name));
+}
 
-// export function findByDisplayNameAll(name: string, expDefault = true) {
-//     return findAll(expDefault ? byDisplayName(name) : byDisplayName.byRaw(name));
-// }
+export function findByDisplayNameAll(name: string, expDefault = true) {
+    return findAll(expDefault ? byDisplayName(name) : byDisplayName.raw(name));
+}
 
-// export function findByTypeName(name: string, expDefault = true) {
-//     return find(expDefault ? byTypeName(name) : byTypeName.byRaw(name));
-// }
+export function findByTypeName(name: string, expDefault = true) {
+    return find(expDefault ? byTypeName(name) : byTypeName.raw(name));
+}
 
-// export function findByTypeNameAsync(name: string, expDefault = true) {
-//     return findAsync(expDefault ? byTypeName(name) : byTypeName.byRaw(name));
-// }
+export function findByTypeNameAsync(name: string, expDefault = true) {
+    return findAsync(expDefault ? byTypeName(name) : byTypeName.raw(name));
+}
 
-// export function findByTypeNameLazy(name: string, expDefault = true) {
-//     return findImmediate(expDefault ? byTypeName(name) : byTypeName.byRaw(name));
-// }
+export function findByTypeNameLazy(name: string, expDefault = true) {
+    return findImmediate(expDefault ? byTypeName(name) : byTypeName.raw(name));
+}
 
-// export function findByTypeNameAll(name: string, expDefault = true) {
-//     return findAll(expDefault ? byTypeName(name) : byTypeName.byRaw(name));
-// }
+export function findByTypeNameAll(name: string, expDefault = true) {
+    return findAll(expDefault ? byTypeName(name) : byTypeName.raw(name));
+}
 
 export function findByStoreName(name: string) {
     return find(byStoreName(name));
@@ -193,8 +193,8 @@ export function findByStoreNameImmediate(name: string) {
     return findImmediate(byStoreName(name));
 }
 
-export function findByFilePath(path: string, expDefault = false) {
-    return find(byFilePath(path, expDefault));
+export function findByFilePath(path: string, resolveToDefault = false) {
+    return find(byFilePath(path, resolveToDefault));
 }
 
 export function findByFilePathImmediate(path: string, expDefault = false) {
