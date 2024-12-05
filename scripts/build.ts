@@ -5,6 +5,7 @@ import { build, type BuildOptions } from "esbuild";
 // import globalPlugin from "esbuild-plugin-globals";
 import yargs from "yargs-parser";
 import { printBuildSuccess } from "./util";
+import path from "path";
 
 /** @type string[] */
 // const metroDeps = await (async () => {
@@ -20,7 +21,16 @@ let context = {} as {
 };
 
 const config: BuildOptions = {
-    entryPoints: ["src/index.ts"],
+    stdin: {
+        resolveDir: path.dirname(require.resolve("../src")),
+        contents: `
+            try {
+                require("./index.ts")
+            } catch (e) {
+                require("./error-reporter.ts").default(e);
+            }
+        `,
+    },
     bundle: true,
     outfile: "dist/wintry.js",
     format: "iife",

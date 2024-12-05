@@ -3,7 +3,8 @@ import hookDefineProperty from "./utils/objects";
 import { internal_getDefiner } from "./metro/internal/modules";
 import { initializeMetro } from "./metro/internal";
 import { connectToDebugger, patchLogHook } from "./debug";
-import {} from "./metro/api";
+import reportErrorOnInitialization from "./error-reporter";
+
 export let hasIndexInitialized = false;
 
 // This is a blocking function!
@@ -24,7 +25,7 @@ async function initialize() {
         };
     } catch (e) {
         return () => {
-        if (e instanceof Error) console.error(e.stack);
+            reportErrorOnInitialization(e);
         };
     }
 }
