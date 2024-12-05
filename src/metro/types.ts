@@ -160,7 +160,6 @@ export interface FilterDefinition<A extends unknown[]> {
 
 export interface LazyModuleContext<A extends unknown[] = unknown[]> {
     filter: FilterFn<A>;
-    moduleId?: number;
     /**
      * Get the exports of the module:
      *  - If the module is indexed and initialized, it will callback the exports of the module immediately.

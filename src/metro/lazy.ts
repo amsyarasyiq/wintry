@@ -35,8 +35,7 @@ export function createLazyModule<A extends unknown[]>(filter: FilterFn<A>) {
         forceLoad() {
             if (!cache) {
                 cache = findImmediate(filter);
-                console.log(`Forced load of ${filter.uniq} (id ${context.moduleId ?? "unknown"})`);
-                if (!cache) throw new Error(`${filter.uniq} is ${typeof cache}! (id ${context.moduleId ?? "unknown"})`);
+                if (!cache) throw new Error(`Result of ${filter.uniq} is ${typeof cache}!`);
             }
 
             return cache;
@@ -50,7 +49,7 @@ export function createLazyModule<A extends unknown[]>(filter: FilterFn<A>) {
         },
     });
 
-    _lazyContexts.set(proxy, context as LazyModuleContext<any>);
+    _lazyContexts.set(proxy, context as LazyModuleContext<unknown[]>);
 
     context.subscribe(exp => (cache = exp));
 
