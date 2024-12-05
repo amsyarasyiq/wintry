@@ -1,6 +1,6 @@
 const RNModules = window.nativeModuleProxy;
 
-export const MMKVModule = RNModules.NativeCacheModule;
+export const CacheModule = RNModules.NativeCacheModule;
 export const FileModule = RNModules.NativeFileModule;
 export const ClientInfoModule = RNModules.NativeClientInfoModule;
 export const DeviceModule = RNModules.NativeDeviceModule;

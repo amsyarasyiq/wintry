@@ -7,7 +7,7 @@ import { requireModule } from "..";
 import { metroEventEmitter } from "./events";
 import { hasIndexInitialized } from "../..";
 
-const { ClientInfoModule, MMKVModule } = lazyDestructure(() => require("../../native"));
+const { ClientInfoModule, CacheModule } = lazyDestructure(() => require("../../native"));
 
 const CACHE_VERSION = Math.random().toString(36).slice(2, 8);
 const WINTRY_METRO_CACHE_KEY = "__wintry_metro_cache_key__";
@@ -37,7 +37,7 @@ function initializeCache() {
 /** @internal */
 export async function setupMetroCache() {
     // TODO: Store in file system... is a better idea?
-    const rawCache = await MMKVModule.getItem(WINTRY_METRO_CACHE_KEY);
+    const rawCache = await CacheModule.getItem(WINTRY_METRO_CACHE_KEY);
 
     try {
         _metroCache = JSON.parse(rawCache);
@@ -52,7 +52,7 @@ export async function setupMetroCache() {
 }
 
 const storeMetroCache = debounce(() => {
-    MMKVModule.setItem(WINTRY_METRO_CACHE_KEY, JSON.stringify(_metroCache));
+    CacheModule.setItem(WINTRY_METRO_CACHE_KEY, JSON.stringify(_metroCache));
 }, 1000);
 
 function getModuleExportFlags(moduleExports: any) {
