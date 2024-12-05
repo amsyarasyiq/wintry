@@ -126,3 +126,54 @@ export namespace Metro {
         }) => ModuleID;
     }
 }
+
+export type ModuleExports = any;
+export type FilterCheckDef<A extends unknown[]> = (
+    args: A,
+    module: any,
+    moduleId: number,
+    isDefaultChecked: boolean,
+) => boolean;
+
+export interface FilterFn<A extends unknown[]> {
+    (m: any, id: number, isDefaultChecked: boolean): boolean;
+    filter: FilterCheckDef<A>;
+    raw: boolean;
+    uniq: string;
+}
+
+export interface FilterDefinition<A extends unknown[]> {
+    (...args: A): FilterFn<A>;
+    raw(...args: A): FilterFn<A>;
+    buildUniq(args: A): string;
+}
+
+export interface LazyModuleContext<A extends unknown[] = unknown[]> {
+    filter: FilterFn<A>;
+    moduleId?: number;
+    /**
+     * Get the exports of the module:
+     *  - If the module is indexed and initialized, it will callback the exports of the module immediately.
+     *  - If the module is indexed but not initialized, it will callback the exports of the module when it is loaded.
+     *  - If the module is not indexed, it will callback the exports of the module immediately *if needed*.
+     *
+     * @param cb Callback to be called when the module is loaded
+     */
+    getExports(cb: (exports: any) => void): () => void;
+    subscribe(cb: (exports: any) => void): () => void;
+    forceLoad(): any;
+    get cache(): any;
+}
+
+export interface ModuleState {
+    id: Metro.ModuleID;
+    factory: Metro.FactoryFn;
+    dependencies: Metro.DependencyMap;
+    initialized: boolean;
+
+    module?: any;
+    meta: {
+        filePath?: string;
+        isAsset?: boolean;
+    };
+}

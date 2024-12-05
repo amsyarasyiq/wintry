@@ -1,20 +1,42 @@
-import { setupMetroCache } from "./caches";
-import { moduleRegistry, patchModule } from "./modules";
+import { before } from "@marshift/strawberry";
+import { markExportsFlags, setupMetroCache } from "./caches";
+import { _importingModuleId, moduleRegistry, patchModule } from "./modules";
 
 export async function initializeMetro() {
     await setupMetroCache();
 
+    // Patches required for extra metadata of the modules
     patchModule(
-        state => state.module?.exports?.registerAsset,
-        module => {
-            const assetRegistryModuleId = module.id;
+        exports => exports.registerAsset,
+        state => {
+            const assetRegistryModuleId = state.id;
 
-            moduleRegistry.forEach((module, id) => {
-                if (Number(module.dependencies) === assetRegistryModuleId) {
-                    console.log(`${id} is an asset module`);
+            for (const state of moduleRegistry.values()) {
+                if (Number(state.dependencies) === assetRegistryModuleId) {
+                    state.meta.isAsset = true;
                 }
+            }
+        },
+        { count: 2 },
+    );
+
+    patchModule(
+        exports => exports.fileFinishedImporting,
+        state => {
+            before(state.module.exports, "fileFinishedImporting", (args: any) => {
+                if (_importingModuleId === -1 || !args[0]) return;
+                moduleRegistry.get(_importingModuleId)!.meta.filePath = args[0];
             });
         },
-        { max: 2 },
+    );
+
+    // Essential patch for brute finding modules, so (bad) modules that aren't supposed to be initialized
+    // won't make the app stop working
+
+    // Fix UI thread hanging
+    patchModule(
+        exp => exp.default?.reactProfilingEnabled,
+        // The bad module is next to the module that is being checked
+        ({ id }) => markExportsFlags(id + 1, undefined),
     );
 }

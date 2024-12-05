@@ -1,6 +1,5 @@
 import swc from "@swc/core";
 import { $ } from "bun";
-import { execSync } from "child_process";
 import crypto from "crypto";
 import { build, type BuildOptions } from "esbuild";
 // import globalPlugin from "esbuild-plugin-globals";
@@ -23,7 +22,7 @@ let context = {} as {
 const config: BuildOptions = {
     entryPoints: ["src/index.ts"],
     bundle: true,
-    outfile: "dist/bunny.js",
+    outfile: "dist/wintry.js",
     format: "iife",
     splitting: false,
     external: [],
@@ -33,7 +32,7 @@ const config: BuildOptions = {
         "const-and-let": false,
     },
     footer: {
-        js: "//# sourceURL=bunny",
+        js: "//# sourceURL=wintry",
     },
     loader: {
         ".png": "dataurl",
@@ -46,14 +45,14 @@ const config: BuildOptions = {
     // inject: ["./shims/asyncIteratorSymbol.js", "./shims/promiseAllSettled.js"],
     legalComments: "none",
     alias: {
-        // "!bunny-deps-shim!": "./shims/depsModule.ts",
+        // "!wintry-deps-shim!": "./shims/depsModule.ts",
         // spitroast: "./node_modules/spitroast",
         // "react/jsx-runtime": "./shims/jsxRuntime",
     },
     plugins: [
         // globalPlugin({
         //     ...metroDeps.reduce((obj, key) => {
-        //         obj[key] = `require("!bunny-deps-shim!")[${JSON.stringify(key)}]`;
+        //         obj[key] = `require("!wintry-deps-shim!")[${JSON.stringify(key)}]`;
         //         return obj;
         //     }, {})
         // }),

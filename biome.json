@@ -20,6 +20,12 @@
 		"enabled": true,
 		"rules": {
 			"recommended": true,
+			"correctness": {
+				"noUnusedImports": {
+					"level": "error",
+					"fix": "safe"
+				}
+			},
 			"a11y": {
 				"useKeyWithClickEvents": {
 					"level": "off"

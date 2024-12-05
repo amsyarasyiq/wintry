@@ -1,25 +1,12 @@
-import { Emitter } from "strict-event-emitter";
-import type { Metro } from "../types";
-import { indexBlacklistFlag } from "./caches";
+import type { FilterFn, Metro, ModuleExports, ModuleState } from "../types";
 import { onUntil } from "../../utils/events";
+import { getAllCachedModuleIds, markExportsFlags, onceCacheReady } from "./caches";
+import { filterExports } from "../api";
+import { metroEventEmitter } from "./events";
 
-interface ModuleState {
-    id: Metro.ModuleID;
-    factory: Metro.FactoryFn;
-    dependencies: Metro.DependencyMap;
-    initialized: boolean;
-    module?: any;
-}
-
-type MetroEvents = {
-    moduleDefined: [ModuleState];
-    moduleLoaded: [ModuleState];
-};
-
-export const metroEventEmitter = new Emitter<MetroEvents>();
-metroEventEmitter.setMaxListeners(Number.POSITIVE_INFINITY);
-
-export const moduleRegistry = new Map<number, ModuleState>();
+// TODO: Remove the global exposure
+export const moduleRegistry = (window.modules = new Map<number, ModuleState>());
+export let _importingModuleId = -1;
 
 /** @internal */
 export function internal_getDefiner(
@@ -28,42 +15,56 @@ export function internal_getDefiner(
 ) {
     return (factory: Metro.FactoryFn, id: Metro.ModuleID, dependencies: Metro.DependencyMap) => {
         const wrappedFactory: Metro.FactoryFn = (...args) => {
+            const state = moduleRegistry.get(id)!;
+
             if (id === 0) {
                 onceIndexRequired(() => factory(...args));
-            } else {
-                const { 1: metroRequire } = args;
+                state.initialized = true;
 
-                // Avoid catching default or named exports
-                args[2 /* metroImportDefault */] = id => {
-                    const exps = metroRequire(id);
-                    return exps?.__esModule ? exps.default : exps;
-                };
-
-                args[3 /* metroImportAll */] = id => {
-                    const exps = metroRequire(id);
-                    if (exps?.__esModule) return exps;
-
-                    const importAll: Record<string, any> = {};
-                    if (exps) Object.assign(importAll, exps);
-                    importAll.default = exps;
-                    return importAll;
-                };
+                return;
             }
 
-            factory(...args);
+            const { 1: metroRequire, 4: publicModule } = args;
 
-            const state = moduleRegistry.get(id)!;
-            state.module = args[4];
+            // Avoid catching default or named exports
+            args[2 /* metroImportDefault */] = id => {
+                const exps = metroRequire(id);
+                return exps?.__esModule ? exps.default : exps;
+            };
+
+            args[3 /* metroImportAll */] = id => {
+                const exps = metroRequire(id);
+                if (exps?.__esModule) return exps;
+
+                const importAll: Record<string, any> = {};
+                if (exps) Object.assign(importAll, exps);
+                importAll.default = exps;
+                return importAll;
+            };
+
+            const originalImportingModuleId = _importingModuleId;
+            _importingModuleId = id;
+
+            try {
+                factory(...args); // Factory does not return anything
+            } catch {
+                // Blacklist the module if the factory throws an error
+                markExportsFlags(id, undefined);
+            }
+
+            _importingModuleId = originalImportingModuleId;
+
+            state.module = publicModule;
             state.initialized = true;
 
-            if (isModuleExportsBad(args[4])) {
-                indexBlacklistFlag(id);
-            } else {
+            markExportsFlags(id, publicModule);
+
+            if (!isBadModuleExports(publicModule)) {
                 metroEventEmitter.emit("moduleLoaded", state);
             }
         };
 
-        const state: ModuleState = { id, factory, dependencies, initialized: false };
+        const state: ModuleState = { id, factory, dependencies, initialized: false, meta: {} };
         moduleRegistry.set(id, state);
         metroEventEmitter.emit("moduleDefined", state);
 
@@ -71,7 +72,7 @@ export function internal_getDefiner(
     };
 }
 
-export function isModuleExportsBad(exports: any) {
+export function isBadModuleExports(exports: any) {
     return (
         exports == null ||
         exports === globalThis ||
@@ -81,32 +82,87 @@ export function isModuleExportsBad(exports: any) {
 }
 
 export function patchModule(
-    predicate: (module: ModuleState) => boolean,
-    patch: (module: ModuleState) => void,
-    { max = 1 } = {},
+    predicate: (module: any, state: ModuleState) => boolean,
+    patch: (state: ModuleState) => void,
+    { count = 1 } = {},
 ) {
-    let count = 0;
+    let _count = 0;
 
-    onUntil(metroEventEmitter, "moduleDefined", module => {
-        if (predicate(module)) {
-            patch(module);
-            count++;
+    onUntil(metroEventEmitter, "moduleLoaded", state => {
+        const exports = state.module.exports;
+        if (exports && predicate(exports, state)) {
+            patch(state);
 
-            if (count === max) return true;
+            if (++_count === count) return true;
         }
 
         return false;
     });
 }
 
-// metroEventEmitter.on("moduleLoaded", module => {
-//     if (module.publicModule?.exports?.registerAsset) {
-//         const assetRegistryModuleId = module.id;
+export function waitFor<A extends unknown[]>(
+    filter: FilterFn<A>,
+    callback: (exports: ModuleExports, state: ModuleState) => void,
+    { count = 1 } = {},
+) {
+    let currentCount = 0;
+    let fulfilled = false; // Also acts as a cancellation flag
 
-//         moduleRegistry.forEach((module, id) => {
-//             if (Number(module.dependencies) === assetRegistryModuleId) {
-//                 console.log(`${id} is an asset module`);
-//             }
-//         });
-//     }
-// });
+    onceCacheReady(() => {
+        const moduleIds = getAllCachedModuleIds(filter.uniq);
+
+        function checkState(state: ModuleState) {
+            if (fulfilled) return true;
+
+            const { resolve } = (state.module?.exports && filterExports(state.module?.exports, state.id, filter)) || {};
+            if (resolve) {
+                callback(resolve(), state);
+                if (++currentCount === count) return (fulfilled = true);
+            }
+
+            return false;
+        }
+
+        // TODO: This is pretty slow, we should only do this after bundle index is initialized
+        for (const state of moduleRegistry.values()) {
+            if (state.module?.exports && filter(state.module?.exports, state.id, true)) {
+                if (checkState(state)) return () => void 0; // Can't cancel this anymore
+            }
+        }
+
+        onUntil(metroEventEmitter, "lookupFound", (uniq, state) => {
+            if (fulfilled) return true;
+            if (filter.uniq === uniq && filter(state.module?.exports, state.id, true)) {
+                return checkState(state);
+            }
+
+            return false;
+        });
+
+        if (moduleIds && moduleIds.length >= count) {
+            for (const id of moduleIds) {
+                const state = moduleRegistry.get(id)!; // We have other problems if this is undefined
+
+                if (state.module?.exports) {
+                    if (checkState(state)) break;
+                } else {
+                    onUntil(metroEventEmitter, "moduleLoaded", state => {
+                        if (fulfilled) return true;
+
+                        if (state.id === id) {
+                            return checkState(state);
+                        }
+
+                        return false;
+                    });
+                }
+            }
+        } else {
+            onUntil(metroEventEmitter, "moduleLoaded", state => {
+                return checkState(state);
+            });
+        }
+    });
+
+    return () => void (fulfilled = true);
+}

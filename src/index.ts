@@ -2,12 +2,19 @@ import { instead } from "@marshift/strawberry";
 import hookDefineProperty from "./utils/objects";
 import { internal_getDefiner } from "./metro/internal/modules";
 import { initializeMetro } from "./metro/internal";
+import { connectToDebugger, patchLogHook } from "./debug";
+import {} from "./metro/api";
 
 // This is a blocking function!
 async function initialize() {
     try {
         console.log("Initializing Wintry...");
         await initializeMetro();
+
+        patchLogHook();
+        connectToDebugger("ws://localhost:9090");
+
+        console.log("Wintry initialized!");
     } catch (e) {
         if (e instanceof Error) console.error(e.stack);
     }

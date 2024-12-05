@@ -1,8 +1,10 @@
 import { debounce } from "es-toolkit";
 
 import { ModuleFlags, ModulesMapInternal } from "./enums";
-import { isModuleExportsBad } from "./modules";
+import { isBadModuleExports, moduleRegistry } from "./modules";
 import { lazyDestructure } from "../../utils/lazy";
+import { requireModule } from "..";
+import { metroEventEmitter } from "./events";
 
 const { ClientInfoModule, MMKVModule } = lazyDestructure(() => require("../../native"));
 
@@ -13,7 +15,8 @@ type ModulesMap = {
     [flag in number | `_${ModulesMapInternal}`]?: ModuleFlags;
 };
 
-let _metroCache = null as unknown as ReturnType<typeof initializeCache>;
+export type MetroCache = ReturnType<typeof initializeCache>;
+let _metroCache = null! as MetroCache;
 
 // TODO: Remove global getter
 export const getMetroCache = (window.__getMetroCache = () => _metroCache);
@@ -40,6 +43,8 @@ export async function setupMetroCache() {
         if (_metroCache._version !== CACHE_VERSION || _metroCache._buildNumber !== ClientInfoModule.Build) {
             throw "cache invalidated";
         }
+
+        metroEventEmitter.emit("cacheLoaded", _metroCache);
     } catch {
         initializeCache();
     }
@@ -51,22 +56,25 @@ const storeMetroCache = debounce(() => {
 
 function getModuleExportFlags(moduleExports: any) {
     let bit = ModuleFlags.EXISTS;
-    if (isModuleExportsBad(moduleExports)) bit |= ModuleFlags.BLACKLISTED;
+    if (isBadModuleExports(moduleExports)) bit |= ModuleFlags.BLACKLISTED;
 
     return bit;
 }
 
-/** @internal */
-export function indexExportsFlags(moduleId: number, moduleExports: any) {
+/**
+ * @internal
+ * Marks the module as blacklisted if the exports are bad.
+ * Set moduleExports to undefined to blacklist the module.
+ */
+export function markExportsFlags(moduleId: number, moduleExports: any) {
     const flags = getModuleExportFlags(moduleExports);
     if (flags !== ModuleFlags.EXISTS) {
         _metroCache.moduleIndex[moduleId] = flags;
     }
 }
 
-/** @internal */
-export function indexBlacklistFlag(id: number) {
-    _metroCache.moduleIndex[id] |= ModuleFlags.BLACKLISTED;
+export function isModuleBlacklisted(moduleId: number): boolean {
+    return (_metroCache.moduleIndex[moduleId] & ModuleFlags.BLACKLISTED) !== 0;
 }
 
 /** @internal */
@@ -87,4 +95,49 @@ export function createCacheHandler(uniq: string, allFind: boolean) {
             storeMetroCache();
         },
     };
+}
+
+export function* iterateModulesForCache(uniq: string, fullLookup: boolean) {
+    let cache = _metroCache.lookupIndex[uniq];
+
+    if (fullLookup && !cache?.[`_${ModulesMapInternal.FULL_LOOKUP}`]) cache = undefined;
+    if (cache?.[`_${ModulesMapInternal.NOT_FOUND}`]) return;
+
+    for (const id in cache) {
+        if (id[0] === "_") continue;
+        const exports = Number(id);
+        if (isBadModuleExports(exports)) continue;
+        yield [id, exports];
+    }
+
+    for (const id of moduleRegistry.keys()) {
+        let exports: any;
+        try {
+            if (isModuleBlacklisted(id)) continue;
+            exports = requireModule(id);
+        } catch {}
+
+        if (isBadModuleExports(exports)) continue;
+        yield [id, exports];
+    }
+}
+
+export function getAllCachedModuleIds(uniq: string) {
+    const modulesMap = _metroCache.lookupIndex[uniq];
+    if (!modulesMap) return undefined;
+
+    const moduleIds = [] as Array<number>;
+    for (const index in modulesMap) {
+        if (!Number.isNaN(index)) moduleIds.push(Number(index));
+    }
+
+    return moduleIds;
+}
+
+export function onceCacheReady(callback: (cache: MetroCache) => void) {
+    if (_metroCache) {
+        callback(_metroCache);
+    } else {
+        metroEventEmitter.once("cacheLoaded", callback);
+    }
 }

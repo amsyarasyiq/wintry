@@ -1,4 +1,7 @@
 declare global {
+    // Build constants
+    const __DEV__: boolean;
+
     // ReactNative/Hermes globals
     var globalEvalWithSourceUrl: (script: string, sourceURL: string) => any;
     var nativePerformanceNow: typeof performance.now;
