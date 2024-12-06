@@ -43,3 +43,58 @@ export default function hookDefineProperty<T extends object, P extends LiteralUn
         targetAsAny[property] = value;
     };
 }
+
+// Based on https://github.com/bunny-mod/Bunny/blob/main/src/lib/utils/findInTree.ts
+
+export type SearchTree = Record<string, any>;
+export type SearchFilter = (tree: SearchTree) => boolean;
+export interface FindInTreeOptions {
+    walkable?: string[];
+    ignore?: string[];
+    maxDepth?: number;
+}
+
+function treeSearch(tree: SearchTree, filter: SearchFilter, opts: Required<FindInTreeOptions>, depth: number): any {
+    if (depth > opts.maxDepth) return;
+    if (!tree) return;
+
+    try {
+        if (filter(tree)) return tree;
+    } catch {}
+
+    if (Array.isArray(tree)) {
+        for (const item of tree) {
+            if (typeof item !== "object" || item === null) continue;
+
+            try {
+                const found = treeSearch(item, filter, opts, depth + 1);
+                if (found) return found;
+            } catch {}
+        }
+    } else if (typeof tree === "object") {
+        for (const key of Object.keys(tree)) {
+            if (typeof tree[key] !== "object" || tree[key] === null) continue;
+            if (opts.walkable.length && !opts.walkable.includes(key)) continue;
+            if (opts.ignore.includes(key)) continue;
+
+            try {
+                const found = treeSearch(tree[key], filter, opts, depth + 1);
+                if (found) return found;
+            } catch {}
+        }
+    }
+}
+
+export function findInTree(
+    tree: SearchTree,
+    filter: SearchFilter,
+    { walkable = [], ignore = [], maxDepth = 100 }: FindInTreeOptions = {},
+): any | undefined {
+    return treeSearch(tree, filter, { walkable, ignore, maxDepth }, 0);
+}
+
+export function findInReactTree(tree: { [key: string]: any }, filter: SearchFilter): any {
+    return findInTree(tree, filter, {
+        walkable: ["props", "children", "child", "sibling"],
+    });
+}

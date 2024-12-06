@@ -1,21 +1,13 @@
-type WintryPlugin = {
-    name: string;
-    stage: StartStage;
-    start: () => void;
-    stop: () => void;
-};
+import { StartAt, type WintryPlugin } from "./types";
 
 const Plugins: Array<WintryPlugin> = [];
 
-export enum StartStage {
-    Init = 0,
-    FirstRender = 1,
-}
-
-export function startAllPlugins(stage: StartStage) {
+export function startAllPlugins(stage: StartAt) {
     for (const plugin of Plugins) {
-        if (plugin.stage === stage) {
-            plugin.start();
+        if (stage === StartAt.Init) {
+            plugin.preinit?.();
+        } else if (stage === StartAt.MetroReady) {
+            plugin.start?.();
         }
     }
 }

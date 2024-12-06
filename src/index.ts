@@ -4,6 +4,8 @@ import { initializeMetro } from "./metro/internal";
 import { connectToDebugger, patchLogHook } from "./debug";
 import reportErrorOnInitialization from "./error-reporter";
 import { instead } from "./patcher";
+import { startAllPlugins } from "./plugins";
+import { StartAt } from "./plugins/types";
 
 export let hasIndexInitialized = false;
 
@@ -13,6 +15,8 @@ async function initialize() {
         console.log("Initializing Wintry...");
         await initializeMetro();
 
+        startAllPlugins(StartAt.Init);
+
         patchLogHook();
         connectToDebugger("ws://localhost:9090");
 
@@ -20,6 +24,7 @@ async function initialize() {
 
         return () => {
             hasIndexInitialized = true;
+            startAllPlugins(StartAt.MetroReady);
 
             console.log("Index module loaded!");
         };

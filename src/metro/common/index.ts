@@ -26,5 +26,5 @@ export const FluxDispatcher = findByProps("_interceptors");
 export const FluxUtils = findByProps("useStateFromStores");
 
 // React
-export const React = (window.React = findByProps("createElement"));
-export const ReactNative = (window.ReactNative = findByProps("AppRegistry"));
+export const React = (window.React = findByProps("createElement")) as typeof import("react");
+export const ReactNative = (window.ReactNative = findByProps("AppRegistry")) as typeof import("react-native");
