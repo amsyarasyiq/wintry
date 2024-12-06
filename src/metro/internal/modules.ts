@@ -1,6 +1,6 @@
 import type { FilterFn, Metro, ModuleExports, ModuleState } from "../types";
 import { onUntil } from "../../utils/events";
-import { getAllCachedModuleIds, markExportsFlags, onceCacheReady } from "./caches";
+import { createCacheHandler, getAllCachedModuleIds, markExportsFlags, onceCacheReady } from "./caches";
 import { filterExports } from "../api";
 import { metroEventEmitter } from "./events";
 import { hasIndexInitialized } from "../..";
@@ -110,6 +110,7 @@ export function waitFor<A extends unknown[]>(
     let fulfilled = false; // Also acts as a cancellation flag
 
     onceCacheReady(() => {
+        if (fulfilled) return;
         const moduleIds = getAllCachedModuleIds(filter.uniq);
 
         function checkState(state: ModuleState) {
@@ -117,6 +118,8 @@ export function waitFor<A extends unknown[]>(
 
             const { resolve } = (state.module?.exports && filterExports(state.module?.exports, state.id, filter)) || {};
             if (resolve) {
+                createCacheHandler(filter.uniq, false).cacheId(state.id, resolve());
+
                 callback(resolve(), state);
                 if (++currentCount === count) return (fulfilled = true);
             }

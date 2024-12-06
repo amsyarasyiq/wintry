@@ -26,7 +26,8 @@ const config: BuildOptions = {
         resolveDir: path.dirname(require.resolve("../src")),
         contents: `
             try {
-                require("./index.ts")
+                WINTRY_START_TIME = nativePerformanceNow();
+                require("./index.ts");
             } catch (e) {
                 require("./error-reporter.ts").default(e);
             }

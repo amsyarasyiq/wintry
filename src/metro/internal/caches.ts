@@ -9,7 +9,7 @@ import { hasIndexInitialized } from "../..";
 
 const { ClientInfoModule, CacheModule } = lazyDestructure(() => require("../../native"));
 
-const CACHE_VERSION = Math.random().toString(36).slice(2, 8);
+const CACHE_VERSION = 1;
 const WINTRY_METRO_CACHE_KEY = "__wintry_metro_cache_key__";
 
 type ModulesMap = {
