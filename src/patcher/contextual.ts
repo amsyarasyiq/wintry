@@ -37,8 +37,21 @@ export function createContextualPatcher({ pluginName }: { pluginName: string }) 
          */
         detached: patchers, // TODO: Still retain context
 
-        addDisposer(...cb: Array<() => void | boolean>) {
-            unpatches.push(...cb.map(cb => () => !!cb()));
+        /**
+         * Add a disposer to the context, which will be called when the context is disposed
+         *
+         * The callback will be called immediately if the context is already disposed
+         * @param cbs Callbacks to call when the context is disposed
+         */
+        addDisposer(...cbs: Array<() => void | boolean>) {
+            if (disposed) {
+                // Call all callbacks immediately
+                for (const cb of cbs) {
+                    if (typeof cb === "function") cb();
+                }
+            } else {
+                unpatches.push(...cbs.map(cb => () => !!cb()));
+            }
         },
 
         dispose() {
