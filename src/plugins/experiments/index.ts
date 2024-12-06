@@ -1,12 +1,11 @@
-import { byStoreName } from "../../../metro/filters";
-import { waitFor } from "../../../metro/internal/modules";
-import { definePlugin } from "../../types";
+import { byStoreName } from "../../metro/filters";
+import { waitFor } from "../../metro/internal/modules";
+import { definePlugin } from "../types";
 
 export default definePlugin({
     name: "Developer",
     description: "Adds a badge to staff members",
     authors: [{ name: "pylixonly" }],
-    required: true,
 
     preinit() {
         const plugin = this;
