@@ -2,15 +2,16 @@ import swc from "@swc/core";
 import { $ } from "bun";
 import crypto from "crypto";
 import { build, type BuildOptions } from "esbuild";
-// import globalPlugin from "esbuild-plugin-globals";
 import yargs from "yargs-parser";
 import { printBuildSuccess } from "./util";
 import path from "path";
+// import globalPlugin from "esbuild-plugin-globals";
 
-/** @type string[] */
-// const metroDeps = await (async () => {
+// const metroDeps: string[] = await (async () => {
 //     const ast = await swc.parseFile(path.resolve("./shims/depsModule.ts"));
-//     return ast.body.at(-1).expression.right.properties.map(p => p.key.value);
+
+//     // @ts-ignore
+//     return ast.body.at(-1).expression.properties.map(p => p.key.value);
 // })();
 
 const args = yargs(process.argv.slice(2));
@@ -55,16 +56,15 @@ const config: BuildOptions = {
     // inject: ["./shims/asyncIteratorSymbol.js", "./shims/promiseAllSettled.js"],
     legalComments: "none",
     alias: {
-        // "!wintry-deps-shim!": "./shims/depsModule.ts",
-        // spitroast: "./node_modules/spitroast",
-        // "react/jsx-runtime": "./shims/jsxRuntime",
+        "!wintry-deps-shim!": "./shims/depsModule.ts",
+        "react/jsx-runtime": "./shims/jsxRuntime",
     },
     plugins: [
         // globalPlugin({
-        //     ...metroDeps.reduce((obj, key) => {
-        //         obj[key] = `require("!wintry-deps-shim!")[${JSON.stringify(key)}]`;
+        //     ...metroDeps.reduce((obj: Record<string, any>, key) => {
+        //         obj[key] = `require("!wintry-deps-shim!").default[${JSON.stringify(key)}]`;
         //         return obj;
-        //     }, {})
+        //     }, {}),
         // }),
         {
             name: "swc",
