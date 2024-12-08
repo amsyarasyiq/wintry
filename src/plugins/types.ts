@@ -13,7 +13,9 @@ export interface WintryPlugin {
     readonly name: string;
     readonly description: string;
     readonly authors: Author[];
+
     readonly required?: boolean;
+    readonly preenabled?: boolean;
 
     readonly state?: PluginState;
 

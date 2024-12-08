@@ -1,15 +1,20 @@
+import Settings from "../api/Settings";
 import { StartAt, type WintryPlugin } from "./types";
 
-const CorePlugins: Array<WintryPlugin> = [require("./_core/settings").default, require("./_core/no-track").default];
-
-const Plugins: Array<WintryPlugin> = [require("./experiments").default];
+export const Plugins: Record<string, WintryPlugin> = {
+    settings: require("./_core/settings").default,
+    "no-track": require("./_core/no-track").default,
+    experiments: require("./experiments").default,
+};
 
 export function startAllPlugins(stage: StartAt) {
-    for (const plugin of CorePlugins.concat(Plugins)) {
-        if (stage === StartAt.Init) {
-            plugin.preinit?.();
-        } else if (stage === StartAt.MetroReady) {
-            plugin.start?.();
+    for (const [id, plugin] of Object.entries(Plugins)) {
+        if (Settings.store.plugins[id].enabled) {
+            if (stage === StartAt.Init) {
+                plugin.preinit?.();
+            } else if (stage === StartAt.MetroReady) {
+                plugin.start?.();
+            }
         }
     }
 }

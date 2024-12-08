@@ -7,6 +7,7 @@ import { instead } from "./patcher";
 import { startAllPlugins } from "./plugins";
 import { StartAt } from "./plugins/types";
 import { trackPerformance } from "./debug/tracer";
+import { setupMmkv } from "./api/kvStorage";
 
 export let hasIndexInitialized = false;
 
@@ -16,6 +17,8 @@ async function initialize() {
         trackPerformance("INITIALIZE");
 
         console.log("Initializing Wintry...");
+
+        await setupMmkv();
         await initializeMetro();
 
         startAllPlugins(StartAt.Init);
