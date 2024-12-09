@@ -5,16 +5,15 @@ import { metroEventEmitter } from "../metro/internal/events";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { kvStorage } from "../api/kvStorage";
 import type { PluginSettings, PluginState } from "../plugins/types";
-import { lazyDestructure } from "../utils/lazy";
+import { getProxyFactory, proxyLazy } from "../utils/lazy";
 
 // Prevent circular dependency
-const { PLUGINS } = lazyDestructure(() => require("../plugins"));
+const PLUGINS = proxyLazy(() => require("../plugins").PLUGINS);
 
 interface PluginStore {
     settings: Record<string, PluginSettings>;
     states: Record<string, PluginState>;
 
-    initializePlugins: () => void;
     togglePlugin: (id: string, value?: boolean) => void;
     startPlugin: (id: string) => void;
     cleanupPlugin: (id: string) => void;
@@ -91,25 +90,28 @@ function cleanupPlugin(draft: PluginStore, id: string) {
     return;
 }
 
+/**
+ * Initialize all plugins, this should be called once at the start of the app before index is initialized
+ * @internal
+ */
+export function initializePlugins() {
+    PluginStore.persist.rehydrate(); // Ensure settings are loaded
+    getProxyFactory(PLUGINS)?.(); // Ensure plugins are initialized
+
+    const { startPlugin, settings } = PluginStore.getState();
+
+    for (const id in PLUGINS) {
+        if (settings[id].enabled) {
+            startPlugin(id);
+        }
+    }
+}
+
 const PluginStore = createStore(
     persist(
         immer<PluginStore>((set, get) => ({
             settings: {} as Record<string, PluginSettings>,
             states: {} as Record<string, PluginState>,
-
-            /**
-             * Initialize all plugins, this should be called once at the start of the app before index is initialized
-             * @internal
-             */
-            initializePlugins: () => {
-                const { startPlugin, settings } = get();
-
-                for (const id in PLUGINS) {
-                    if (settings[id].enabled) {
-                        startPlugin(id);
-                    }
-                }
-            },
 
             /**
              * Toggle a plugin's enabled state

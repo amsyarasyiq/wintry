@@ -1,27 +1,12 @@
 import { debounce } from "es-toolkit";
-import { CacheModule } from "../native";
+import { writeFile } from "./fs";
 
-let state: { [key in string]?: string } = null!;
-
-const STORAGE_STATE_KEY = "__wintry_storage_state_key__";
+const state: { [key in string]?: string } = window.__WINTRY_KV_STORAGE__ ?? {};
 
 const saveState = debounce(() => {
-    CacheModule.setItem(STORAGE_STATE_KEY, JSON.stringify(state));
+    const script = `globalThis.__WINTRY_KV_STORAGE__=${JSON.stringify(state)}`;
+    writeFile("preloads/wt-kvStorage.js", script, { prefix: "pyoncord/" });
 }, 500);
-
-/** @internal */
-export async function setupMmkv() {
-    const savedState = await CacheModule.getItem(STORAGE_STATE_KEY);
-    if (savedState == null) {
-        state = {};
-    } else {
-        try {
-            state = JSON.parse(savedState);
-        } catch (e) {
-            throw new Error("Failed to parse Wintry's storage state", { cause: e });
-        }
-    }
-}
 
 function getItem(key: string) {
     return state[key] || null;

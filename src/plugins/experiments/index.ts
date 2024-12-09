@@ -2,11 +2,13 @@ import { byStoreName } from "../../metro/filters";
 import { waitFor } from "../../metro/internal/modules";
 import { definePlugin } from "../types";
 
+let patched: boolean;
+
 export default definePlugin("experiments", {
     name: "Experiments",
     description: "Expose super secret developer & staff experiments",
     authors: [{ name: "pylixonly" }],
-    requiresRestart: ({ isInit }) => !isInit,
+    requiresRestart: ({ isInit }) => !isInit && !patched,
 
     preinit() {
         waitFor(byStoreName.raw("DeveloperExperimentStore"), exports => {
@@ -20,6 +22,8 @@ export default definePlugin("experiments", {
                     return Reflect.get(target, property, receiver);
                 },
             });
+
+            patched = true;
         });
     },
 });

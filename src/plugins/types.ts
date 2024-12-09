@@ -1,3 +1,4 @@
+import { produce } from "immer";
 import PluginStore from "../stores/PluginStore";
 import { toDefaulted } from "es-toolkit/compat";
 
@@ -70,16 +71,20 @@ export type WintryPluginInstance<P = Record<string, unknown>> = P & WithRequired
 type LooseWintryPlugin<P> = WithThis<P, WintryPluginInstance<P>>;
 
 export function definePlugin<P extends WintryPlugin>(id: string, plugin: LooseWintryPlugin<P>): P {
+    const pluginState: PluginState = { running: false };
     const pluginSettings: PluginSettings = toDefaulted(PluginStore.getState().settings[id] ?? {}, {
         enabled: Boolean(plugin.preenabled !== false || plugin.required || false),
     });
 
-    const pluginState: PluginState = { running: false };
+    PluginStore.persist.rehydrate();
+    PluginStore.setState(
+        produce(state => {
+            state.states[id] = pluginState;
+            state.settings[id] = pluginSettings;
+        }),
+    );
 
-    PluginStore.setState(state => {
-        state.states[id] = pluginState;
-        state.settings[id] = pluginSettings;
-    });
+    console.log({ state: PluginStore.getState() });
 
     Object.defineProperty(plugin, "state", {
         get: () => PluginStore.getState().states[id],

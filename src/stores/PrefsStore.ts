@@ -1,5 +1,5 @@
 import { createJSONStorage, persist } from "zustand/middleware";
-import { createStore } from "zustand";
+import { createStore } from "zustand/vanilla";
 import { kvStorage } from "../api/kvStorage";
 
 interface PrefsStore {
@@ -30,11 +30,8 @@ const unsub = PrefsStore.persist.onFinishHydration(state => {
  * @returns True if safe mode is enabled for the current instance, otherwise false.
  */
 export function isSafeModeEnabled() {
-    if (!initialState) {
-        throw new Error("PrefsStore is not hydrated yet");
-    }
-
-    return initialState.safeMode === true;
+    if (!initialState) PrefsStore.persist.rehydrate();
+    return initialState!.safeMode === true;
 }
 
 export default PrefsStore;
