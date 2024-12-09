@@ -3,6 +3,7 @@ import type { MetroCache } from "./caches";
 import type { ModuleState } from "../types";
 
 type MetroEvents = {
+    metroReady: [];
     moduleDefined: [ModuleState];
     moduleLoaded: [ModuleState];
     lookupFound: [string, ModuleState];

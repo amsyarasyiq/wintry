@@ -25,6 +25,8 @@
 		"@types/react": "^18.3.13",
 		"@types/react-native": "^0.73.0",
 		"es-toolkit": "^1.29.0",
-		"strict-event-emitter": "^0.5.1"
+		"immer": "^10.1.1",
+		"strict-event-emitter": "^0.5.1",
+		"zustand": "^5.0.2"
 	}
 }

@@ -2,19 +2,19 @@ import { byStoreName } from "../../metro/filters";
 import { waitFor } from "../../metro/internal/modules";
 import { definePlugin } from "../types";
 
-export default definePlugin({
-    name: "Developer",
-    description: "Adds a badge to staff members",
+export default definePlugin("experiments", {
+    name: "Experiments",
+    description: "Expose super secret developer & staff experiments",
     authors: [{ name: "pylixonly" }],
+    requiresRestart: ({ isInit }) => !isInit,
 
     preinit() {
-        const plugin = this;
-
         waitFor(byStoreName.raw("DeveloperExperimentStore"), exports => {
             exports.default = new Proxy(exports.default, {
-                get(target, property, receiver) {
+                get: (target, property, receiver) => {
                     if (property === "isDeveloper") {
-                        return plugin.state.running ?? false;
+                        // If this plugin is running, return true
+                        return this.state.running ?? false;
                     }
 
                     return Reflect.get(target, property, receiver);

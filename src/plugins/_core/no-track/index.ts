@@ -2,7 +2,7 @@ import { byProps } from "../../../metro/filters";
 import { waitFor } from "../../../metro/internal/modules";
 import { definePlugin } from "../../types";
 
-export default definePlugin({
+export default definePlugin("no-track", {
     name: "NoTrack",
     description: "Disables tracking",
     authors: [{ name: "pylixonly" }],

@@ -1,5 +1,8 @@
-import { plugins } from "../plugins";
+import { lazyDestructure } from "../utils/lazy";
 import SettingsStore from "./classes/SettingsStore";
+
+// Prevent circular dependency
+const { PLUGINS } = lazyDestructure(() => require("../plugins"));
 
 interface WintrySettings {
     safeMode: boolean;
@@ -18,9 +21,9 @@ export default new SettingsStore<WintrySettings>(
         plugins: {},
     },
     ({ key, path }) => {
-        if (path === "plugins" && key in plugins) {
+        if (path === "plugins" && key in PLUGINS) {
             return {
-                enabled: plugins[key].preenabled !== false || plugins[key].required || false,
+                enabled: PLUGINS[key].preenabled !== false || PLUGINS[key].required || false,
             };
         }
     },

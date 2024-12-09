@@ -1,13 +1,14 @@
 import hookDefineProperty from "./utils/objects";
-import { internal_getDefiner } from "./metro/internal/modules";
+import { internal_getDefiner, waitFor } from "./metro/internal/modules";
 import { initializeMetro } from "./metro/internal";
 import { connectToDebugger, patchLogHook } from "./debug";
 import reportErrorOnInitialization from "./error-reporter";
-import { instead } from "./patcher";
-import { startAllPlugins } from "./plugins";
-import { StartAt } from "./plugins/types";
+import { after, instead } from "./patcher";
 import { trackPerformance } from "./debug/tracer";
 import { setupMmkv } from "./api/kvStorage";
+import { metroEventEmitter } from "./metro/internal/events";
+import PluginStore from "./stores/PluginStore";
+import { byName } from "./metro/filters";
 
 export let hasIndexInitialized = false;
 
@@ -21,7 +22,16 @@ async function initialize() {
         await setupMmkv();
         await initializeMetro();
 
-        startAllPlugins(StartAt.Init);
+        PluginStore.persist.rehydrate();
+        PluginStore.getState().initializePlugins();
+
+        // TODO(temp): Implement an actual ErrorBoundary (as a plugin)
+        waitFor(byName("ErrorBoundary"), module => {
+            after(module.prototype, "render", function a(this: any) {
+                // Print render error stack
+                this.state?.error && console.error(this.state.error.stack);
+            });
+        });
 
         return () => {
             hasIndexInitialized = true;
@@ -29,7 +39,7 @@ async function initialize() {
             patchLogHook();
             connectToDebugger("ws://localhost:9090");
 
-            startAllPlugins(StartAt.MetroReady);
+            metroEventEmitter.emit("metroReady");
 
             trackPerformance("FINISH_INITIALIZED");
         };

@@ -5,14 +5,14 @@ import { build, type BuildOptions } from "esbuild";
 import yargs from "yargs-parser";
 import { printBuildSuccess } from "./util";
 import path from "path";
-// import globalPlugin from "esbuild-plugin-globals";
+import globalPlugin from "esbuild-plugin-globals";
 
-// const metroDeps: string[] = await (async () => {
-//     const ast = await swc.parseFile(path.resolve("./shims/depsModule.ts"));
+const metroDeps: string[] = await (async () => {
+    const ast = await swc.parseFile(path.resolve("./shims/depsModule.ts"));
 
-//     // @ts-ignore
-//     return ast.body.at(-1).expression.properties.map(p => p.key.value);
-// })();
+    // @ts-ignore
+    return ast.body.at(-1).expression.properties.map(p => p.key.value);
+})();
 
 const args = yargs(process.argv.slice(2));
 const { "release-branch": releaseBranch, "build-minify": buildMinify } = args;
@@ -61,12 +61,12 @@ const config: BuildOptions = {
         "react/jsx-runtime": "./shims/jsxRuntime",
     },
     plugins: [
-        // globalPlugin({
-        //     ...metroDeps.reduce((obj: Record<string, any>, key) => {
-        //         obj[key] = `require("!wintry-deps-shim!").default[${JSON.stringify(key)}]`;
-        //         return obj;
-        //     }, {}),
-        // }),
+        globalPlugin({
+            ...metroDeps.reduce((obj: Record<string, any>, key) => {
+                obj[key] = `require("!wintry-deps-shim!").default[${JSON.stringify(key)}]`;
+                return obj;
+            }, {}),
+        }),
         {
             name: "swc",
             setup(build) {

@@ -11,6 +11,7 @@ import WintryIcon from "./wintry.png";
 import { definePlugin } from "../../types";
 import type { ComponentProps } from "react";
 import type { Text } from "react-native";
+import { findAssetId } from "../../../metro/assets";
 
 const patcher = createContextualPatcher({ pluginName: "Settings" });
 
@@ -40,7 +41,7 @@ interface SettingRowConfig {
     rawTabsConfig?: Record<string, any>;
 }
 
-export default definePlugin({
+export default definePlugin("settings", {
     name: "Settings",
     description: "Adds Settings UI and debug info",
     authors: [{ name: "pylixonly" }],
@@ -55,7 +56,13 @@ export default definePlugin({
                         key: "WINTRY",
                         title: () => "Wintry",
                         IconComponent: () => <TableRow.Icon source={{ uri: WintryIcon }} />,
-                        render: () => import("./SettingsPage"),
+                        render: () => import("./components/pages/Wintry"),
+                    },
+                    {
+                        key: "WINTRY_PLUGINS",
+                        title: () => "Plugins",
+                        IconComponent: () => <TableRow.Icon source={findAssetId("ActivitiesIcon")} />,
+                        render: () => import("./components/pages/Plugins"),
                     },
                 ],
             }),

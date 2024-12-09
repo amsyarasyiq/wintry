@@ -1,20 +1,8 @@
-import settings from "../api/settings";
-import { StartAt, type WintryPlugin } from "./types";
+import type { WintryPluginInstance } from "./types";
 
-export const plugins: Record<string, WintryPlugin> = {
-    settings: require("./_core/settings").default,
-    "no-track": require("./_core/no-track").default,
-    experiments: require("./experiments").default,
+// TODO: Automate this by configuring esbuild
+export const PLUGINS: Record<string, WintryPluginInstance> = {
+    settings: require("../plugins/_core/settings").default,
+    "no-track": require("../plugins/_core/no-track").default,
+    experiments: require("../plugins/experiments").default,
 };
-
-export function startAllPlugins(stage: StartAt) {
-    for (const [id, plugin] of Object.entries(plugins)) {
-        if (settings.plugins[id].enabled) {
-            if (stage === StartAt.Init) {
-                plugin.preinit?.();
-            } else if (stage === StartAt.MetroReady) {
-                plugin.start?.();
-            }
-        }
-    }
-}
