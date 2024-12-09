@@ -84,14 +84,13 @@ export function definePlugin<P extends WintryPlugin>(id: string, plugin: LooseWi
         }),
     );
 
-    console.log({ state: PluginStore.getState() });
-
-    Object.defineProperty(plugin, "state", {
-        get: () => PluginStore.getState().states[id],
-    });
-
-    Object.defineProperty(plugin, "settings", {
-        get: () => PluginStore.getState().settings[id],
+    Object.defineProperties(plugin, {
+        state: {
+            get: () => PluginStore.getState().states[id],
+        },
+        settings: {
+            get: () => PluginStore.getState().settings[id],
+        },
     });
 
     return plugin as P;
