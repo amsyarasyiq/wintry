@@ -2,9 +2,8 @@ import { before } from "../../patcher";
 import { markExportsFlags, setupMetroCache } from "./caches";
 import { _importingModuleId, moduleRegistry, patchModule } from "./modules";
 
-export async function initializeMetro() {
-    await setupMetroCache();
-
+export function initializeMetro() {
+    setupMetroCache();
     // Patches required for extra metadata of the modules
     patchModule(
         exports => exports.registerAsset,

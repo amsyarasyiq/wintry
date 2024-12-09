@@ -1,13 +1,10 @@
-import { debounce } from "es-toolkit";
-
 import { ModuleFlags, ModulesMapInternal } from "./enums";
 import { isBadModuleExports, moduleRegistry } from "./modules";
-import { lazyDestructure } from "../../utils/lazy";
 import { requireModule } from "..";
 import { metroEventEmitter } from "./events";
 import { hasIndexInitialized } from "../..";
-
-const { ClientInfoModule, CacheModule } = lazyDestructure(() => require("../../native"));
+import { kvStorage } from "../../api/kvStorage";
+import { ClientInfoModule } from "../../native";
 
 const CACHE_VERSION = 1;
 const WINTRY_METRO_CACHE_KEY = "__wintry_metro_cache_key__";
@@ -30,30 +27,32 @@ function initializeCache() {
         lookupIndex: {} as Record<string, ModulesMap | undefined>,
     } as const;
 
-    _metroCache = cache;
     return cache;
 }
 
 /** @internal */
-export async function setupMetroCache() {
-    // TODO: Store in file system... is a better idea?
-    const rawCache = await CacheModule.getItem(WINTRY_METRO_CACHE_KEY);
+export function setupMetroCache() {
+    const rawCache = kvStorage.getItem(WINTRY_METRO_CACHE_KEY);
 
     try {
-        _metroCache = JSON.parse(rawCache);
-        if (_metroCache._version !== CACHE_VERSION || _metroCache._buildNumber !== ClientInfoModule.Build) {
+        const parsedCache = JSON.parse(rawCache!); // If it fails, it will throw
+        if (parsedCache._version !== CACHE_VERSION || parsedCache._buildNumber !== ClientInfoModule.Build) {
             throw "cache invalidated";
         }
 
+        _metroCache = parsedCache;
         metroEventEmitter.emit("cacheLoaded", _metroCache);
+        return parsedCache;
     } catch {
-        initializeCache();
+        _metroCache = initializeCache();
+        metroEventEmitter.emit("cacheLoaded", _metroCache);
+        return _metroCache;
     }
 }
 
-const storeMetroCache = debounce(() => {
-    CacheModule.setItem(WINTRY_METRO_CACHE_KEY, JSON.stringify(_metroCache));
-}, 1000);
+function storeMetroCache() {
+    kvStorage.setItem(WINTRY_METRO_CACHE_KEY, JSON.stringify(_metroCache));
+}
 
 function getModuleExportFlags(moduleExports: any) {
     let bit = ModuleFlags.EXISTS;

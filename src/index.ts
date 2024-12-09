@@ -3,7 +3,6 @@ import { internal_getDefiner } from "./metro/internal/modules";
 import { initializeMetro } from "./metro/internal";
 import { connectToDebugger, patchLogHook } from "./debug";
 import reportErrorOnInitialization from "./error-reporter";
-import { instead } from "./patcher";
 import { trackPerformance } from "./debug/tracer";
 import { metroEventEmitter } from "./metro/internal/events";
 import { initializePlugins } from "./stores/PluginStore";
@@ -12,13 +11,13 @@ import { isSafeModeEnabled } from "./stores/PrefsStore";
 export let hasIndexInitialized = false;
 
 // This is a blocking function!
-async function initialize() {
+function initialize() {
     try {
         trackPerformance("INITIALIZE");
 
         console.log("Initializing Wintry...");
 
-        await initializeMetro();
+        initializeMetro();
 
         if (!isSafeModeEnabled()) {
             initializePlugins();
@@ -43,36 +42,41 @@ async function initialize() {
 
 function onceIndexRequired(runFactory: any) {
     trackPerformance("INDEX_REQUIRED");
-    const batchedBridge = window.__fbBatchedBridge;
 
-    // Defer calls from the native side until we're ready
-    const callQueue = [] as Array<any[]>;
-    const unpatchHook = instead(batchedBridge, "callFunctionReturnFlushedQueue", (args: any, orig: any) => {
-        // We only care about AppRegistry.runApplication calls and modules that are not loaded yet
-        if (args[0] === "AppRegistry" || !batchedBridge.getCallableModule(args[0])) {
-            callQueue.push(args);
-            return batchedBridge.flushedQueue();
-        }
+    const afterInit = initialize();
+    runFactory();
+    afterInit();
 
-        return orig.apply(batchedBridge, args);
-    });
+    // const batchedBridge = window.__fbBatchedBridge;
 
-    const startDiscord = async () => {
-        const afterInit = await initialize();
+    // // Defer calls from the native side until we're ready
+    // const callQueue = [] as Array<any[]>;
+    // const unpatchHook = instead(batchedBridge, "callFunctionReturnFlushedQueue", (args: any, orig: any) => {
+    //     // We only care about AppRegistry.runApplication calls and modules that are not loaded yet
+    //     if (args[0] === "AppRegistry" || !batchedBridge.getCallableModule(args[0])) {
+    //         callQueue.push(args);
+    //         return batchedBridge.flushedQueue();
+    //     }
 
-        unpatchHook();
-        runFactory();
+    //     return orig.apply(batchedBridge, args);
+    // });
 
-        for (const args of callQueue) {
-            if (batchedBridge.getCallableModule(args[0])) {
-                batchedBridge.__callFunction(...args);
-            }
-        }
+    // const startDiscord = async () => {
+    //     const afterInit = await initialize();
 
-        afterInit();
-    };
+    //     unpatchHook();
+    //     runFactory();
 
-    startDiscord();
+    //     for (const args of callQueue) {
+    //         if (batchedBridge.getCallableModule(args[0])) {
+    //             batchedBridge.__callFunction(...args);
+    //         }
+    //     }
+
+    //     afterInit();
+    // };
+
+    // startDiscord();
 }
 
 const unhook = hookDefineProperty(global, "__d", define => {
