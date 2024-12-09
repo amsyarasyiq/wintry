@@ -9,6 +9,7 @@ import { setupMmkv } from "./api/kvStorage";
 import { metroEventEmitter } from "./metro/internal/events";
 import PluginStore from "./stores/PluginStore";
 import { byName } from "./metro/filters";
+import PrefsStore, { isSafeModeEnabled } from "./stores/PrefsStore";
 
 export let hasIndexInitialized = false;
 
@@ -23,7 +24,11 @@ async function initialize() {
         await initializeMetro();
 
         PluginStore.persist.rehydrate();
-        PluginStore.getState().initializePlugins();
+        PrefsStore.persist.rehydrate();
+
+        if (!isSafeModeEnabled()) {
+            PluginStore.getState().initializePlugins();
+        }
 
         // TODO(temp): Implement an actual ErrorBoundary (as a plugin)
         waitFor(byName("ErrorBoundary"), module => {
