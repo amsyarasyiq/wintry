@@ -1,9 +1,9 @@
 import { findByProps } from "../src/metro/api";
 
-function wrap(factory: () => any) {
+function wrap(factory) {
     const ret = factory();
 
-    const proxy: Record<string, unknown> = new Proxy(
+    const proxy = new Proxy(
         {},
         {
             get: (_, p) => ret[p],

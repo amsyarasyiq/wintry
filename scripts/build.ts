@@ -59,7 +59,7 @@ const config: BuildOptions = {
     // inject: ["./shims/asyncIteratorSymbol.js", "./shims/promiseAllSettled.js"],
     legalComments: "none",
     alias: {
-        "!wintry-deps-shim!": "./shims/depsModule.ts",
+        "!wintry-deps-shim!": "./shims/depsModule",
         "react/jsx-runtime": "./shims/jsxRuntime",
     },
     plugins: [

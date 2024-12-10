@@ -12,6 +12,7 @@ import { lazy, useEffect, type ComponentProps } from "react";
 import type { Text } from "react-native";
 import { findAssetId } from "../../../metro/assets";
 import { definePlugin } from "../../utils";
+import { t } from "../../../i18n";
 
 const patcher = createContextualPatcher({ pluginName: "Settings" });
 
@@ -55,13 +56,13 @@ export default definePlugin("settings", {
                 items: [
                     {
                         key: "WINTRY",
-                        title: () => "Wintry",
+                        title: () => t.wintry(),
                         IconComponent: () => <TableRow.Icon source={{ uri: WintryIcon }} />,
                         render: () => import("./components/pages/Wintry"),
                     },
                     {
                         key: "WINTRY_PLUGINS",
-                        title: () => "Plugins",
+                        title: () => t.settings.sections.plugins(),
                         IconComponent: () => <TableRow.Icon source={findAssetId("ActivitiesIcon")} />,
                         render: () => import("./components/pages/Plugins"),
                     },

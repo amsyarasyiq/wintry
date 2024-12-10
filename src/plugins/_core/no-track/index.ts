@@ -1,6 +1,6 @@
 import { byProps } from "../../../metro/filters";
 import { waitFor } from "../../../metro/internal/modules";
-import { definePlugin } from "../../types";
+import { definePlugin } from "../../utils";
 
 export default definePlugin("no-track", {
     name: "NoTrack",

@@ -3,7 +3,9 @@
 	"type": "module",
 	"scripts": {
 		"build": "bun run scripts/build.ts",
-		"serve": "bun run scripts/serve.ts --adb"
+		"serve": "bun run scripts/serve.ts --adb",
+		"typesafe-i18n": "typesafe-i18n",
+		"i18n:export": "bun run scripts/exportI18n.ts"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^1.9.4",
@@ -26,7 +28,9 @@
 		"@types/react-native": "^0.73.0",
 		"es-toolkit": "^1.29.0",
 		"immer": "^10.1.1",
+		"intl-pluralrules": "^2.0.1",
 		"strict-event-emitter": "^0.5.1",
+		"typesafe-i18n": "^5.26.2",
 		"zustand": "^5.0.2"
 	}
 }
