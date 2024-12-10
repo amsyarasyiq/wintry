@@ -1,3 +1,5 @@
+import type { definePluginSettings } from "./utils";
+
 type Author = { name: string };
 
 export enum StartAt {
@@ -21,6 +23,7 @@ export interface WintryPlugin {
 
     readonly required?: boolean;
     readonly preenabled?: boolean;
+    readonly settings?: ReturnType<typeof definePluginSettings>;
 
     readonly state?: PluginState;
 
@@ -61,3 +64,58 @@ type WithRequired<T, K extends keyof T> = T & { [P in K]-?: T[P] };
 
 // Allows defining a plugin without the state property and allow extra properties
 export type WintryPluginInstance<P = Record<string, unknown>> = P & WithRequired<WintryPlugin, "state">;
+
+export type OptionDefinitions = Record<string, OptionDefinition>;
+export type OptionDefinition =
+    | StringOptionDefinition
+    | BooleanOptionDefinition
+    | SelectOptionDefinition
+    | RadioOptionDefinition
+    | SliderOptionDefinition
+    | SelectOptionDefinition;
+
+type OptionType = "string" | "boolean" | "select" | "radio" | "slider";
+
+interface OptionDefinitionBase {
+    type: OptionType;
+    label: string;
+    description?: string;
+    icon?: string | { uri: string };
+}
+
+interface StringOptionDefinition extends OptionDefinitionBase {
+    type: "string";
+    placeholder?: string;
+    default?: string;
+    textArea?: boolean;
+    regexValidation?: string;
+}
+
+interface BooleanOptionDefinition extends OptionDefinitionBase {
+    type: "boolean";
+    default?: boolean;
+}
+
+interface SelectOptionDefinition extends OptionDefinitionBase {
+    type: "select";
+    options: SelectRadioOptionRow[];
+}
+
+interface RadioOptionDefinition extends OptionDefinitionBase {
+    type: "radio";
+    options: SelectRadioOptionRow[];
+}
+
+interface SliderOptionDefinition extends OptionDefinitionBase {
+    type: "slider";
+    points: number[];
+    default?: number;
+}
+
+interface SelectRadioOptionRow {
+    label: string;
+    description?: string;
+    icon?: string | { uri: string };
+    value: string | number | boolean;
+    default?: boolean;
+}

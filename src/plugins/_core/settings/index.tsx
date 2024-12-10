@@ -11,7 +11,7 @@ import WintryIcon from "./wintry.png";
 import { lazy, useEffect, type ComponentProps } from "react";
 import type { Text } from "react-native";
 import { findAssetId } from "../../../metro/assets";
-import { definePlugin } from "../../utils";
+import { definePlugin, definePluginSettings } from "../../utils";
 import { t } from "../../../i18n";
 
 const patcher = createContextualPatcher({ pluginName: "Settings" });
@@ -43,11 +43,22 @@ interface SettingRowConfig {
     rawTabsConfig?: Record<string, any>;
 }
 
+const settings = definePluginSettings({
+    ON_TOP: {
+        type: "boolean",
+        label: "On Top",
+        description: "Show Wintry section on top",
+        default: false,
+    },
+});
+
 export default definePlugin("settings", {
     name: "Settings",
     description: "Adds Settings UI and debug info",
     authors: [{ name: "pylixonly" }],
     required: true,
+
+    settings,
 
     start() {
         patcher.addDisposer(

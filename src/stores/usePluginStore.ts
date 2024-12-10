@@ -10,7 +10,7 @@ import { getProxyFactory, lazyValue } from "../utils/lazy";
 // Prevent circular dependency
 const PLUGINS = lazyValue(() => require("../plugins").PLUGINS);
 
-interface PluginStore {
+export interface PluginStore {
     settings: Record<string, PluginSettings>;
     states: Record<string, PluginState>;
 
