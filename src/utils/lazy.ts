@@ -1,15 +1,25 @@
-/* eslint-disable func-call-spacing */
+import { isPrimitive } from "es-toolkit";
 
 type ExemptedEntries = Record<symbol | string, unknown>;
 
 interface LazyOptions<E extends ExemptedEntries> {
+    /**
+     * Type of the 'dummy' object for the proxy. Defaults to "function" since it's less restrictive than "object" (can call functions).
+     * */
     hint?: "function" | "object";
+    /**
+     * Entries that are internally used to access a property without invoking the factory function.
+     */
     exemptedEntries?: E;
+    /**
+     * If set to false, the function returned will NOT be bound to the resolved object.
+     */
+    retainContext?: boolean;
 }
 
 interface ContextHolder {
     options: LazyOptions<any>;
-    factory: any;
+    factory: (...args: any[]) => any;
 }
 
 const unconfigurable = new Set(["arguments", "caller", "prototype"]);
@@ -54,13 +64,22 @@ const lazyHandler: ProxyHandler<any> = {
         }
 
         const resolved = contextHolder?.factory();
-        if (!resolved) throw new Error(`Trying to Reflect.get of ${typeof resolved}`);
-        return Reflect.get(resolved, p, receiver);
+
+        try {
+            const ret = Reflect.get(resolved, p, receiver);
+            if (typeof ret === "function" && contextHolder?.options?.retainContext !== false) {
+                return ret.bind(resolved);
+            }
+
+            return ret;
+        } catch (e) {
+            throw new Error(`Reflect.get called on ${typeof resolved}`);
+        }
     },
     ownKeys: target => {
         const contextHolder = proxyContextHolder.get(target);
         const resolved = contextHolder?.factory();
-        if (!resolved) throw new Error(`Trying to Reflect.ownKeys of ${typeof resolved}`);
+        if (!resolved) throw new Error(`Reflect.ownKeys of ${typeof resolved}`);
 
         const cacheKeys = Reflect.ownKeys(resolved);
         for (const key of unconfigurable) {
@@ -73,7 +92,7 @@ const lazyHandler: ProxyHandler<any> = {
     getOwnPropertyDescriptor: (target, p) => {
         const contextHolder = proxyContextHolder.get(target);
         const resolved = contextHolder?.factory();
-        if (!resolved) throw new Error(`Trying to getOwnPropertyDescriptor of ${typeof resolved}`);
+        if (!resolved) throw new Error(`Reflect.getOwnPropertyDescriptor of ${typeof resolved}`);
 
         if (isUnconfigurable(p)) return Reflect.getOwnPropertyDescriptor(target, p);
 
@@ -84,7 +103,9 @@ const lazyHandler: ProxyHandler<any> = {
 };
 
 /**
- * Lazy proxy that will only call the factory function when needed (when a property is accessed). This will not work with primitive values! (e.g. strings, numbers, booleans)
+ * Lazy proxy that will only call the factory function when needed (when a property is accessed).
+ *
+ * For primitive values (strings, numbers, booleans), the lazy value will be converted to an object, since proxies can't be primitive
  * @param factory Factory function to create the object
  * @param asFunction Mock the proxy as a function
  * @returns A proxy that will call the factory function only when needed
@@ -94,12 +115,23 @@ export function proxyLazy<T, I extends ExemptedEntries>(factory: () => T, opts: 
     let cache: T;
 
     const dummy = opts.hint !== "object" ? () => {} : {};
-    const proxyFactory = () => (cache ??= factory());
+    const proxyFactory = () => {
+        if (!cache) {
+            cache = factory();
+
+            if (cache != null && isPrimitive(cache)) {
+                // @ts-expect-error - TypeScript doesn't know this is a constructor
+                cache = new cache!.constructor(cache);
+            }
+        }
+
+        return cache;
+    };
 
     const proxy = new Proxy(dummy, lazyHandler) as T & I;
     factories.set(proxy, proxyFactory);
     proxyContextHolder.set(dummy, {
-        factory,
+        factory: proxyFactory,
         options: opts,
     });
 
@@ -112,8 +144,14 @@ export function proxyLazy<T, I extends ExemptedEntries>(factory: () => T, opts: 
  * @param asFunction Mock the proxy as a function
  * @example
  *
- * const { uuid4 } = lazyDestructure(() => findByProps("uuid4"))
+ * // Using immediate here to get the object immediately
+ * const { uuid4 } = lazyDestructure(() => findByPropsImmediate("uuid4"));
  * uuid4; // <- is a lazy proxy!
+ *
+ * // You can also retain the original object and access it lazily
+ * const [ThemeStore, {theme}] = lazyDestructure(() => findByStoreNameImmediate("ThemeStore"));
+ * ThemeStore; // <- is a lazy proxy!
+ * theme.valueOf(); // <- is a lazy proxy! valueOf is needed to access it since it's a primitive
  */
 export function lazyDestructure<T extends Record<PropertyKey, unknown>, I extends ExemptedEntries>(
     factory: () => T,
