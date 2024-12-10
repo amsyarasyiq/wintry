@@ -1,7 +1,6 @@
 import { Image, View } from "react-native";
-import { Text } from "../../../../../../metro/common/components";
-
-import WintryIcon from "../../../wintry.png";
+import { Text } from "../../../../metro/common/components";
+import WintryIcon from "../../../../plugins/_core/settings/wintry.png";
 
 export default function WintryPage() {
     return (

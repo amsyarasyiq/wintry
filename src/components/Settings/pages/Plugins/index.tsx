@@ -1,7 +1,7 @@
 import { View } from "react-native";
-import { Card, Text } from "../../../../../../metro/common/components";
-import { PLUGINS } from "../../../../..";
-import usePluginStore from "../../../../../../stores/usePluginStore";
+import { Card, Text } from "../../../../metro/common/components";
+import { PLUGINS } from "../../../../plugins";
+import usePluginStore from "../../../../stores/usePluginStore";
 import { useShallow } from "zustand/shallow";
 
 function usePluginSettings(id: string) {
