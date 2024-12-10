@@ -1,4 +1,4 @@
-import { proxyLazy, lazyDestructure } from "../../utils/lazy";
+import { lazyValue, lazyDestructure } from "../../utils/lazy";
 import { findByProps, findByDisplayName, findByName, find } from "../api";
 import { createFilterDefinition } from "../factories";
 
@@ -9,8 +9,8 @@ const bySingularProp = createFilterDefinition<[string]>(
     prop => `bunny.metro.common.components.bySingularProp(${prop})`,
 );
 
-const findSingular = (prop: string) => proxyLazy(() => find(bySingularProp(prop))?.[prop]);
-const findProp = (prop: string) => proxyLazy(() => findByProps(prop)[prop]);
+const findSingular = (prop: string) => lazyValue(() => find(bySingularProp(prop))?.[prop]);
+const findProp = (prop: string) => lazyValue(() => findByProps(prop)[prop]);
 
 // Discord
 export const LegacyAlert = findByDisplayName("FluxContainer(Alert)");
@@ -49,7 +49,7 @@ export const FormCheckbox = findSingular("FormCheckbox");
 
 // Card
 export const Card = findProp("Card");
-export const RedesignCompat = proxyLazy(() => findByProps("RedesignCompat").RedesignCompat);
+export const RedesignCompat = lazyValue(() => findByProps("RedesignCompat").RedesignCompat);
 
 // Misc.
 export const Stack = findProp("Stack") as t.Stack;
@@ -70,7 +70,7 @@ export const ActionSheet = findProp("ActionSheet") as t.ActionSheet;
 export const BottomSheetTitleHeader = findProp("BottomSheetTitleHeader");
 
 const textsModule = findByProps("Text", "LegacyText");
-export const Text = proxyLazy(() => textsModule.Text) as t.Text;
+export const Text = lazyValue(() => textsModule.Text) as t.Text;
 
 export const Forms = findByProps("Form", "FormSection");
 

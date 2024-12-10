@@ -111,7 +111,7 @@ const lazyHandler: ProxyHandler<any> = {
  * @returns A proxy that will call the factory function only when needed
  * @example const ChannelStore = proxyLazy(() => findByProps("getChannelId"));
  */
-export function proxyLazy<T, I extends ExemptedEntries>(factory: () => T, opts: LazyOptions<I> = {}): T {
+export function lazyValue<T, I extends ExemptedEntries>(factory: () => T, opts: LazyOptions<I> = {}): T {
     let cache: T;
 
     const dummy = opts.hint !== "object" ? () => {} : {};
@@ -157,7 +157,7 @@ export function lazyDestructure<T extends Record<PropertyKey, unknown>, I extend
     factory: () => T,
     opts: LazyOptions<I> = {},
 ): T {
-    const proxiedObject = proxyLazy(factory);
+    const proxiedObject = lazyValue(factory);
 
     return new Proxy(
         {},
@@ -169,13 +169,13 @@ export function lazyDestructure<T extends Record<PropertyKey, unknown>, I extend
                         yield new Proxy(
                             {},
                             {
-                                get: (_, p) => proxyLazy(() => proxiedObject[p], opts),
+                                get: (_, p) => lazyValue(() => proxiedObject[p], opts),
                             },
                         );
                         throw new Error("This is not a real iterator, this is likely used incorrectly");
                     };
                 }
-                return proxyLazy(() => proxiedObject[property], opts);
+                return lazyValue(() => proxiedObject[property], opts);
             },
         },
     ) as T;

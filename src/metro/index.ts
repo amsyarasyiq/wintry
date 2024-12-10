@@ -1,4 +1,4 @@
-import { proxyLazy } from "../utils/lazy";
+import { lazyValue } from "../utils/lazy";
 import type { Metro } from "./types";
 
-export const requireModule = proxyLazy(() => window.__r) as Metro.RequireFn;
+export const requireModule = lazyValue(() => window.__r) as Metro.RequireFn;

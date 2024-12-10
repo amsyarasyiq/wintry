@@ -5,10 +5,10 @@ import { metroEventEmitter } from "../metro/internal/events";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { kvStorage } from "../api/kvStorage";
 import type { PluginSettings, PluginState } from "../plugins/types";
-import { getProxyFactory, proxyLazy } from "../utils/lazy";
+import { getProxyFactory, lazyValue } from "../utils/lazy";
 
 // Prevent circular dependency
-const PLUGINS = proxyLazy(() => require("../plugins").PLUGINS);
+const PLUGINS = lazyValue(() => require("../plugins").PLUGINS);
 
 interface PluginStore {
     settings: Record<string, PluginSettings>;

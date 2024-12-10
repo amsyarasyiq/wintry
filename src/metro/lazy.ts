@@ -1,5 +1,5 @@
 import { _patcherDelaySymbol } from "../patcher/patcher";
-import { proxyLazy } from "../utils/lazy";
+import { lazyValue } from "../utils/lazy";
 import { findImmediate } from "./api";
 import { waitFor } from "./internal/modules";
 import type { FilterFn, LazyModuleContext } from "./types";
@@ -42,7 +42,7 @@ export function createLazyModule<A extends unknown[]>(filter: FilterFn<A>) {
         },
     };
 
-    const proxy = proxyLazy(() => context.forceLoad(), {
+    const proxy = lazyValue(() => context.forceLoad(), {
         exemptedEntries: {
             [_lazyContextSymbol]: context,
             [_patcherDelaySymbol]: (cb: (exports: any) => void) => context.getExports(cb),
