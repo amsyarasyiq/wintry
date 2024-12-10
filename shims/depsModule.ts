@@ -2,6 +2,7 @@ import { findByProps } from "../src/metro/api";
 
 function wrap(factory: () => any) {
     const ret = factory();
+
     const proxy: Record<string, unknown> = new Proxy(
         {},
         {
@@ -13,6 +14,7 @@ function wrap(factory: () => any) {
     return proxy;
 }
 
+// biome-ignore format: To appear more consistent
 export default {
     "react": wrap(() => findByProps("createElement")),
     "react-native": wrap(() => findByProps("AppRegistry")),

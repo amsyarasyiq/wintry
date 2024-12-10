@@ -71,15 +71,15 @@ const lazyHandler: ProxyHandler<any> = {
         try {
             const ret = Reflect.get(resolved, p, receiver);
             if (typeof ret === "function" && contextHolder?.options?.retainContext !== false) {
-                const bindedFn = Object.assign(ret.bind(resolved), ret);
-
-                // set a hidden property to the original function
-                Object.defineProperty(bindedFn, originalFnSym, {
-                    value: ret,
-                    enumerable: false,
+                return new Proxy(ret, {
+                    get(target, prop, receiver) {
+                        if (prop === originalFnSym) return target;
+                        return Reflect.get(target, prop, receiver);
+                    },
+                    apply(target, thisArg, args) {
+                        return Reflect.apply(target, thisArg === receiver ? resolved : thisArg, args);
+                    },
                 });
-
-                return bindedFn;
             }
 
             return ret;
@@ -120,7 +120,7 @@ const lazyHandler: ProxyHandler<any> = {
  * @param factory Factory function to create the object
  * @param opts Options for the lazy proxy
  * @returns A proxy that will call the factory function only when needed
- * @example const ChannelStore = proxyLazy(() => findByProps("getChannelId"));
+ * @example const ChannelStore = lazyValue(() => findByProps("getChannelId"));
  */
 export function lazyValue<T, I extends ExemptedEntries>(factory: () => T, opts: LazyOptions<I> = {}): T {
     let cache: T;
