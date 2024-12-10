@@ -12,7 +12,9 @@ interface LazyOptions<E extends ExemptedEntries> {
      */
     exemptedEntries?: E;
     /**
-     * If set to false, the function returned will NOT be bound to the resolved object.
+     * If set to false, function properties returned will NOT be bound to the resolved object.\
+     * You can set this to false if you want to retain the original reference to the function property.\
+     * Alternatively, you can access the original function by using the hidden property `Symbol.for("wintry.lazy.originalFn")` on the bound function.
      */
     retainContext?: boolean;
 }
@@ -22,6 +24,7 @@ interface ContextHolder {
     factory: (...args: any[]) => any;
 }
 
+const originalFnSym = Symbol.for("wintry.lazy.originalFn");
 const unconfigurable = new Set(["arguments", "caller", "prototype"]);
 const isUnconfigurable = (key: PropertyKey) => typeof key === "string" && unconfigurable.has(key);
 
@@ -68,7 +71,15 @@ const lazyHandler: ProxyHandler<any> = {
         try {
             const ret = Reflect.get(resolved, p, receiver);
             if (typeof ret === "function" && contextHolder?.options?.retainContext !== false) {
-                return ret.bind(resolved);
+                const bindedFn = Object.assign(ret.bind(resolved), ret);
+
+                // set a hidden property to the original function
+                Object.defineProperty(bindedFn, originalFnSym, {
+                    value: ret,
+                    enumerable: false,
+                });
+
+                return bindedFn;
             }
 
             return ret;
@@ -107,7 +118,7 @@ const lazyHandler: ProxyHandler<any> = {
  *
  * For primitive values (strings, numbers, booleans), the lazy value will be converted to an object, since proxies can't be primitive
  * @param factory Factory function to create the object
- * @param asFunction Mock the proxy as a function
+ * @param opts Options for the lazy proxy
  * @returns A proxy that will call the factory function only when needed
  * @example const ChannelStore = proxyLazy(() => findByProps("getChannelId"));
  */

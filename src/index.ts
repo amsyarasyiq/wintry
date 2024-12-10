@@ -23,6 +23,13 @@ function initialize() {
             initializePlugins();
         }
 
+        // // Uncomment this to log error boundaries
+        // waitFor(byName("ErrorBoundary"), module => {
+        //     after(module.prototype, "render", function f(this: any) {
+        //         this.state.error && console.log(this.state.error?.stack);
+        //     });
+        // });
+
         return () => {
             hasIndexInitialized = true;
 
