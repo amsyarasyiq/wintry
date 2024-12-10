@@ -5,8 +5,8 @@ import { connectToDebugger, patchLogHook } from "./debug";
 import reportErrorOnInitialization from "./error-reporter";
 import { trackPerformance } from "./debug/tracer";
 import { metroEventEmitter } from "./metro/internal/events";
-import { initializePlugins } from "./stores/PluginStore";
-import { isSafeModeEnabled } from "./stores/PrefsStore";
+import { initializePlugins } from "./stores/usePluginStore";
+import { isSafeModeEnabled } from "./stores/usePrefsStore";
 
 export let hasIndexInitialized = false;
 

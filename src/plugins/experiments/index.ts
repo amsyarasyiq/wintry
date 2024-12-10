@@ -1,6 +1,6 @@
 import { byStoreName } from "../../metro/filters";
 import { waitFor } from "../../metro/internal/modules";
-import { definePlugin } from "../types";
+import { definePlugin } from "../utils";
 
 let patched: boolean;
 

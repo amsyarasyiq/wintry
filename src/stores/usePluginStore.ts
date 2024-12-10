@@ -1,4 +1,4 @@
-import { createStore } from "zustand/vanilla";
+import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
 import { hasIndexInitialized } from "..";
 import { metroEventEmitter } from "../metro/internal/events";
@@ -95,10 +95,10 @@ function cleanupPlugin(draft: PluginStore, id: string) {
  * @internal
  */
 export function initializePlugins() {
-    PluginStore.persist.rehydrate(); // Ensure settings are loaded
+    usePluginStore.persist.rehydrate(); // Ensure settings are loaded
     getProxyFactory(PLUGINS)?.(); // Ensure plugins are initialized
 
-    const { startPlugin, settings } = PluginStore.getState();
+    const { startPlugin, settings } = usePluginStore.getState();
 
     for (const id in PLUGINS) {
         if (settings[id].enabled) {
@@ -107,9 +107,9 @@ export function initializePlugins() {
     }
 }
 
-const PluginStore = createStore(
+const usePluginStore = create(
     persist(
-        immer<PluginStore>((set, get) => ({
+        immer<PluginStore>(set => ({
             settings: {} as Record<string, PluginSettings>,
             states: {} as Record<string, PluginState>,
 
@@ -142,4 +142,4 @@ const PluginStore = createStore(
     ),
 );
 
-export default PluginStore;
+export default usePluginStore;

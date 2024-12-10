@@ -1,20 +1,16 @@
 import { View } from "react-native";
 import { Card, Text } from "../../../../../../metro/common/components";
 import { PLUGINS } from "../../../../..";
-import { useStore } from "zustand";
-import PluginStore from "../../../../../../stores/PluginStore";
+import usePluginStore from "../../../../../../stores/usePluginStore";
 import { useShallow } from "zustand/shallow";
 
 function usePluginSettings(id: string) {
-    return useStore(
-        PluginStore,
-        useShallow(state => state.settings[id]),
-    );
+    return usePluginStore(useShallow(state => state.settings[id]));
 }
 
 function PluginCard(props: { pluginId: string }) {
     const plugin = PLUGINS[props.pluginId];
-    const togglePlugin = useStore(PluginStore, state => state.togglePlugin);
+    const togglePlugin = usePluginStore(state => state.togglePlugin);
     const settings = usePluginSettings(props.pluginId);
 
     return (

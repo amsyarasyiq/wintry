@@ -8,10 +8,10 @@ import { findInReactTree } from "../../../utils/objects";
 import { TableRow } from "../../../metro/common/components";
 
 import WintryIcon from "./wintry.png";
-import { definePlugin } from "../../types";
 import { lazy, useEffect, type ComponentProps } from "react";
 import type { Text } from "react-native";
 import { findAssetId } from "../../../metro/assets";
+import { definePlugin } from "../../utils";
 
 const patcher = createContextualPatcher({ pluginName: "Settings" });
 

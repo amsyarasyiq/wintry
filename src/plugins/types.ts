@@ -1,7 +1,3 @@
-import { produce } from "immer";
-import PluginStore from "../stores/PluginStore";
-import { toDefaulted } from "es-toolkit/compat";
-
 type Author = { name: string };
 
 export enum StartAt {
@@ -62,36 +58,6 @@ export interface WintryPlugin {
 }
 
 type WithRequired<T, K extends keyof T> = T & { [P in K]-?: T[P] };
-type WithThis<T, This> = {
-    [P in keyof T]: T[P] extends (...args: infer A) => infer R ? (this: This, ...args: A) => R : T[P];
-};
 
 // Allows defining a plugin without the state property and allow extra properties
 export type WintryPluginInstance<P = Record<string, unknown>> = P & WithRequired<WintryPlugin, "state">;
-type LooseWintryPlugin<P> = WithThis<P, WintryPluginInstance<P>>;
-
-export function definePlugin<P extends WintryPlugin>(id: string, plugin: LooseWintryPlugin<P>): P {
-    const pluginState: PluginState = { running: false };
-    const pluginSettings: PluginSettings = toDefaulted(PluginStore.getState().settings[id] ?? {}, {
-        enabled: Boolean(plugin.preenabled !== false || plugin.required || false),
-    });
-
-    PluginStore.persist.rehydrate();
-    PluginStore.setState(
-        produce(state => {
-            state.states[id] = pluginState;
-            state.settings[id] = pluginSettings;
-        }),
-    );
-
-    Object.defineProperties(plugin, {
-        state: {
-            get: () => PluginStore.getState().states[id],
-        },
-        settings: {
-            get: () => PluginStore.getState().settings[id],
-        },
-    });
-
-    return plugin as P;
-}
