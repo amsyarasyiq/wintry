@@ -17,7 +17,7 @@ export type MetroCache = ReturnType<typeof initializeCache>;
 let _metroCache = null! as MetroCache;
 
 // TODO: Remove global getter
-export const getMetroCache = (window.__getMetroCache = () => _metroCache);
+export const getMetroCache = () => _metroCache;
 
 function initializeCache() {
     const cache = {

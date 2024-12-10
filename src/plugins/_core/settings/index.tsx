@@ -1,5 +1,5 @@
 import { createContextualPatcher } from "../../../patcher/contextual";
-import { NavigationNative, React } from "../../../metro/common";
+import { NavigationNative } from "../../../metro/common";
 import { findByName, findByProps } from "../../../metro/api";
 import { waitFor } from "../../../metro/internal/modules";
 import { byProps } from "../../../metro/filters";
@@ -9,7 +9,7 @@ import { TableRow } from "../../../metro/common/components";
 
 import WintryIcon from "./wintry.png";
 import { definePlugin } from "../../types";
-import type { ComponentProps } from "react";
+import { lazy, useEffect, type ComponentProps } from "react";
 import type { Text } from "react-native";
 import { findAssetId } from "../../../metro/assets";
 
@@ -24,7 +24,8 @@ const CustomPageRenderer = () => {
 
     const { render: PageComponent, ...args } = route.params;
 
-    React.useEffect(() => void navigation.setOptions({ ...args }), [navigation]);
+    // biome-ignore lint/correctness/useExhaustiveDependencies: This is fine
+    useEffect(() => void navigation.setOptions({ ...args }), [navigation]);
 
     // TODO: Wrap with ErrorBoundary
     return <PageComponent />;
@@ -34,7 +35,7 @@ interface SettingRowConfig {
     key: string;
     title: () => string;
     onPress?: () => any;
-    render?: Parameters<typeof React.lazy>[0];
+    render?: Parameters<typeof lazy>[0];
     IconComponent?: React.ComponentType;
     usePredicate?: () => boolean;
     useTrailing?: () => ComponentProps<typeof Text>["children"];
@@ -143,7 +144,7 @@ export default definePlugin("settings", {
                     onPress: () => {
                         if (row.onPress) return row.onPress();
 
-                        const Component = React.lazy(row.render!);
+                        const Component = lazy(row.render!);
                         tabsNavigationRef.getRootNavigationRef().navigate("BUNNY_CUSTOM_PAGE", {
                             title: row.title(),
                             render: () => <Component />,

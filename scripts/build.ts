@@ -12,6 +12,7 @@ const metroDeps: string[] = await (async () => {
 
     // @ts-ignore
     return ast.body.at(-1).expression.properties.map(p => p.key.value);
+    // return ast.body.at(-1).expression.right.properties.map(p => p.key.value); // <- Parsing CommonJS version
 })();
 
 const args = yargs(process.argv.slice(2));
@@ -49,6 +50,7 @@ const config: BuildOptions = {
     loader: {
         ".png": "dataurl",
     },
+    platform: "browser",
     define: {
         window: "globalThis",
         global: "globalThis",
