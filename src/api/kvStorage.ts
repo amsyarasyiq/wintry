@@ -5,7 +5,7 @@ const state: { [key in string]?: string } = window.__WINTRY_KV_STORAGE__ ?? {};
 
 const saveState = debounce(() => {
     const script = `globalThis.__WINTRY_KV_STORAGE__=${JSON.stringify(state)}`;
-    writeFile("preloads/wt-kvStorage.js", script, { prefix: "pyoncord/" });
+    writeFile("preload/wt-kvStorage.js", script);
 }, 500);
 
 function getItem(key: string) {
