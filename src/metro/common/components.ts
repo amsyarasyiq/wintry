@@ -10,7 +10,7 @@ const bySingularProp = createFilterDefinition<[string]>(
 );
 
 const findSingular = (prop: string) => lazyValue(() => find(bySingularProp(prop))?.[prop]);
-const findProp = (prop: string) => lazyValue(() => findByProps(prop)[prop]);
+const findProp = (...prop: string[]) => lazyValue(() => findByProps(...prop)[prop[0]]);
 
 // Discord
 export const LegacyAlert = findByDisplayName("FluxContainer(Alert)");
@@ -61,7 +61,7 @@ export const TextInput = findSingular("TextInput") as t.TextInput;
 export const SegmentedControl = findProp("SegmentedControl") as t.SegmentedControl;
 export const SegmentedControlPages = findProp("SegmentedControlPages") as t.SegmentedControlPages;
 export const useSegmentedControlState = findSingular("useSegmentedControlState") as (
-    arg: t.SegmentedControlStateArgs,
+    state: t.SegmentedControlStateArgs,
 ) => t.SegmentedControlState;
 export const CompatSegmentedControl = findProp("CompatSegmentedControl") as t.CompatSegmentedControl;
 
@@ -69,38 +69,8 @@ export const FloatingActionButton = findProp("FloatingActionButton") as t.Floati
 export const ActionSheet = findProp("ActionSheet") as t.ActionSheet;
 export const BottomSheetTitleHeader = findProp("BottomSheetTitleHeader");
 
-const textsModule = findByProps("Text", "LegacyText");
-export const Text = lazyValue(() => textsModule.Text) as t.Text;
+export const Text = findProp("Text", "LegacyText") as t.Text;
 
 export const Forms = findByProps("Form", "FormSection");
-
-export const {
-    Form: LegacyForm,
-    FormArrow: LegacyFormArrow,
-    FormCTA: LegacyFormCTA,
-    FormCTAButton: LegacyFormCTAButton,
-    FormCardSection: LegacyFormCardSection,
-    FormCheckbox: LegacyFormCheckbox,
-    FormCheckboxRow: LegacyFormCheckboxRow,
-    FormCheckmark: LegacyFormCheckmark,
-    FormDivider: LegacyFormDivider,
-    FormHint: LegacyFormHint,
-    FormIcon: LegacyFormIcon,
-    FormInput: LegacyFormInput,
-    FormLabel: LegacyFormLabel,
-    FormRadio: LegacyFormRadio,
-    FormRadioGroup: LegacyFormRadioGroup,
-    FormRadioRow: LegacyFormRadioRow,
-    FormRow: LegacyFormRow,
-    FormSection: LegacyFormSection,
-    FormSelect: LegacyFormSelect,
-    FormSliderRow: LegacyFormSliderRow,
-    FormSubLabel: LegacyFormSubLabel,
-    FormSwitch: LegacyFormSwitch,
-    FormSwitchRow: LegacyFormSwitchRow,
-    FormTernaryCheckBox: LegacyFormTernaryCheckBox,
-    FormText: LegacyFormText,
-    FormTitle: LegacyFormTitle,
-} = lazyDestructure(() => Forms);
 
 export const FlashList = findProp("FlashList");

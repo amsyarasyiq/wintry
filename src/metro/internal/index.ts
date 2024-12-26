@@ -4,6 +4,7 @@ import { _importingModuleId, moduleRegistry, patchModule } from "./modules";
 
 export function initializeMetro() {
     setupMetroCache();
+
     // Patches required for extra metadata of the modules
     patchModule(
         exports => exports.registerAsset,

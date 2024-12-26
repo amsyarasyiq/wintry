@@ -2,15 +2,28 @@ import { requireModule } from ".";
 import { findByProps } from "./api";
 import { moduleRegistry } from "./internal/modules";
 
-export interface Asset {
-    id: number;
-    name: string;
+export type Asset = { id: number } & (
+    { fileSystemLocation: string } 
+    | { httpServerLocation: string }
+) & {
+    width?: number,
+    height?: number,
+    scales: Array<number>,
+    hash: string,
+    name: string,
+    type: string,
+
+    resolver?: "android" | "generic",
 }
 
 const assetsRegistry = findByProps("getAssetByID");
 
-// Cache common name lookups
 const _nameToAssetCache = {} as Record<string, Asset>;
+let arrayCache: Asset[] | undefined; 
+
+export function getAssets() {
+    return arrayCache ??= Array.from(iterateAssets());
+}
 
 export function* iterateAssets() {
     const yielded = new Set<number>();
@@ -19,7 +32,7 @@ export function* iterateAssets() {
         if (state.meta.isAsset) {
             const assetId = requireModule(state.id);
             if (yielded.has(state.id) || typeof assetId !== "number") {
-                continue;
+               continue;
             }
 
             yield getAssetById(assetId);
@@ -80,7 +93,7 @@ export function filterAssets(param: string | ((a: Asset) => boolean)) {
 export function findAssetId(name: string): number | undefined;
 export function findAssetId(filter: (a: Asset) => boolean): number | undefined;
 
-export function findAssetId(param: Exclude<AssetFilter, number>) {
+export function findAssetId(param: Exclude<AssetFilter, number>): number | undefined {
     // ANYTHING to make TypeScript happy :)
     return typeof param === "string" ? findAsset(param)?.id : findAsset(param)?.id;
 }

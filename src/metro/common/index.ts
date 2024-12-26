@@ -1,6 +1,8 @@
 import { lazyDestructure } from "../../utils/lazy";
 import { findByProps, findByFilePath } from "../api";
 
+export * from "./components";
+
 // Discord
 export const constants = findByProps("Fonts", "Permissions");
 export const channels = findByProps("getVoiceChannelId");

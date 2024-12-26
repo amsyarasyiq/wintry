@@ -43,14 +43,20 @@ export default definePlugin("settings", {
                         key: "WINTRY",
                         title: () => t.wintry(),
                         IconComponent: () => <TableRow.Icon source={{ uri: WintryIcon }} />,
-                        render: () => import("../../../components/Settings/pages/Wintry"),
+                        render: () => import("../../../components/WintrySettings/pages/Wintry"),
                     },
                     {
                         key: "WINTRY_PLUGINS",
                         title: () => t.settings.sections.plugins(),
                         IconComponent: () => <TableRow.Icon source={findAssetId("ActivitiesIcon")} />,
-                        render: () => import("../../../components/Settings/pages/Plugins"),
+                        render: () => import("../../../components/WintrySettings/pages/Plugins"),
                     },
+                    {
+                        key: "WINTRY_DEVELOPER",
+                        title: () => t.settings.sections.developer(),
+                        IconComponent: () => <TableRow.Icon source={findAssetId("WrenchIcon")} />,
+                        render: () => import("../../../components/WintrySettings/pages/Developer"),
+                    }
                 ],
             }),
 

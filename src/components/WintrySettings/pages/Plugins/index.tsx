@@ -3,6 +3,7 @@ import { Card, Text } from "../../../../metro/common/components";
 import { PLUGINS } from "../../../../plugins";
 import usePluginStore from "../../../../stores/usePluginStore";
 import { useShallow } from "zustand/shallow";
+import PageWrapper from "../../PageWrapper";
 
 function usePluginSettings(id: string) {
     return usePluginStore(useShallow(state => state.settings[id]));
@@ -34,10 +35,10 @@ function PluginCard(props: { pluginId: string }) {
 
 export default function PluginsPage() {
     return (
-        <View>
+        <PageWrapper style={{ gap: 12 }}>
             {Object.keys(PLUGINS).map(id => (
                 <PluginCard key={id} pluginId={id} />
             ))}
-        </View>
+        </PageWrapper>
     );
 }

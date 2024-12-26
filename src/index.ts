@@ -39,6 +39,7 @@ function initialize() {
             metroEventEmitter.emit("metroReady");
 
             trackPerformance("FINISH_INITIALIZED");
+            window.wintry = require("./windowObject.cts");
         };
     } catch (e) {
         return () => {

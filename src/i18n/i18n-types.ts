@@ -17,6 +17,16 @@ type RootTranslation = {
 	 * W​i​n​t​r​y
 	 */
 	wintry: string
+	ui: {
+		components: {
+			search: {
+				/**
+				 * S​e​a​r​c​h
+				 */
+				placeholder: string
+			}
+		}
+	}
 	settings: {
 		sections: {
 			/**
@@ -27,6 +37,22 @@ type RootTranslation = {
 			 * T​h​e​m​e​s
 			 */
 			themes: string
+			/**
+			 * D​e​v​e​l​o​p​e​r
+			 */
+			developer: string
+		}
+		developer: {
+			/**
+			 * A​s​s​e​t​ ​B​r​o​w​s​e​r
+			 */
+			assetBrowser: string
+			sections: {
+				/**
+				 * T​o​o​l​s
+				 */
+				tools: string
+			}
 		}
 	}
 }
@@ -36,6 +62,16 @@ export type TranslationFunctions = {
 	 * Wintry
 	 */
 	wintry: () => LocalizedString
+	ui: {
+		components: {
+			search: {
+				/**
+				 * Search
+				 */
+				placeholder: () => LocalizedString
+			}
+		}
+	}
 	settings: {
 		sections: {
 			/**
@@ -46,6 +82,22 @@ export type TranslationFunctions = {
 			 * Themes
 			 */
 			themes: () => LocalizedString
+			/**
+			 * Developer
+			 */
+			developer: () => LocalizedString
+		}
+		developer: {
+			/**
+			 * Asset Browser
+			 */
+			assetBrowser: () => LocalizedString
+			sections: {
+				/**
+				 * Tools
+				 */
+				tools: () => LocalizedString
+			}
 		}
 	}
 }
