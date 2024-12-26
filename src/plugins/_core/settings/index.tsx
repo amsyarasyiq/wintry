@@ -1,50 +1,22 @@
 import { createContextualPatcher } from "../../../patcher/contextual";
-import { NavigationNative } from "../../../metro/common";
-import { findByName, findByProps } from "../../../metro/api";
+import { findByName } from "../../../metro/api";
 import { waitFor } from "../../../metro/internal/modules";
 import { byProps } from "../../../metro/filters";
 import { findInReactTree } from "../../../utils/objects";
-
 import { TableRow } from "../../../metro/common/components";
-
 import WintryIcon from "./wintry.png";
-import { lazy, useEffect, type ComponentProps } from "react";
-import type { Text } from "react-native";
 import { findAssetId } from "../../../metro/assets";
 import { definePlugin, definePluginSettings } from "../../utils";
 import { t } from "../../../i18n";
+import SettingsManager from "./SettingsManager";
+import { CustomPageRenderer } from "./CustomPageRenderer";
 
 const patcher = createContextualPatcher({ pluginName: "Settings" });
 
 const SettingsOverviewScreen = findByName("SettingsOverviewScreen", false);
-const tabsNavigationRef = findByProps("getRootNavigationRef");
-
-const CustomPageRenderer = () => {
-    const navigation = NavigationNative.useNavigation();
-    const route = NavigationNative.useRoute();
-
-    const { render: PageComponent, ...args } = route.params;
-
-    // biome-ignore lint/correctness/useExhaustiveDependencies: This is fine
-    useEffect(() => void navigation.setOptions({ ...args }), [navigation]);
-
-    // TODO: Wrap with ErrorBoundary
-    return <PageComponent />;
-};
-
-interface SettingRowConfig {
-    key: string;
-    title: () => string;
-    onPress?: () => any;
-    render?: Parameters<typeof lazy>[0];
-    IconComponent?: React.ComponentType;
-    usePredicate?: () => boolean;
-    useTrailing?: () => ComponentProps<typeof Text>["children"];
-    rawTabsConfig?: Record<string, any>;
-}
 
 const settings = definePluginSettings({
-    ON_TOP: {
+    onTop: {
         type: "boolean",
         label: "On Top",
         description: "Show Wintry section on top",
@@ -60,10 +32,12 @@ export default definePlugin("settings", {
 
     settings,
 
+    manager: new SettingsManager(),
+
     start() {
         patcher.addDisposer(
-            this.registerSection({
-                name: "Wintry",
+            this.manager.registerSection({
+                name: t.wintry(),
                 items: [
                     {
                         key: "WINTRY",
@@ -101,7 +75,7 @@ export default definePlugin("settings", {
                         },
 
                         // Render other sections
-                        ...this.getRowConfigs(),
+                        ...this.manager.getRowConfigs(),
                     }),
                     set: v => (rendererConfigValue = v),
                 });
@@ -118,13 +92,14 @@ export default definePlugin("settings", {
 
             patcher.after(SettingsOverviewScreen, "default", (_, ret) => {
                 const { sections } = findInReactTree(ret, i => i.props?.sections).props;
-                let index = -~sections.findIndex((sect: any) => sect.settings.includes("ACCOUNT")) || 1;
+                let index = settings.get().onTop
+                    ? 0
+                    : -~sections.findIndex((sect: any) => sect.settings.includes("ACCOUNT")) || 1;
 
-                for (const sect in this.registeredSections) {
+                for (const section of this.manager.registeredSections.values()) {
                     sections.splice(index++, 0, {
-                        label: sect,
-                        title: sect,
-                        settings: this.registeredSections[sect].map(a => a.key),
+                        label: section.name,
+                        settings: section.items.map(a => a.key),
                     });
                 }
             }),
@@ -133,41 +108,5 @@ export default definePlugin("settings", {
 
     cleanup() {
         patcher.dispose();
-    },
-
-    registeredSections: {} as Record<string, SettingRowConfig[]>,
-
-    registerSection(section: { name: string; items: SettingRowConfig[] }) {
-        this.registeredSections[section.name] = section.items;
-        return () => delete this.registeredSections[section.name];
-    },
-
-    getRowConfigs() {
-        const rows: Record<string, any> = {};
-
-        for (const sect in this.registeredSections) {
-            for (const row of this.registeredSections[sect]) {
-                rows[row.key] = {
-                    type: "pressable",
-                    title: row.title,
-                    IconComponent: row.IconComponent,
-                    usePredicate: row.usePredicate,
-                    useTrailing: row.useTrailing,
-                    onPress: () => {
-                        if (row.onPress) return row.onPress();
-
-                        const Component = lazy(row.render!);
-                        tabsNavigationRef.getRootNavigationRef().navigate("BUNNY_CUSTOM_PAGE", {
-                            title: row.title(),
-                            render: () => <Component />,
-                        });
-                    },
-                    withArrow: true,
-                    ...row.rawTabsConfig,
-                };
-            }
-        }
-
-        return rows;
-    },
+    }
 });

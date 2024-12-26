@@ -1,5 +1,3 @@
-import type { definePluginSettings } from "./utils";
-
 type Author = { name: string };
 
 export enum StartAt {
@@ -16,14 +14,15 @@ export interface PluginSettings {
     [key: string]: any;
 }
 
-export interface WintryPlugin {
+export interface WintryPlugin<D extends DefinedOptions<O>, O extends OptionDefinitions> {
     readonly name: string;
     readonly description: string;
     readonly authors: Author[];
 
     readonly required?: boolean;
     readonly preenabled?: boolean;
-    readonly settings?: ReturnType<typeof definePluginSettings>;
+
+    readonly settings?: D;
 
     readonly state?: PluginState;
 
@@ -61,9 +60,14 @@ export interface WintryPlugin {
 }
 
 type WithRequired<T, K extends keyof T> = T & { [P in K]-?: T[P] };
+type RuntimePropertyKey = "state";
 
 // Allows defining a plugin without the state property and allow extra properties
-export type WintryPluginInstance<P = Record<string, unknown>> = P & WithRequired<WintryPlugin, "state">;
+export type WintryPluginInstance<
+    P = Record<string, unknown>,
+    O extends OptionDefinitions = OptionDefinitions,
+    D extends DefinedOptions<O> = DefinedOptions<O>,
+> = P & WithRequired<WintryPlugin<D, O>, RuntimePropertyKey>;
 
 export type OptionDefinitions = Record<string, OptionDefinition>;
 export type OptionDefinition =
@@ -73,6 +77,37 @@ export type OptionDefinition =
     | RadioOptionDefinition
     | SliderOptionDefinition
     | SelectOptionDefinition;
+
+type OptionDefToType<T extends OptionDefinition> = T extends StringOptionDefinition
+    ? string
+    : T extends BooleanOptionDefinition
+      ? boolean
+      : T extends SelectOptionDefinition | RadioOptionDefinition
+        ? T["options"][number]["value"]
+        : T extends RadioOptionDefinition
+          ? string
+          : T extends SliderOptionDefinition
+            ? number
+            : never;
+
+type OptionDefaultType<O extends OptionDefinition> = O extends RadioOptionDefinition | SelectOptionDefinition
+    ? O["options"] extends { default?: boolean }[]
+        ? O["options"][number]["value"]
+        : undefined
+    : O extends { default: infer T }
+      ? T
+      : undefined;
+
+export type SettingsStore<D extends OptionDefinitions> = {
+    [K in keyof D]: OptionDefToType<D[K]> | OptionDefaultType<D[K]>;
+};
+
+export interface DefinedOptions<Def extends OptionDefinitions> {
+    pluginId: string;
+    definition: Def;
+    get: () => SettingsStore<Def>;
+    use: <T>(selector: (state: SettingsStore<Def>) => T) => T;
+}
 
 type OptionType = "string" | "boolean" | "select" | "radio" | "slider";
 

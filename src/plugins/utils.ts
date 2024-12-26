@@ -1,6 +1,14 @@
 import { toDefaulted } from "es-toolkit/compat";
-import usePluginStore, { type PluginStore } from "../stores/usePluginStore";
-import type { OptionDefinitions, PluginSettings, PluginState, WintryPlugin, WintryPluginInstance } from "./types";
+import type {
+    DefinedOptions,
+    OptionDefinitions,
+    PluginSettings,
+    PluginState,
+    SettingsStore,
+    WintryPlugin,
+    WintryPluginInstance,
+} from "./types";
+import usePluginStore from "../stores/usePluginStore";
 
 type WithThis<T, This> = {
     [P in keyof T]: T[P] extends (...args: infer A) => infer R ? (this: This, ...args: A) => R : T[P];
@@ -9,7 +17,10 @@ type WithThis<T, This> = {
 // Allows defining a plugin without the state property and allow extra properties
 type LooseWintryPlugin<P> = WithThis<P, WintryPluginInstance<P>>;
 
-export function definePlugin<P extends WintryPlugin>(id: string, plugin: LooseWintryPlugin<P>): P {
+export function definePlugin<P extends WintryPlugin<D, O>, D extends DefinedOptions<O>, O extends OptionDefinitions>(
+    id: string,
+    plugin: LooseWintryPlugin<P>,
+): P {
     const pluginState: PluginState = { running: false };
     const pluginSettings: PluginSettings = toDefaulted(usePluginStore.getState().settings[id] ?? {}, {
         enabled: Boolean(plugin.preenabled !== false || plugin.required || false),
@@ -52,12 +63,12 @@ export function definePlugin<P extends WintryPlugin>(id: string, plugin: LooseWi
 }
 
 export function definePluginSettings<Def extends OptionDefinitions>(def: Def) {
-    const definition = {
+    const definition: DefinedOptions<Def> = {
         pluginId: "",
         definition: def,
-        get: () => usePluginStore.getState().settings[definition.pluginId],
-        use<T>(selector: (state: PluginStore["settings"][string]) => T) {
-            return usePluginStore(state => selector(state.settings[this.pluginId]));
+        get: () => usePluginStore.getState().settings[definition.pluginId] as any,
+        use<T>(selector: (state: SettingsStore<Def>) => T) {
+            return usePluginStore(state => selector(state.settings[this.pluginId] as SettingsStore<Def>));
         },
         // TODO: Implement this
         // withPrivateSettings<T>() {
