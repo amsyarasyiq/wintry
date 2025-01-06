@@ -1,12 +1,11 @@
-import { useMemo, useState } from "react";
-import { FlatList, Image, View } from "react-native";
-import { getAssets, iterateAssets, type Asset } from "../../../../metro/assets";
-import Search from "../../../Search";
-import { Card, TableRow, Text } from "../../../../metro/common/components";
+import { useMemo } from "react";
+import { getAssets, type Asset } from "../../../../metro/assets";
+import Search, { useSearchQuery } from "../../../Search";
+import { Card, FlashList, Text } from "../../../../metro/common/components";
 import PageWrapper from "../../PageWrapper";
 
-interface AssetDisplayProps { 
-    asset: Asset; 
+interface AssetDisplayProps {
+    asset: Asset;
     start: boolean;
     end: boolean;
 }
@@ -18,23 +17,25 @@ function AssetDisplay({ asset, start, end }: AssetDisplayProps) {
             <Text>{asset.id}</Text>
             <Text>{asset.type}</Text>
         </Card>
-    )
+    );
 }
+
 export default function AssetBrowser() {
-    const [search, setSearch] = useState("");
-    const assets = useMemo(() =>
-        getAssets().filter(a => a.name.includes(search) || a.id.toString() === search), [search]);
+    const ref = useSearchQuery();
+    const assets = useMemo(
+        () => getAssets().filter(a => a.name.includes(ref.query) || a.id.toString() === ref.query),
+        [ref.query],
+    );
 
     return (
-        <PageWrapper>
-            <Search
-                style={{ margin: 10 }}
-                onChangeText={(v: string) => setSearch(v)}
-            />
-            <FlatList
+        <PageWrapper style={{ gap: 12, paddingHorizontal: 12, paddingTop: 8 }}>
+            <Search queryRef={ref} />
+            <FlashList
                 data={assets}
-                renderItem={({ item, index }) => <AssetDisplay asset={item} start={index === 0} end={index === assets.length - 1} />}
-                keyExtractor={item => item.name}
+                keyExtractor={item => String(item.id)}
+                renderItem={({ item, index }) => (
+                    <AssetDisplay asset={item} start={index === 0} end={index === assets.length - 1} />
+                )}
             />
         </PageWrapper>
     );

@@ -1,9 +1,9 @@
-import { View } from "react-native";
-import { Card, Text } from "../../../../metro/common/components";
+import { Card, FlashList, Text } from "../../../../metro/common/components";
 import { PLUGINS } from "../../../../plugins";
 import usePluginStore from "../../../../stores/usePluginStore";
 import { useShallow } from "zustand/shallow";
 import PageWrapper from "../../PageWrapper";
+import { View } from "react-native";
 
 function usePluginSettings(id: string) {
     return usePluginStore(useShallow(state => state.settings[id]));
@@ -34,11 +34,15 @@ function PluginCard(props: { pluginId: string }) {
 }
 
 export default function PluginsPage() {
+    const pluginIds = Object.keys(PLUGINS);
+
     return (
-        <PageWrapper style={{ gap: 12 }}>
-            {Object.keys(PLUGINS).map(id => (
-                <PluginCard key={id} pluginId={id} />
-            ))}
+        <PageWrapper style={{ gap: 6 }}>
+            <FlashList
+                data={Object.keys(PLUGINS)}
+                renderItem={({ item: id }) => <PluginCard pluginId={id} />}
+                ItemSeparatorComponent={() => <View style={{ height: 8 }} />}
+            />
         </PageWrapper>
     );
 }

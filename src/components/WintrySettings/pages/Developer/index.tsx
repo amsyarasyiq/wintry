@@ -1,4 +1,3 @@
-import { ScrollView } from "react-native";
 import { TableRow, TableRowGroup } from "../../../../metro/common/components";
 import { t } from "../../../../i18n";
 import { NavigationNative } from "../../../../metro/common";
@@ -13,10 +12,12 @@ export default function DeveloperPage() {
             <TableRowGroup title={t.settings.developer.sections.tools()}>
                 <TableRow
                     label={t.settings.developer.assetBrowser()}
-                    onPress={() => navigation.push("BUNNY_CUSTOM_PAGE", {
-                        title: t.settings.developer.assetBrowser(),
-                        render: lazy(() => import("./AssetBrowser")),
-                    })}
+                    onPress={() =>
+                        navigation.push("BUNNY_CUSTOM_PAGE", {
+                            title: t.settings.developer.assetBrowser(),
+                            render: lazy(() => import("./AssetBrowser")),
+                        })
+                    }
                 />
             </TableRowGroup>
         </PageWrapper>

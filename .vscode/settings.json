@@ -1,6 +1,9 @@
 {
-	"editor.codeActionsOnSave": {
-		"quickfix.biome": "explicit"
-    },
-    "editor.formatOnSave": true
+  "editor.codeActionsOnSave": {
+    "quickfix.biome": "explicit"
+  },
+  "editor.formatOnSave": true,
+  "[typescriptreact]": {
+    "editor.linkedEditing": true
+  },
 }
