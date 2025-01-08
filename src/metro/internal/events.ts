@@ -1,6 +1,6 @@
 import { Emitter } from "strict-event-emitter";
-import type { MetroCache } from "./caches";
 import type { ModuleState } from "../types";
+import type { MetroCache } from "./caches";
 
 type MetroEvents = {
     metroReady: [];

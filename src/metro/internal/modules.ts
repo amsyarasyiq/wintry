@@ -1,9 +1,9 @@
-import type { FilterFn, Metro, ModuleExports, ModuleState } from "../types";
-import { onUntil } from "../../utils/events";
-import { createCacheHandler, getAllCachedModuleIds, markExportsFlags, onceCacheReady } from "./caches";
-import { filterExports } from "../api";
-import { metroEventEmitter } from "./events";
 import { hasIndexInitialized } from "../..";
+import { onUntil } from "../../utils/events";
+import { filterExports } from "../api";
+import type { FilterFn, Metro, ModuleExports, ModuleState } from "../types";
+import { createCacheHandler, getAllCachedModuleIds, markExportsFlags, onceCacheReady } from "./caches";
+import { metroEventEmitter } from "./events";
 
 // TODO: Remove the global exposure
 export const moduleRegistry = (window.modules = new Map<number, ModuleState>());

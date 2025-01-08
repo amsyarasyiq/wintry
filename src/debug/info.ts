@@ -1,4 +1,4 @@
-import { ClientInfoModule } from "../native";
+import { NativeClientInfoModule } from "../native";
 
 export function getDebugInfo() {
     // Hermes
@@ -12,8 +12,8 @@ export function getDebugInfo() {
 
     return {
         discord: {
-            version: ClientInfoModule.Version,
-            build: ClientInfoModule.Build,
+            version: NativeClientInfoModule.Version,
+            build: NativeClientInfoModule.Build,
         },
         react: {
             // version: React.version,

@@ -1,7 +1,8 @@
-import { TableRow, TableRowGroup } from "../../../../metro/common/components";
-import { t } from "../../../../i18n";
-import { NavigationNative } from "../../../../metro/common";
 import { lazy } from "react";
+import { t } from "../../../../i18n";
+import { findAssetId } from "../../../../metro";
+import { NavigationNative } from "../../../../metro/common";
+import { TableRow, TableRowGroup } from "../../../../metro/common/components";
 import PageWrapper from "../../PageWrapper";
 
 export default function DeveloperPage() {
@@ -11,7 +12,9 @@ export default function DeveloperPage() {
         <PageWrapper>
             <TableRowGroup title={t.settings.developer.sections.tools()}>
                 <TableRow
+                    arrow={true}
                     label={t.settings.developer.assetBrowser()}
+                    icon={<TableRow.Icon source={findAssetId("ImageIcon")} />}
                     onPress={() =>
                         navigation.push("BUNNY_CUSTOM_PAGE", {
                             title: t.settings.developer.assetBrowser(),

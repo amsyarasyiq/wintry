@@ -76,11 +76,17 @@ const config: BuildOptions = {
                     const result = await swc.transformFile(args.path, {
                         jsc: {
                             externalHelpers: true,
+                            // Some external libraries ships jsx syntax in js file?
+                            parser: {
+                                syntax: "typescript",
+                                tsx: true,
+                            },
                             transform: {
                                 constModules: {
                                     globals: {
                                         "#build-info": {
-                                            version: `"${context.hash}-${releaseBranch ?? "local"}"`,
+                                            commitHash: `"${context.hash}"`,
+                                            branch: `"${releaseBranch ?? "local"}"`,
                                         },
                                     },
                                 },

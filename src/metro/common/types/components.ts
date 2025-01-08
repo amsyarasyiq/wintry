@@ -149,7 +149,6 @@ type TextProps = React.ComponentProps<typeof RN.Text> & {
     color?: string; // TODO: type this
     lineClamp?: number;
     maxFontSizeMultiplier?: number;
-    style?: RN.TextStyle;
 };
 
 export type Text = React.FC<TextProps>;

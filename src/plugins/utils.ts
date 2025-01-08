@@ -1,4 +1,5 @@
 import { toDefaulted } from "es-toolkit/compat";
+import usePluginStore from "../stores/usePluginStore";
 import type {
     DefinedOptions,
     OptionDefinitions,
@@ -8,7 +9,6 @@ import type {
     WintryPlugin,
     WintryPluginInstance,
 } from "./types";
-import usePluginStore from "../stores/usePluginStore";
 
 type WithThis<T, This> = {
     [P in keyof T]: T[P] extends (...args: infer A) => infer R ? (this: This, ...args: A) => R : T[P];
@@ -51,6 +51,9 @@ export function definePlugin<P extends WintryPlugin<D, O>, D extends DefinedOpti
     });
 
     Object.defineProperties(plugin, {
+        id: {
+            value: id,
+        },
         state: {
             get: () => usePluginStore.getState().states[id],
         },

@@ -1,5 +1,5 @@
-import hook from "./hook";
 import type { LiteralUnion } from "type-fest";
+import hook from "./hook";
 
 type PatchType = "b" | "i" | "a";
 

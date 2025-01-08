@@ -1,12 +1,12 @@
-import hookDefineProperty from "./utils/objects";
-import { internal_getDefiner } from "./metro/internal/modules";
-import { initializeMetro } from "./metro/internal";
 import { connectToDebugger, patchLogHook } from "./debug";
-import reportErrorOnInitialization from "./error-reporter";
 import { trackPerformance } from "./debug/tracer";
+import reportErrorOnInitialization from "./error-reporter";
+import { initializeMetro } from "./metro/internal";
 import { metroEventEmitter } from "./metro/internal/events";
+import { internal_getDefiner } from "./metro/internal/modules";
 import { initializePlugins } from "./stores/usePluginStore";
 import { isSafeModeEnabled } from "./stores/usePrefsStore";
+import hookDefineProperty from "./utils/objects";
 
 export let hasIndexInitialized = false;
 

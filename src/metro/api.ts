@@ -1,10 +1,10 @@
-import { createCacheHandler, iterateModulesForCache } from "./internal/caches";
-import type { FilterFn } from "./types";
-import { isNotNil, TimeoutError } from "es-toolkit";
-import { createLazyModule } from "./lazy";
-import { moduleRegistry, waitFor } from "./internal/modules";
+import { TimeoutError, isNotNil } from "es-toolkit";
 import { byDisplayName, byFilePath, byName, byProps, byStoreName, byTypeName } from "./filters";
+import { createCacheHandler, iterateModulesForCache } from "./internal/caches";
 import { metroEventEmitter } from "./internal/events";
+import { moduleRegistry, waitFor } from "./internal/modules";
+import { createLazyModule } from "./lazy";
+import type { FilterFn } from "./types";
 
 /**
  * @internal

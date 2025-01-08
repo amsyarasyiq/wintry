@@ -1,10 +1,10 @@
-import { ModuleFlags, ModulesMapInternal } from "./enums";
-import { isBadModuleExports, moduleRegistry } from "./modules";
 import { requireModule } from "..";
-import { metroEventEmitter } from "./events";
 import { hasIndexInitialized } from "../..";
 import { kvStorage } from "../../api/kvStorage";
-import { ClientInfoModule } from "../../native";
+import { NativeClientInfoModule } from "../../native";
+import { ModuleFlags, ModulesMapInternal } from "./enums";
+import { metroEventEmitter } from "./events";
+import { isBadModuleExports, moduleRegistry } from "./modules";
 
 const CACHE_VERSION = 1;
 const WINTRY_METRO_CACHE_KEY = "__wintry_metro_cache_key__";
@@ -22,7 +22,7 @@ export const getMetroCache = () => _metroCache;
 function initializeCache() {
     const cache = {
         _version: CACHE_VERSION,
-        _buildNumber: ClientInfoModule.Build as number,
+        _buildNumber: NativeClientInfoModule.Build as number,
         moduleIndex: {} as Record<string, number>,
         lookupIndex: {} as Record<string, ModulesMap | undefined>,
     } as const;

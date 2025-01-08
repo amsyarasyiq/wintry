@@ -1,11 +1,11 @@
-import { FileModule } from "../native";
+import { NativeFileModule } from "../native";
 
 /**
  * Removes all files in a directory from the path given
  * @param path Path to the targeted directory
  */
 export async function clearFolder(path: string, { prefix = "wintry/" } = {}) {
-    return void (await FileModule.clearFolder("documents", `${prefix}${path}`));
+    return void (await NativeFileModule.clearFolder("documents", `${prefix}${path}`));
 }
 
 /**
@@ -13,7 +13,7 @@ export async function clearFolder(path: string, { prefix = "wintry/" } = {}) {
  * @param path Path to the file
  */
 export async function removeFile(path: string, { prefix = "wintry/" } = {}) {
-    return void (await FileModule.removeFile("documents", `${prefix}${path}`));
+    return void (await NativeFileModule.removeFile("documents", `${prefix}${path}`));
 }
 
 /**
@@ -21,7 +21,7 @@ export async function removeFile(path: string, { prefix = "wintry/" } = {}) {
  * @param path Path to the file
  */
 export async function fileExists(path: string, { prefix = "wintry/" } = {}) {
-    return await FileModule.fileExists(`${FileModule.getConstants().DocumentsDirPath}/${prefix}${path}`);
+    return await NativeFileModule.fileExists(`${NativeFileModule.getConstants().DocumentsDirPath}/${prefix}${path}`);
 }
 
 /**
@@ -31,7 +31,7 @@ export async function fileExists(path: string, { prefix = "wintry/" } = {}) {
  */
 export async function writeFile(path: string, data: string, { prefix = "wintry/" } = {}): Promise<void> {
     if (typeof data !== "string") throw new Error("Argument 'data' must be a string");
-    return void (await FileModule.writeFile("documents", `${prefix}${path}`, data, "utf8"));
+    return void (await NativeFileModule.writeFile("documents", `${prefix}${path}`, data, "utf8"));
 }
 
 /**
@@ -41,7 +41,10 @@ export async function writeFile(path: string, data: string, { prefix = "wintry/"
  */
 export async function readFile(path: string, { prefix = "wintry/" } = {}): Promise<string> {
     try {
-        return await FileModule.readFile(`${FileModule.getConstants().DocumentsDirPath}/${prefix}${path}`, "utf8");
+        return await NativeFileModule.readFile(
+            `${NativeFileModule.getConstants().DocumentsDirPath}/${prefix}${path}`,
+            "utf8",
+        );
     } catch (err) {
         throw new Error(`An error occured while writing to '${path}'`, { cause: err });
     }
@@ -61,5 +64,5 @@ export async function downloadFile(url: string, path: string, { prefix = "wintry
     const arrayBuffer = await response.arrayBuffer();
     const data = Buffer.from(arrayBuffer).toString("base64");
 
-    return void (await FileModule.writeFile("documents", `${prefix}${path}`, data, "base64"));
+    return void (await NativeFileModule.writeFile("documents", `${prefix}${path}`, data, "base64"));
 }

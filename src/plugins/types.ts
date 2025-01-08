@@ -15,6 +15,7 @@ export interface PluginSettings {
 }
 
 export interface WintryPlugin<D extends DefinedOptions<O>, O extends OptionDefinitions> {
+    readonly id: string;
     readonly name: string;
     readonly description: string;
     readonly authors: Author[];
@@ -60,7 +61,7 @@ export interface WintryPlugin<D extends DefinedOptions<O>, O extends OptionDefin
 }
 
 type WithRequired<T, K extends keyof T> = T & { [P in K]-?: T[P] };
-type RuntimePropertyKey = "state";
+type RuntimePropertyKey = "id" | "state";
 
 // Allows defining a plugin without the state property and allow extra properties
 export type WintryPluginInstance<

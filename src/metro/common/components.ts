@@ -1,10 +1,10 @@
 import type { FlashListProps } from "@shopify/flash-list";
-import { lazyValue, lazyDestructure } from "../../utils/lazy";
-import { findByProps, findByDisplayName, findByName, find } from "../api";
+import { lazyDestructure, lazyValue } from "../../utils/lazy";
+import { find, findByDisplayName, findByName, findByProps } from "../api";
 import { createFilterDefinition } from "../factories";
 
-import type * as t from "./types/components";
 import type { ReactElement } from "react";
+import type * as t from "./types/components";
 
 const bySingularProp = createFilterDefinition<[string]>(
     ([prop], m) => m[prop] && Object.keys(m).length === 1,
@@ -76,3 +76,6 @@ export const Text = findProp("Text", "LegacyText") as t.Text;
 export const Forms = findByProps("Form", "FormSection");
 
 export const FlashList = findProp("FlashList") as <T>(props: FlashListProps<T>) => ReactElement<typeof props>;
+export const MasonryFlashList = findProp("MasonryFlashList") as <T>(
+    props: FlashListProps<T>,
+) => ReactElement<typeof props>;

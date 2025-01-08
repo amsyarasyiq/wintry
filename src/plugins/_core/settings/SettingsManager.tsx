@@ -22,7 +22,7 @@ interface SettingRowConfig {
 const tabsNavigationRef = findByProps("getRootNavigationRef");
 
 export default class SettingsManager {
-    registeredSections = new Map<string, SectionConfig>()
+    registeredSections = new Map<string, SectionConfig>();
 
     registerSection(section: SectionConfig) {
         const id = uniqueId("section_");

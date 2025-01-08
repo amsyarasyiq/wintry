@@ -2,27 +2,24 @@ import { requireModule } from ".";
 import { findByProps } from "./api";
 import { moduleRegistry } from "./internal/modules";
 
-export type Asset = { id: number } & (
-    { fileSystemLocation: string } 
-    | { httpServerLocation: string }
-) & {
-    width?: number,
-    height?: number,
-    scales: Array<number>,
-    hash: string,
-    name: string,
-    type: string,
+export type Asset = { id: number } & ({ fileSystemLocation: string } | { httpServerLocation: string }) & {
+        width?: number;
+        height?: number;
+        scales: Array<number>;
+        hash: string;
+        name: string;
+        type: string;
 
-    resolver?: "android" | "generic",
-}
+        resolver?: "android" | "generic";
+    };
 
 const assetsRegistry = findByProps("getAssetByID");
 
 const _nameToAssetCache = {} as Record<string, Asset>;
-let arrayCache: Asset[] | undefined; 
+let arrayCache: Asset[] | undefined;
 
 export function getAssets() {
-    return arrayCache ??= Array.from(iterateAssets());
+    return (arrayCache ??= Array.from(iterateAssets()));
 }
 
 export function* iterateAssets() {
@@ -32,7 +29,7 @@ export function* iterateAssets() {
         if (state.meta.isAsset) {
             const assetId = requireModule(state.id);
             if (yielded.has(state.id) || typeof assetId !== "number") {
-               continue;
+                continue;
             }
 
             yield getAssetById(assetId);

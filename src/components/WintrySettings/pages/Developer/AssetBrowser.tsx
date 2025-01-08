@@ -1,7 +1,7 @@
 import { useMemo } from "react";
-import { getAssets, type Asset } from "../../../../metro/assets";
-import Search, { useSearchQuery } from "../../../Search";
+import { type Asset, getAssets } from "../../../../metro/assets";
 import { Card, FlashList, Text } from "../../../../metro/common/components";
+import Search, { useSearchQuery } from "../../../Search";
 import PageWrapper from "../../PageWrapper";
 
 interface AssetDisplayProps {

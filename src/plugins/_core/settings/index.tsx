@@ -1,15 +1,15 @@
-import { createContextualPatcher } from "../../../patcher/contextual";
-import { findByName } from "../../../metro/api";
-import { waitFor } from "../../../metro/internal/modules";
-import { byProps } from "../../../metro/filters";
-import { findInReactTree } from "../../../utils/objects";
-import { TableRow } from "../../../metro/common/components";
-import WintryIcon from "./wintry.png";
-import { findAssetId } from "../../../metro/assets";
-import { definePlugin, definePluginSettings } from "../../utils";
 import { t } from "../../../i18n";
-import SettingsManager from "./SettingsManager";
+import { findByName } from "../../../metro/api";
+import { findAssetId } from "../../../metro/assets";
+import { TableRow } from "../../../metro/common/components";
+import { byProps } from "../../../metro/filters";
+import { waitFor } from "../../../metro/internal/modules";
+import { createContextualPatcher } from "../../../patcher/contextual";
+import { findInReactTree } from "../../../utils/objects";
+import { definePlugin, definePluginSettings } from "../../utils";
 import { CustomPageRenderer } from "./CustomPageRenderer";
+import SettingsManager from "./SettingsManager";
+import WintryIcon from "./wintry.png";
 
 const patcher = createContextualPatcher({ pluginName: "Settings" });
 
@@ -56,7 +56,7 @@ export default definePlugin("settings", {
                         title: () => t.settings.sections.developer(),
                         IconComponent: () => <TableRow.Icon source={findAssetId("WrenchIcon")} />,
                         render: () => import("../../../components/WintrySettings/pages/Developer"),
-                    }
+                    },
                 ],
             }),
 
@@ -114,5 +114,5 @@ export default definePlugin("settings", {
 
     cleanup() {
         patcher.dispose();
-    }
+    },
 });

@@ -1,6 +1,6 @@
+import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { kvStorage } from "../api/kvStorage";
-import { create } from "zustand";
 
 interface PrefsStore {
     safeMode: boolean;

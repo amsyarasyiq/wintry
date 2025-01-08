@@ -1,9 +1,9 @@
 import { create } from "zustand";
+import { createJSONStorage, persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import { hasIndexInitialized } from "..";
-import { metroEventEmitter } from "../metro/internal/events";
-import { createJSONStorage, persist } from "zustand/middleware";
 import { kvStorage } from "../api/kvStorage";
+import { metroEventEmitter } from "../metro/internal/events";
 import type { PluginSettings, PluginState } from "../plugins/types";
 import { getProxyFactory, lazyValue } from "../utils/lazy";
 
