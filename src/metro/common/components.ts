@@ -1,4 +1,4 @@
-import type { FlashListProps } from "@shopify/flash-list";
+import type { FlashListProps, Masonry } from "@shopify/flash-list";
 import { lazyDestructure, lazyValue } from "../../utils/lazy";
 import { find, findByDisplayName, findByName, findByProps } from "../api";
 import { createFilterDefinition } from "../factories";
@@ -77,5 +77,5 @@ export const Forms = findByProps("Form", "FormSection");
 
 export const FlashList = findProp("FlashList") as <T>(props: FlashListProps<T>) => ReactElement<typeof props>;
 export const MasonryFlashList = findProp("MasonryFlashList") as <T>(
-    props: FlashListProps<T>,
+    props: Masonry.MasonryFlashListProps<T>,
 ) => ReactElement<typeof props>;

@@ -36,7 +36,7 @@ export function setupMetroCache() {
 
     try {
         const parsedCache = JSON.parse(rawCache!); // If it fails, it will throw
-        if (parsedCache._version !== CACHE_VERSION || parsedCache._buildNumber !== ClientInfoModule.Build) {
+        if (parsedCache._version !== CACHE_VERSION || parsedCache._buildNumber !== NativeClientInfoModule.Build) {
             throw "cache invalidated";
         }
 
