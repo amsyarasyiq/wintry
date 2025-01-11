@@ -1,15 +1,16 @@
-import type { ViewStyle } from "react-native";
+import type { StyleProp, ViewStyle } from "react-native";
 import { SafeAreaView } from "../../metro/common";
 
 interface PageWrapperProps {
     children: React.ReactNode;
-    style?: ViewStyle;
+    style?: StyleProp<ViewStyle>;
     /**
      * Edges to put insets on. Defaults to ["right", "bottom", "left"]. Set to an empty array to disable insets.
      */
     edges?: Array<"top" | "right" | "bottom" | "left">;
 }
 
+// Applies padding to the page content and insets to the default edges.
 export default function PageWrapper(props: PageWrapperProps) {
     return (
         <SafeAreaView

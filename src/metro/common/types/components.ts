@@ -5,7 +5,7 @@ import type { ImageSourcePropType, PressableProps } from "react-native";
 import type { LiteralUnion } from "type-fest";
 
 // Abandon all hope, ye who enter here
-type Style = RN.ViewStyle & RN.ImageStyle & RN.TextStyle;
+type Style = RN.StyleProp<RN.ViewStyle & RN.ImageStyle & RN.TextStyle>;
 
 type InteractiveSize = "sm" | "md" | "lg";
 

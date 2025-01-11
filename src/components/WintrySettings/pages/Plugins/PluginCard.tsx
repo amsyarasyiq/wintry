@@ -35,9 +35,8 @@ function SearchHighlightText(props: { index: number; fallback: string } & Compon
     const { result } = useCardContext();
     const textProps = omit(props, ["index", "fallback"]);
 
-    // TODO: Derive style props
     const highlightedNode = result[props.index].highlight((m, i) => (
-        <Text key={i} {...textProps} style={[{ backgroundColor: getHighlightColor() }]}>
+        <Text key={i} {...textProps} style={[props.style, { backgroundColor: getHighlightColor() }]}>
             {m}
         </Text>
     ));
