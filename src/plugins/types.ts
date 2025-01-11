@@ -29,11 +29,11 @@ export interface WintryPlugin<D extends DefinedOptions<O>, O extends OptionDefin
     readonly state?: PluginState;
 
     /**
-     * A check if the plugin can be started without a restart.
-     * If true, the plugin will not load.
+     * A check if the plugin can be started/stopped without a restart.
+     * If true, the plugin will not load/unload.
      */
     // Probably should have better naming here
-    readonly requiresRestart?: (state: PluginState) => boolean;
+    readonly requiresRestart?: (start: boolean, state: PluginState) => boolean;
 
     /**
      * Called very early, when most APIs are not available and Metro is not ready (you can't forcefully load modules).

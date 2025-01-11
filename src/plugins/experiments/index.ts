@@ -4,11 +4,12 @@ import { definePlugin } from "../utils";
 
 let patched: boolean;
 
+// Potential enhancement: Add warning on Experiments page when this plugin is enabled
 export default definePlugin("experiments", {
     name: "Experiments",
-    description: "Expose super secret developer & staff experiments",
+    description: "Exposes internal developer sections, allowing Discord experiments overriding!",
     authors: [{ name: "pylixonly" }],
-    requiresRestart: ({ ranPreinit }) => !ranPreinit || !patched,
+    requiresRestart: (start, { ranPreinit }) => start && (!ranPreinit || !patched),
 
     preinit() {
         waitFor(byStoreName.raw("DeveloperExperimentStore"), exports => {
