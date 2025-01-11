@@ -23,7 +23,7 @@ export function definePlugin<P extends WintryPlugin<D, O>, D extends DefinedOpti
 ): P {
     const pluginState: PluginState = { running: false };
     const pluginSettings: PluginSettings = toDefaulted(usePluginStore.getState().settings[id] ?? {}, {
-        enabled: Boolean(plugin.preenabled !== false || plugin.required || false),
+        enabled: Boolean(plugin.preenabled === true || plugin.required || false),
     });
 
     if (typeof plugin.settings === "object") {
