@@ -1,6 +1,6 @@
 import { omit } from "es-toolkit";
 import type {} from "fuzzysort";
-import { type ComponentProps, createContext, useContext } from "react";
+import { type ComponentProps, createContext, memo, useContext } from "react";
 import { View } from "react-native";
 import { useShallow } from "zustand/shallow";
 import { findAssetId, findByProps } from "../../../../metro";
@@ -158,7 +158,7 @@ function Switch() {
     );
 }
 
-export default function PluginCard({ result, item: plugin }: PluginCardProps<WintryPluginInstance>) {
+export default memo(function PluginCard({ result, item: plugin }: PluginCardProps<WintryPluginInstance>) {
     return (
         <PluginCardContext.Provider value={{ plugin, result }}>
             <Card>
@@ -180,4 +180,4 @@ export default function PluginCard({ result, item: plugin }: PluginCardProps<Win
             </Card>
         </PluginCardContext.Provider>
     );
-}
+});

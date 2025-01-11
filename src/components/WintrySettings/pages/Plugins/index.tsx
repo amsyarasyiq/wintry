@@ -1,11 +1,11 @@
 import fuzzysort from "fuzzysort";
 import { useMemo } from "react";
-import { View, useWindowDimensions } from "react-native";
-import { MasonryFlashList } from "../../../../metro/common/components";
+import { View } from "react-native";
 import { PLUGINS } from "../../../../plugins";
 import Search, { useSearchQuery } from "../../../Search";
 import PageWrapper from "../../PageWrapper";
 import PluginCard from "./PluginCard";
+import { ResponsiveMasonryFlashList } from "../ResponsiveMasonryFlashList";
 
 export default function PluginsPage() {
     const queryRef = useSearchQuery();
@@ -17,30 +17,18 @@ export default function PluginsPage() {
         });
     }, [queryRef.query]);
 
-    const minWidth = 244; // Magic number (literally)
-    const dimensions = useWindowDimensions();
-    const numColumns = Math.min(results.length, Math.floor((dimensions.width - 24) / minWidth));
+    const ItemSeparator = () => <View style={{ height: 8 }} />;
 
     return (
         <PageWrapper style={{ gap: 6 }}>
             <Search queryRef={queryRef} />
-            <MasonryFlashList
+            <ResponsiveMasonryFlashList
                 data={results}
-                numColumns={numColumns}
+                itemMinWidth={244} // Approximated number
                 estimatedItemSize={150}
                 keyExtractor={i => i.obj.id}
-                renderItem={({ item: result, columnIndex }) => (
-                    <View
-                        style={{
-                            minWidth,
-                            paddingRight: columnIndex === numColumns - 1 ? 0 : 4,
-                            paddingLeft: columnIndex === 0 ? 0 : 4,
-                        }}
-                    >
-                        <PluginCard result={result} item={result.obj} />
-                    </View>
-                )}
-                ItemSeparatorComponent={() => <View style={{ height: 8 }} />}
+                renderItem={({ item: result }) => <PluginCard result={result} item={result.obj} />}
+                ItemSeparatorComponent={ItemSeparator}
             />
         </PageWrapper>
     );
