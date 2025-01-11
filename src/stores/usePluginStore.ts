@@ -8,13 +8,13 @@ import type { PluginSettings, PluginState } from "../plugins/types";
 import { getProxyFactory, lazyValue } from "../utils/lazy";
 
 // Prevent circular dependency
-const PLUGINS = lazyValue(() => require("../plugins").PLUGINS);
+const PLUGINS = lazyValue(() => require("../plugins").PLUGINS) as typeof import("../plugins").PLUGINS;
 
 export interface PluginStore {
     settings: Record<string, PluginSettings>;
     states: Record<string, PluginState>;
 
-    togglePlugin: (id: string, value?: boolean) => void;
+    togglePlugin: (id: string, value?: boolean, startOrStop?: boolean) => void;
     startPlugin: (id: string) => void;
     cleanupPlugin: (id: string) => void;
 }
@@ -27,16 +27,11 @@ function startPlugin(draft: PluginStore, id: string) {
         return;
     }
 
-    if (plugin.requiresRestart?.({ isInit: !hasIndexInitialized })) {
-        console.warn(`${plugin.name} requires restart`);
-        return;
-    }
-
     const start = () => {
         console.info(`Starting plugin ${plugin.name}`);
 
         try {
-            plugin.start();
+            plugin.start?.();
         } catch (e) {
             console.error(`Failed to start ${plugin.name}: ${e}`);
             return;
@@ -48,6 +43,7 @@ function startPlugin(draft: PluginStore, id: string) {
 
         try {
             plugin.preinit();
+            draft.states[id].ranPreinit = true;
         } catch (e) {
             console.error(`Failed to preinitialize ${plugin.name}\n`, e);
             return;

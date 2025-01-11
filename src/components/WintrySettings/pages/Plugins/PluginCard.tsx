@@ -141,7 +141,13 @@ function Switch() {
                         if (manualHandle === true) return;
                     }
 
-                    togglePlugin(plugin.id, v);
+                    if (v && plugin.requiresRestart?.(plugin.state)) {
+                        // TODO: Use a proper alert
+                        alert("This plugin requires a restart to be enabled.");
+                        togglePlugin(plugin.id, v, false);
+                    } else {
+                        togglePlugin(plugin.id, v);
+                    }
                 }}
             />
         </View>

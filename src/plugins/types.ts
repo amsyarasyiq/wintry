@@ -7,6 +7,7 @@ export enum StartAt {
 
 export interface PluginState {
     running: boolean;
+    ranPreinit: boolean;
 }
 
 export interface PluginSettings {
@@ -15,7 +16,7 @@ export interface PluginSettings {
 }
 
 export interface WintryPlugin<D extends DefinedOptions<O>, O extends OptionDefinitions> {
-    readonly id: string;
+    readonly id?: string;
     readonly name: string;
     readonly description: string;
     readonly authors: Author[];
@@ -32,7 +33,7 @@ export interface WintryPlugin<D extends DefinedOptions<O>, O extends OptionDefin
      * If true, the plugin will not load.
      */
     // Probably should have better naming here
-    readonly requiresRestart?: ({ isInit }: { isInit: boolean }) => boolean;
+    readonly requiresRestart?: (state: PluginState) => boolean;
 
     /**
      * Called very early, when most APIs are not available and Metro is not ready (you can't forcefully load modules).

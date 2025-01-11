@@ -8,7 +8,7 @@ export default definePlugin("experiments", {
     name: "Experiments",
     description: "Expose super secret developer & staff experiments",
     authors: [{ name: "pylixonly" }],
-    requiresRestart: ({ isInit }) => !isInit && !patched,
+    requiresRestart: ({ ranPreinit }) => !ranPreinit || !patched,
 
     preinit() {
         waitFor(byStoreName.raw("DeveloperExperimentStore"), exports => {

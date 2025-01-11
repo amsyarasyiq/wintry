@@ -21,7 +21,7 @@ export function definePlugin<P extends WintryPlugin<D, O>, D extends DefinedOpti
     id: string,
     plugin: LooseWintryPlugin<P>,
 ): P {
-    const pluginState: PluginState = { running: false };
+    const pluginState: PluginState = { running: false, ranPreinit: false };
     const pluginSettings: PluginSettings = toDefaulted(usePluginStore.getState().settings[id] ?? {}, {
         enabled: Boolean(plugin.preenabled === true || plugin.required || false),
     });
