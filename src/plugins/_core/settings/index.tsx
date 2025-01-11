@@ -1,3 +1,4 @@
+import { Devs } from "../../../data/constants";
 import { t } from "../../../i18n";
 import { findByName } from "../../../metro/api";
 import { findAssetId } from "../../../metro/assets";
@@ -27,7 +28,7 @@ const settings = definePluginSettings({
 export default definePlugin("settings", {
     name: "Settings",
     description: "Provides a settings interface and debug information",
-    authors: [{ name: "pylixonly" }],
+    authors: [Devs.Pylix],
     required: true,
 
     settings,

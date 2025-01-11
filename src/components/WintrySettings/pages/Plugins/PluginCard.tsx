@@ -7,6 +7,7 @@ import { findAssetId, findByProps } from "../../../../metro";
 import { Card, FormSwitch, IconButton, Stack, Text, tokens } from "../../../../metro/common";
 import type { WintryPluginInstance } from "../../../../plugins/types";
 import usePluginStore from "../../../../stores/usePluginStore";
+import { showSheet } from "../../../utils/sheets";
 
 const PluginCardContext = createContext<{
     plugin: WintryPluginInstance;
@@ -44,7 +45,7 @@ function SearchHighlightText(props: { index: number; fallback: string } & Compon
     return <Text {...textProps}>{highlightedNode.length > 0 ? highlightedNode : props.fallback}</Text>;
 }
 
-function Title() {
+function CardHeader() {
     const { plugin, result } = useCardContext();
 
     // could be empty if the plugin name is irrelevant!
@@ -68,7 +69,7 @@ function Title() {
     );
 }
 
-function Authors() {
+function CardDevs() {
     const {
         plugin: { authors },
     } = useCardContext();
@@ -96,35 +97,24 @@ function Description() {
     return <SearchHighlightText index={1} fallback={plugin.description} />;
 }
 
-function Actions() {
+function CardActions() {
+    const { plugin } = useCardContext();
+
     return (
         <View style={{ flexDirection: "row", gap: 6 }}>
-            {/* <IconButton
-                size="sm"
-                variant="secondary"
-                icon={findAssetId("WrenchIcon")}
-                disabled={!plugin.getPluginSettingsComponent()}
-                onPress={() =>
-                    navigation.push("WINTRY_CUSTOM_PAGE", {
-                        title: plugin.name,
-                        render: plugin.getPluginSettingsComponent(),
-                    })
-                }
-            /> */}
             <IconButton
                 size="sm"
                 variant="secondary"
                 icon={findAssetId("CircleInformationIcon-primary")}
-                onPress={
-                    () => {}
-                    // void showSheet("PluginInfoActionSheet", plugin.resolveSheetComponent(), { plugin, navigation })
-                }
+                onPress={() => {
+                    showSheet("PluginSheetComponent", import("./PluginSheetComponent"), { plugin });
+                }}
             />
         </View>
     );
 }
 
-function Switch() {
+function CardSwitch() {
     const { plugin } = useCardContext();
     const settings = usePluginSettings();
     const togglePlugin = usePluginStore(state => state.togglePlugin);
@@ -160,17 +150,17 @@ function Switch() {
 export default memo(function PluginCard({ result, item: plugin }: PluginCardProps<WintryPluginInstance>) {
     return (
         <PluginCardContext.Provider value={{ plugin, result }}>
-            <Card>
+            <Card onPress={() => showSheet("PluginSheetComponent", import("./PluginSheetComponent"), { plugin })}>
                 <Stack spacing={16}>
                     <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
                         <View style={{ flexShrink: 1 }}>
-                            <Title />
-                            <Authors />
+                            <CardHeader />
+                            <CardDevs />
                         </View>
                         <View>
                             <Stack spacing={12} direction="horizontal">
-                                <Actions />
-                                <Switch />
+                                <CardActions />
+                                <CardSwitch />
                             </Stack>
                         </View>
                     </View>

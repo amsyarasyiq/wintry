@@ -1,4 +1,5 @@
-type Author = { name: string };
+import type { SetRequired } from "type-fest";
+import type { Dev } from "../data/constants";
 
 export enum StartAt {
     Init = 0,
@@ -19,7 +20,7 @@ export interface WintryPlugin<D extends DefinedOptions<O>, O extends OptionDefin
     readonly id?: string;
     readonly name: string;
     readonly description: string;
-    readonly authors: Author[];
+    readonly authors: Dev[];
 
     readonly required?: boolean;
     readonly preenabled?: boolean;
@@ -61,7 +62,6 @@ export interface WintryPlugin<D extends DefinedOptions<O>, O extends OptionDefin
     readonly onStopRequest?: (stop: () => void) => boolean;
 }
 
-type WithRequired<T, K extends keyof T> = T & { [P in K]-?: T[P] };
 type RuntimePropertyKey = "id" | "state";
 
 // Allows defining a plugin without the state property and allow extra properties
@@ -69,7 +69,7 @@ export type WintryPluginInstance<
     P = Record<string, unknown>,
     O extends OptionDefinitions = OptionDefinitions,
     D extends DefinedOptions<O> = DefinedOptions<O>,
-> = P & WithRequired<WintryPlugin<D, O>, RuntimePropertyKey>;
+> = P & SetRequired<WintryPlugin<D, O>, RuntimePropertyKey>;
 
 export type OptionDefinitions = Record<string, OptionDefinition>;
 export type OptionDefinition =

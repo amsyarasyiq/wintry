@@ -19,6 +19,14 @@ const en = {
         general: {
             info: "Info",
         },
+        plugins: {
+            description: "Description",
+            info_sheet: {
+                details: "Details",
+                more_info: "More Info",
+                view_source: "View Source",
+            },
+        },
         developer: {
             assetBrowser: "Asset Browser",
             sections: {

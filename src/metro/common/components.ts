@@ -1,6 +1,6 @@
 import type { FlashListProps, Masonry } from "@shopify/flash-list";
 import { lazyDestructure, lazyValue } from "../../utils/lazy";
-import { find, findByDisplayName, findByName, findByProps } from "../api";
+import { find, findByProps } from "../api";
 import { createFilterDefinition } from "../factories";
 
 import type { ReactElement } from "react";
@@ -14,11 +14,6 @@ const bySingularProp = createFilterDefinition<[string]>(
 const findSingular = (prop: string) => lazyValue(() => find(bySingularProp(prop))?.[prop]);
 const findProp = (...prop: string[]) => lazyValue(() => findByProps(...prop)[prop[0]]);
 
-// Discord
-export const LegacyAlert = findByDisplayName("FluxContainer(Alert)");
-export const CompatButton = findByProps("Looks", "Colors", "Sizes");
-export const HelpMessage = findByName("HelpMessage");
-
 // React Native's included SafeAreaView only adds padding on iOS.
 export const { SafeAreaView, SafeAreaProvider, useSafeAreaInsets } = lazyDestructure(() =>
     findByProps("useSafeAreaInsets"),
@@ -29,18 +24,22 @@ export const ActionSheetRow = findProp("ActionSheetRow");
 
 // Buttons
 export const Button = findSingular("Button") as t.Button;
-export const TwinButtons = findProp("TwinButtons");
+export const TwinButtons = findProp("TwinButtons") as t.TwinButtons;
 export const IconButton = findSingular("IconButton") as t.IconButton;
 export const RowButton = findProp("RowButton") as t.RowButton;
 
 export const PressableScale = findProp("PressableScale");
 
 // Tables
-export const TableRow = findProp("TableRow");
-export const TableRowIcon = findProp("TableRowIcon");
-export const TableRowTrailingText = findProp("TableRowTrailingText");
-export const TableRowGroup = findProp("TableRowGroup");
-export const TableSwitchRow = findProp("TableSwitchRow");
+export const TableRow = findProp("TableRow") as t.TableRow;
+export const TableRowIcon = findProp("TableRowIcon") as t.TableRowIcon;
+export const TableRowTrailingText = findProp("TableRowTrailingText") as t.TableRowTrailingText;
+export const TableRowGroup = findProp("TableRowGroup") as t.TableRowGroup;
+export const TableRadioGroup = findProp("TableRadioGroup") as t.TableRadioGroup;
+export const TableRadioRow = findProp("TableRadioRow") as t.TableRadioRow;
+export const TableSwitchRow = findProp("TableSwitchRow") as t.TableSwitchRow;
+export const TableCheckboxRow = findProp("TableCheckboxRow") as t.TableCheckboxRow;
+
 export const TableSwitch = findSingular("FormSwitch");
 export const TableRadio = findSingular("FormRadio");
 export const TableCheckbox = findSingular("FormCheckbox");
@@ -51,19 +50,29 @@ export const FormCheckbox = findSingular("FormCheckbox");
 
 // Card
 export const Card = findProp("Card");
-export const RedesignCompat = lazyValue(() => findByProps("RedesignCompat").RedesignCompat);
+
+// Alert
+export const AlertModal = findProp("AlertModal");
+export const AlertActionButton = findProp("AlertActionButton");
+export const AlertActions = findProp("AlertActions");
+
+// Pile
+export const AvatarPile = findSingular("AvatarPile");
 
 // Misc.
+export const ContextMenu = findProp("ContextMenu") as t.ContextMenu;
 export const Stack = findProp("Stack") as t.Stack;
+export const Avatar = findProp("default", "AvatarSizes", "getStatusSize");
 
 // Inputs
 export const TextInput = findSingular("TextInput") as t.TextInput;
+export const TextArea = findSingular("TextArea");
 
 // SegmentedControl
 export const SegmentedControl = findProp("SegmentedControl") as t.SegmentedControl;
 export const SegmentedControlPages = findProp("SegmentedControlPages") as t.SegmentedControlPages;
 export const useSegmentedControlState = findSingular("useSegmentedControlState") as (
-    state: t.SegmentedControlStateArgs,
+    arg: t.SegmentedControlStateArgs,
 ) => t.SegmentedControlState;
 export const CompatSegmentedControl = findProp("CompatSegmentedControl") as t.CompatSegmentedControl;
 
@@ -73,9 +82,7 @@ export const BottomSheetTitleHeader = findProp("BottomSheetTitleHeader");
 
 export const Text = findProp("Text", "LegacyText") as t.Text;
 
-export const Forms = findByProps("Form", "FormSection");
-
-export const FlashList = findProp("FlashList") as <T>(props: FlashListProps<T>) => ReactElement<typeof props>;
+export const FlashList = findProp("FlashList") as <T>(props: FlashListProps<T>) => ReactElement;
 export const MasonryFlashList = findProp("MasonryFlashList") as <T>(
     props: Masonry.MasonryFlashListProps<T>,
-) => ReactElement<typeof props>;
+) => ReactElement;

@@ -1,3 +1,4 @@
+import { Devs } from "../../../data/constants";
 import { byProps } from "../../../metro/filters";
 import { waitFor } from "../../../metro/internal/modules";
 import { definePlugin } from "../../utils";
@@ -5,7 +6,7 @@ import { definePlugin } from "../../utils";
 export default definePlugin("no-track", {
     name: "NoTrack",
     description: "Prevents Discord's tracking analytics and Sentry crash reporting",
-    authors: [{ name: "pylixonly" }],
+    authors: [Devs.Pylix],
     required: true,
 
     preinit() {

@@ -1,8 +1,7 @@
-// import type { DiscordTextStyles } from "@ui/types";
-import type { ReactNode } from "react";
+import type { ReactNode, RefObject, MutableRefObject, PropsWithoutRef, FC } from "react";
 import type * as RN from "react-native";
-import type { ImageSourcePropType, PressableProps } from "react-native";
 import type { LiteralUnion } from "type-fest";
+import type { TextStyles, ThemeColors } from "./styles";
 
 // Abandon all hope, ye who enter here
 type Style = RN.StyleProp<RN.ViewStyle & RN.ImageStyle & RN.TextStyle>;
@@ -21,12 +20,18 @@ interface ButtonProps {
     size?: LiteralUnion<InteractiveSize, string>;
     iconPosition?: "start" | "end";
     scaleAmountInPx?: number;
-    icon?: ImageSourcePropType | ReactNode;
+    icon?: RN.ImageSourcePropType | ReactNode;
     style?: Style;
     grow?: boolean;
 }
 
 export type Button = React.ForwardRefExoticComponent<ButtonProps>;
+
+interface TwinButtonsProps {
+    children: ReactNode;
+}
+
+export type TwinButtons = React.ComponentType<TwinButtonsProps>;
 
 // Segmented Control
 interface SegmentedControlItem {
@@ -41,21 +46,23 @@ export interface SegmentedControlStateArgs {
     defaultIndex?: number;
 }
 
-// biome-ignore lint/suspicious/noEmptyInterface: We're commenting this out for now
+// Not a real type, replace with proper Reanimated type when available
+type SharedValue<T> = unknown;
+
 export interface SegmentedControlState {
-    // activeIndex: SharedValue<number>;
-    // pagerRef: RefObject<unknown>;
-    // scrollTarget: SharedValue<number>;
-    // scrollOverflow: SharedValue<number>;
-    // scrollOffset: SharedValue<number>;
-    // items: SegmentedControlItem[];
-    // itemDimensions: SharedValue<unknown[]>;
-    // pageWidth: number;
-    // pressedIndex: SharedValue<number>;
-    // onPageChangeRef: MutableRefObject<unknown>; // { current: undefined }
-    // setActiveIndex: (index: number) => void;
-    // setItemDimensions: (index: number, dimensions: unknown[]) => void;
-    // useReducedMotion: boolean;
+    activeIndex: SharedValue<number>;
+    pagerRef: RefObject<unknown>;
+    scrollTarget: SharedValue<number>;
+    scrollOverflow: SharedValue<number>;
+    scrollOffset: SharedValue<number>;
+    items: SegmentedControlItem[];
+    itemDimensions: SharedValue<unknown[]>;
+    pageWidth: number;
+    pressedIndex: SharedValue<number>;
+    onPageChangeRef: MutableRefObject<unknown>; // { current: undefined }
+    setActiveIndex: (index: number) => void;
+    setItemDimensions: (index: number, dimensions: unknown[]) => void;
+    useReducedMotion: boolean;
 }
 
 interface SegmentedControlProps {
@@ -94,16 +101,16 @@ interface TextInputProps extends Omit<RN.TextInputProps, "onChange" | "onChangeT
     isRound?: boolean;
     label?: string;
     leadingIcon?: React.FC<any>;
-    leadingPressableProps?: PressableProps;
+    leadingPressableProps?: RN.PressableProps;
     leadingText?: string;
     onChange?: (text: string) => void;
     size?: "sm" | "md" | "lg";
     state?: "error" | "default";
     style?: Style;
     trailingIcon?: React.FC<any>;
-    trailingPressableProps?: PressableProps;
+    trailingPressableProps?: RN.PressableProps;
     trailingText?: string;
-    value?: string | RN.Falsy;
+    value?: string | null;
 }
 
 export type TextInput = React.FC<TextInputProps>;
@@ -111,7 +118,7 @@ export type TextInput = React.FC<TextInputProps>;
 interface RowButtonProps {
     variant?: LiteralUnion<ButtonVariant, string>;
     style?: Style;
-    icon?: ImageSourcePropType | ReactNode;
+    icon?: RN.ImageSourcePropType | ReactNode;
     label: string | ReactNode;
     subLabel?: string | ReactNode;
     onPress: () => void;
@@ -130,7 +137,7 @@ interface StackProps {
 export type Stack = React.FC<React.PropsWithChildren<StackProps> & RN.ViewProps>;
 
 interface FABProps {
-    icon: ImageSourcePropType | ReactNode;
+    icon: RN.ImageSourcePropType | ReactNode;
     style?: Style;
     onPress: () => void;
     positionBottom?: number;
@@ -145,16 +152,18 @@ interface ActionSheetProps {
 export type ActionSheet = React.FC<React.PropsWithChildren<ActionSheetProps>>;
 
 type TextProps = React.ComponentProps<typeof RN.Text> & {
-    variant?: string; // DiscordTextStyles; // TODO
-    color?: string; // TODO: type this
+    variant?: TextStyles;
+    color?: ThemeColors;
     lineClamp?: number;
     maxFontSizeMultiplier?: number;
+    style?: RN.StyleProp<RN.TextStyle>;
 };
 
 export type Text = React.FC<TextProps>;
 
 interface IconButtonProps {
-    icon: ImageSourcePropType | ReactNode;
+    label?: string;
+    icon: RN.ImageSourcePropType | ReactNode;
     onPress: () => void;
     disabled?: boolean;
     size?: InteractiveSize;
@@ -163,3 +172,93 @@ interface IconButtonProps {
 }
 
 export type IconButton = React.FC<IconButtonProps>;
+
+export type PressableScale = React.FC<PropsWithoutRef<typeof RN.Pressable>>;
+
+interface TableRowBaseProps {
+    arrow?: boolean;
+    label: string | ReactNode;
+    subLabel?: string | ReactNode;
+    variant?: LiteralUnion<"danger", string>;
+    icon?: JSX.Element | false | null;
+    disabled?: boolean;
+    trailing?: ReactNode | React.ComponentType<any>;
+}
+
+interface TableRowProps extends TableRowBaseProps {
+    onPress?: () => void;
+}
+
+export type TableRow = React.FC<TableRowProps> & {
+    Icon: TableRowIcon;
+    TrailingText: TableRowTrailingText;
+    Arrow: FC;
+};
+
+interface TableRowTrailingTextProps {
+    text: string;
+}
+
+export type TableRowTrailingText = FC<TableRowTrailingTextProps>;
+
+interface TableRowIconProps {
+    style?: RN.StyleProp<RN.ImageStyle>;
+    variant?: LiteralUnion<"danger", string>;
+    source: RN.ImageSourcePropType | undefined;
+}
+
+export type TableRowIcon = React.FC<TableRowIconProps>;
+
+interface TableRowGroupProps {
+    title: string;
+    children: ReactNode;
+}
+
+export type TableRowGroup = React.FC<TableRowGroupProps>;
+
+interface TableRadioGroupProps {
+    title: string;
+    value: string;
+    hasIcons?: boolean;
+    onChange: <T extends string>(type: T) => void;
+    children: ReactNode;
+}
+
+export type TableRadioGroup = FC<TableRadioGroupProps>;
+
+interface TableRadioRowProps extends TableRowBaseProps {
+    value: string;
+}
+
+export type TableRadioRow = FC<TableRadioRowProps>;
+
+interface TableSwitchRowProps extends TableRowBaseProps {
+    value: boolean;
+    onValueChange: (value: boolean) => void;
+}
+
+export type TableSwitchRow = FC<TableSwitchRowProps>;
+
+interface TableCheckboxRowProps extends TableRowBaseProps {
+    checked: boolean;
+    onPress: () => void;
+}
+
+export type TableCheckboxRow = FC<TableCheckboxRowProps>;
+
+interface ContextMenuItem {
+    label: string;
+    variant?: LiteralUnion<"destructive", string>;
+    iconSource?: number;
+    action: () => unknown;
+}
+
+interface ContextMenuProps {
+    triggerOnLongPress?: boolean;
+    items: ContextMenuItem[] | ContextMenuItem[][];
+    align?: "left" | "right" | "above" | "below" | "auto" | null;
+    title?: string;
+    children: React.FC<Record<"onPress" | "onLongPress" | "accessibilityActions" | "onAccessibilityAction", any>>;
+}
+
+export type ContextMenu = FC<ContextMenuProps>;

@@ -8,7 +8,7 @@
 	"files": {
 		"ignoreUnknown": true,
 		"include": ["*.js", "*.ts", "*.json", "*.tsx", "*.jsx", "*.mjs", "*.mts"],
-		"ignore": ["dist/**/*", "node_modules/**/*"]
+		"ignore": ["dist/*", "node_modules/*", "src/i18n/*"]
 	},
 	"formatter": {
 		"enabled": true,
@@ -48,6 +48,9 @@
 					"level": "off"
 				},
 				"noConfusingVoidType": {
+					"level": "off"
+				},
+				"noArrayIndexKey": {
 					"level": "off"
 				}
 			}

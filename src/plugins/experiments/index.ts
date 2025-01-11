@@ -1,3 +1,4 @@
+import { Devs } from "../../data/constants";
 import { byStoreName } from "../../metro/filters";
 import { waitFor } from "../../metro/internal/modules";
 import { definePlugin } from "../utils";
@@ -7,8 +8,8 @@ let patched: boolean;
 // Potential enhancement: Add warning on Experiments page when this plugin is enabled
 export default definePlugin("experiments", {
     name: "Experiments",
-    description: "Exposes internal developer sections, allowing Discord experiments overriding!",
-    authors: [{ name: "pylixonly" }],
+    description: "Exposes internal developer sections, allowing Discord experiments overriding",
+    authors: [Devs.Pylix],
     requiresRestart: (start, { ranPreinit }) => start && (!ranPreinit || !patched),
 
     preinit() {
