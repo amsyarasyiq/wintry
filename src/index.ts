@@ -1,5 +1,4 @@
 import { connectToDebugger, patchLogHook } from "./debug";
-import { trackPerformance } from "./debug/tracer";
 import reportErrorOnInitialization from "./error-reporter";
 import { initializeMetro } from "./metro/internal";
 import { metroEventEmitter } from "./metro/internal/events";
@@ -13,8 +12,6 @@ export let hasIndexInitialized = false;
 // This is a blocking function!
 function initialize() {
     try {
-        trackPerformance("INITIALIZE");
-
         console.log("Initializing Wintry...");
 
         initializeMetro();
@@ -38,7 +35,6 @@ function initialize() {
 
             metroEventEmitter.emit("metroReady");
 
-            trackPerformance("FINISH_INITIALIZED");
             window.wintry = require("./windowObject.cts");
         };
     } catch (e) {
@@ -49,8 +45,6 @@ function initialize() {
 }
 
 function onceIndexRequired(runFactory: any) {
-    trackPerformance("INDEX_REQUIRED");
-
     const afterInit = initialize();
     runFactory();
     afterInit();
@@ -91,5 +85,4 @@ const unhook = hookDefineProperty(global, "__d", define => {
     unhook!();
     // @ts-ignore - __d is an internal RN function exposed by Metro
     global.__d = internal_getDefiner(define, onceIndexRequired);
-    trackPerformance("DEFINE_HOOKED");
 });
