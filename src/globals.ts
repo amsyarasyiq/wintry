@@ -1,7 +1,9 @@
 import "no-expose";
 import { lazyValue } from "./utils/lazy";
 
-export const wintryGlobalExports = window.__wintry_exports = lazyValue(() => require("!wintry_global!").default as Record<string, any>);
+export const wintryGlobalExports = (window.__wintry_exports = lazyValue(
+    () => require("!wintry_global!").default as Record<string, any>,
+));
 
 // This is cursed but hey, how else?
 export function wintryGlobalObject() {
@@ -11,9 +13,9 @@ export function wintryGlobalObject() {
         const subPaths = new Set<string>();
 
         for (const path of paths) {
-            const segments = path.split('/');
+            const segments = path.split("/");
             if (segments.length >= 2) {
-                subPaths.add(segments.slice(0, 2).join('/'));
+                subPaths.add(segments.slice(0, 2).join("/"));
             }
         }
 
@@ -45,7 +47,9 @@ export function wintryGlobalObject() {
             get(_, key: string) {
                 if (typeof key !== "string") return baseObject[key];
 
-                const matchingModulePaths = availableModules.filter(modulePath => modulePath.startsWith(currentPath + key));
+                const matchingModulePaths = availableModules.filter(modulePath =>
+                    modulePath.startsWith(currentPath + key),
+                );
 
                 if (matchingModulePaths.length === 0) return baseObject[key];
                 if (matchingModulePaths.length === 1 && key === matchingModulePaths[0])
@@ -61,23 +65,29 @@ export function wintryGlobalObject() {
                     const fullChildPath = currentPath + childPath;
                     const childKey = fullChildPath.replace(pathPrefix, "");
 
-                    defineLazyProperty(childModules, childKey, () => createModuleProxy(wintryGlobalExports[fullChildPath], `${fullChildPath}/`));
+                    defineLazyProperty(childModules, childKey, () =>
+                        createModuleProxy(wintryGlobalExports[fullChildPath], `${fullChildPath}/`),
+                    );
                 }
 
                 const currentModule = wintryGlobalExports[currentPath + key] ?? {};
                 return new Proxy(currentModule as Record<string, any>, {
                     get(_, prop: string) {
-
                         // The actual module has a higher priority, but in the case when the developer wants to access the property of
                         // a child module, then we should return it instead (by prefixing it with '$$')
-                        if (typeof prop === "string" && prop.startsWith("$$") && currentModule[prop] && childModules[prop]) {
+                        if (
+                            typeof prop === "string" &&
+                            prop.startsWith("$$") &&
+                            currentModule[prop.slice(2)] &&
+                            childModules[prop.slice(2)]
+                        ) {
                             return childModules[prop.slice(2)];
                         }
 
                         return currentModule[prop] ?? childModules[prop];
                     },
                 });
-            }
+            },
         });
     }
 
