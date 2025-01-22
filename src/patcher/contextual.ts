@@ -1,3 +1,5 @@
+import "no-expose";
+
 import * as patchers from "./index";
 
 type DisposableFn = (...props: any[]) => () => unknown;

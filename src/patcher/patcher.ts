@@ -1,3 +1,5 @@
+import "no-expose";
+
 import type { LiteralUnion } from "type-fest";
 import hook from "./hook";
 

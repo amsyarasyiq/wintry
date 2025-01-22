@@ -1,3 +1,5 @@
+import "no-expose";
+
 // Calls relevant patches and returns the final result
 import { patchedFunctions } from "./patcher";
 

@@ -1,7 +1,7 @@
 // This function is called when an error occurs in the initialization process.
 // Most globals are not available at this point, so make sure the function is self-contained and error-proof as much as possible.
 // Avoid importing any modules, with exception to modules that are guaranteed to be available and rarely change.
-
+import "no-expose";
 import hookDefineProperty from "./utils/objects";
 
 function getStackTrace(error: unknown) {

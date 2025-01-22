@@ -1,5 +1,6 @@
 import { connectToDebugger, patchLogHook } from "./debug";
 import reportErrorOnInitialization from "./error-reporter";
+import { wintryGlobalObject } from "./globals";
 import { initializeMetro } from "./metro/internal";
 import { metroEventEmitter } from "./metro/internal/events";
 import { internal_getDefiner } from "./metro/internal/modules";
@@ -8,6 +9,8 @@ import { isSafeModeEnabled } from "./stores/usePrefsStore";
 import hookDefineProperty from "./utils/objects";
 
 export let hasIndexInitialized = false;
+
+Object.freeze = Object.seal = Object;
 
 // This is a blocking function!
 function initialize() {
@@ -35,7 +38,7 @@ function initialize() {
 
             metroEventEmitter.emit("metroReady");
 
-            window.wintry = require("./windowObject.cts");
+            window.wintry = wintryGlobalObject();
         };
     } catch (e) {
         return () => {

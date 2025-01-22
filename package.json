@@ -11,6 +11,7 @@
 		"intl-pluralrules": "^2.0.1",
 		"strict-event-emitter": "^0.5.1",
 		"typesafe-i18n": "^5.26.2",
+		"typescript": "^5.7.3",
 		"zustand": "^5.0.2"
 	},
 	"devDependencies": {
@@ -22,7 +23,6 @@
 		"esbuild": "^0.24.2",
 		"esbuild-plugin-globals": "^0.2.0",
 		"type-fest": "^4.31.0",
-		"typescript": "5.4.5",
 		"yargs-parser": "^21.1.1"
 	},
 	"scripts": {

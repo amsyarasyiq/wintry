@@ -6,6 +6,7 @@ import yargs from "yargs-parser";
 import { printBuildSuccess } from "./util";
 import path from "path";
 import globalPlugin from "esbuild-plugin-globals";
+import { makeRequireModule } from "./modules";
 
 const metroDeps: string[] = await (async () => {
     const ast = await swc.parseFile(path.resolve("./shims/depsModule.ts"));
@@ -61,6 +62,7 @@ const config: BuildOptions = {
     alias: {
         "!wintry-deps-shim!": "./shims/depsModule",
         "react/jsx-runtime": "./shims/jsxRuntime",
+        "no-expose": "./shims/emptyModule",
     },
     plugins: [
         globalPlugin({
@@ -69,6 +71,19 @@ const config: BuildOptions = {
                 return obj;
             }, {}),
         }),
+        {
+            name: "modules-exposer",
+            setup(build) {
+                build.onResolve({ filter: /^!wintry_global!$/ }, async args => {
+                    return { path: args.path, namespace: "modules-exposer" };
+                });
+
+                build.onLoad({ filter: /.*/, namespace: "modules-exposer" }, async () => {
+                    const script = await makeRequireModule();
+                    return { contents: script, loader: "js", resolveDir: path.resolve(".") };
+                });
+            },
+        },
         {
             name: "swc",
             setup(build) {
