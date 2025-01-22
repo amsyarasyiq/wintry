@@ -5,7 +5,7 @@ import { waitFor } from "./internal/modules";
 import type { FilterFn, LazyModuleContext } from "./types";
 
 /** @internal */
-export const _lazyContextSymbol = Symbol.for("wintry.metro.lazyContext");
+const _lazyContextSymbol = Symbol.for("wintry.metro.lazyContext");
 
 const _lazyContexts = new WeakMap<any, LazyModuleContext>();
 
@@ -36,6 +36,8 @@ export function createLazyModule<A extends unknown[]>(filter: FilterFn<A>) {
             if (!cache) {
                 cache = findImmediate(filter);
                 if (!cache) throw new Error(`Result of ${filter.uniq} is ${typeof cache}!`);
+                if (typeof cache === "function" || typeof cache === "object")
+                    _lazyContexts.set(cache, context as LazyModuleContext<unknown[]>);
             }
 
             return cache;
