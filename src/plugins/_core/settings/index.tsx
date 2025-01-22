@@ -16,6 +16,8 @@ const patcher = createContextualPatcher({ pluginName: "Settings" });
 
 const SettingsOverviewScreen = findByName("SettingsOverviewScreen", false);
 
+const manager = new SettingsManager();
+
 const settings = definePluginSettings({
     onTop: {
         type: "boolean",
@@ -33,11 +35,9 @@ export default definePlugin("settings", {
 
     settings,
 
-    manager: new SettingsManager(),
-
     start() {
         patcher.addDisposer(
-            this.manager.registerSection({
+            manager.registerSection({
                 name: t.wintry(),
                 items: [
                     {
@@ -82,7 +82,7 @@ export default definePlugin("settings", {
                         },
 
                         // Render other sections
-                        ...this.manager.getRowConfigs(),
+                        ...manager.getRowConfigs(),
                     }),
                     set: v => (rendererConfigValue = v),
                 });
@@ -103,7 +103,7 @@ export default definePlugin("settings", {
                     ? 0
                     : -~sections.findIndex((sect: any) => sect.settings.includes("ACCOUNT")) || 1;
 
-                for (const section of this.manager.registeredSections.values()) {
+                for (const section of manager.registeredSections.values()) {
                     sections.splice(index++, 0, {
                         label: section.name,
                         settings: section.items.map(a => a.key),

@@ -15,7 +15,7 @@ type WithThis<T, This> = {
 };
 
 // Allows defining a plugin without the state property and allow extra properties
-type LooseWintryPlugin<P> = WithThis<P, WintryPluginInstance<P>>;
+type LooseWintryPlugin<P> = WithThis<P, WintryPluginInstance>;
 
 export function definePlugin<P extends WintryPlugin<D, O>, D extends DefinedOptions<O>, O extends OptionDefinitions>(
     id: string,
