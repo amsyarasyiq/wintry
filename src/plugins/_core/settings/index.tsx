@@ -1,3 +1,4 @@
+import { meta } from "#plugin-context";
 import { Devs } from "../../../data/constants";
 import { t } from "../../../i18n";
 import { findByName } from "../../../metro/api";
@@ -36,6 +37,7 @@ export default definePlugin("settings", {
     manager: new SettingsManager(),
 
     start() {
+        alert(meta.id);
         patcher.addDisposer(
             this.manager.registerSection({
                 name: t.wintry(),

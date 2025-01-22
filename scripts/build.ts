@@ -1,12 +1,12 @@
 import swc from "@swc/core";
-import { $ } from "bun";
+import { $, fileURLToPath, } from "bun";
 import crypto from "crypto";
 import { build, type BuildOptions } from "esbuild";
 import yargs from "yargs-parser";
 import { printBuildSuccess } from "./util";
 import path from "path";
 import globalPlugin from "esbuild-plugin-globals";
-import { makeRequireModule } from "./modules";
+import { makePluginContextModule, makeRequireModule } from "./modules";
 
 const metroDeps: string[] = await (async () => {
     const ast = await swc.parseFile(path.resolve("./shims/depsModule.ts"));
@@ -81,6 +81,36 @@ const config: BuildOptions = {
                 build.onLoad({ filter: /.*/, namespace: "modules-exposer" }, async () => {
                     const script = await makeRequireModule();
                     return { contents: script, loader: "js", resolveDir: path.resolve(".") };
+                });
+            },
+        },
+        {
+            name: "plugins-context",
+            setup(build) {
+                build.onResolve({ filter: /^#plugin-context$/ }, args => ({
+                    path: args.path,
+                    namespace: "plugins-context",
+                    pluginData: { importer: args.importer }
+                }));
+
+                build.onLoad({ filter: /.*/, namespace: "plugins-context" }, args => {
+                    const { importer } = args.pluginData as { importer: string };
+                    const pluginPath = fileURLToPath(import.meta.resolve("../src/plugins"));
+
+                    // Extract plugin ID from the import path
+                    const pluginId = path.relative(pluginPath, importer)
+                        .split(path.sep)
+                        .find(segment => !segment.startsWith("_"));
+
+                    if (!pluginId) {
+                        throw new Error(`Could not determine plugin ID from path: ${importer}`);
+                    }
+
+                    return {
+                        contents: makePluginContextModule(pluginId),
+                        resolveDir: path.resolve("."),
+                        loader: "js"
+                    };
                 });
             },
         },

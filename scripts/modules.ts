@@ -1,4 +1,4 @@
-import { Glob } from "bun";
+import { fileURLToPath, Glob } from "bun";
 import { readFile, exists } from "node:fs/promises";
 import path from "node:path";
 
@@ -55,4 +55,17 @@ export async function makeRequireModule(): Promise<string> {
     script += "}\n";
 
     return script;
+}
+
+export function makePluginContextModule(id: string): string {
+    const sharedModulePath = fileURLToPath(import.meta.resolve("../src/plugins/shared.ts"));
+    const relativePath = `./${path.relative(".", sharedModulePath).replace(/\\/g, "/")}`;
+
+    return `
+        import { getPluginContext } from "${relativePath}";    
+        var context = getPluginContext(${JSON.stringify(id)});
+
+        export var { meta } = context;
+        export default context;
+    `;
 }
