@@ -100,7 +100,7 @@ export function* iterate<A extends unknown[]>(filter: FilterFn<A>) {
  * @returns
  */
 export function findAll<A extends unknown[]>(filter: FilterFn<A>) {
-    return [..._iterateModule(filter, true)].map(({ resolve }) => resolve?.()).map(isNotNil);
+    return [..._iterateModule(filter, true)].map(({ resolve }) => resolve?.()).filter(isNotNil);
 }
 
 /**
