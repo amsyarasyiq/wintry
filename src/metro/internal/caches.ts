@@ -1,6 +1,6 @@
 import { requireModule } from "..";
 import { hasIndexInitialized } from "../..";
-import { kvStorage } from "../../api/kvStorage";
+import { kvStorage } from "../../utils/kvStorage";
 import { NativeClientInfoModule } from "../../native";
 import { ModuleFlags, ModulesMapInternal } from "./enums";
 import { metroEventEmitter } from "./events";
@@ -118,7 +118,7 @@ export function* iterateModulesForCache(uniq: string, fullLookup: boolean) {
                 throw new Error(`Module '${id}' is getting forcefully initialized before the index module!`);
 
             exports = requireModule(id);
-        } catch {}
+        } catch { }
 
         if (isBadModuleExports(exports)) continue;
         yield [id, exports];
