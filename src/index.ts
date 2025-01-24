@@ -3,7 +3,8 @@ import reportErrorOnInitialization from "./error-reporter";
 import { wintryGlobalObject } from "./globals";
 import { initializeMetro } from "./metro/internal";
 import { metroEventEmitter } from "./metro/internal/events";
-import { internal_getDefiner } from "./metro/internal/modules";
+import { internal_getDefiner, waitFor } from "./metro/internal/modules";
+import { after } from "./patcher";
 import { initializePlugins } from "./stores/usePluginStore";
 import { isSafeModeEnabled } from "./stores/usePrefsStore";
 import hookDefineProperty from "./utils/objects";
@@ -23,18 +24,25 @@ function initialize() {
             initializePlugins();
         }
 
-        // // Uncomment this to log error boundaries
-        // waitFor(byName("ErrorBoundary"), module => {
-        //     after(module.prototype, "render", function f(this: any) {
-        //         this.state.error && console.log(this.state.error?.stack);
-        //     });
-        // });
+
+        // Uncomment this to log error boundaries
+        const { byName } = require("./metro/filters");
+        waitFor(byName("ErrorBoundary"), module => {
+            after(module.prototype, "render", function f(this: any) {
+                this.state.error && console.log(this.state.error?.stack);
+            });
+        });
 
         return () => {
             hasIndexInitialized = true;
 
             patchLogHook();
-            connectToDebugger("ws://localhost:9090");
+            connectToDebugger("ws://localhost:9092");
+
+            // __reactDevTools!.exports.connectToDevTools({
+            //     host: "localhost",
+            //     resolveRNStyle: require("react-native").flatten,
+            // })
 
             metroEventEmitter.emit("metroReady");
 
@@ -48,6 +56,8 @@ function initialize() {
 }
 
 function onceIndexRequired(runFactory: any) {
+    if (hasIndexInitialized) return;
+
     const afterInit = initialize();
     runFactory();
     afterInit();

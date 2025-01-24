@@ -62,8 +62,8 @@ const settings = definePluginSettings({
         type: "slider",
         label: "Energy Level",
         description: "Set the bunny's energy level.",
-        points: [0, 25, 50, 75, 100],
-        default: 50,
+        points: ["0%", "25%", "50%", "75%", "100%"],
+        default: "50%",
     }
 });
 

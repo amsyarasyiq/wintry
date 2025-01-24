@@ -5,12 +5,7 @@ import { StringOptionRow } from "./StringOptionRow";
 import { BooleanOptionRow } from "./BooleanOptionRow";
 import { SelectOptionRow } from "./SelectOptionRow";
 import { RadioOptionRow } from "./RadioOptionRow";
-import { TableRow } from "../../../../../metro/common";
-
-// TODO: Implement SliderOptionRow
-function SliderOptionRow({ opt, plugin, settingKey }: BaseOptionRowProps<"slider">) {
-    return <TableRow label="Slider is not supported yet :(" />;
-}
+import { SliderOptionRow } from "./SliderOptionRow";
 
 export function OptionDefRow(props: BaseOptionRowProps) {
     const componentMap = {

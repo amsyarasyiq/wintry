@@ -3,6 +3,7 @@ import { after } from "../patcher";
 let socket: WebSocket;
 
 export function connectToDebugger(url: string) {
+    console.log(`Connecting to debugger at ${url}`);
     if (socket !== undefined && socket.readyState !== WebSocket.CLOSED) socket.close();
 
     socket = new WebSocket(url);
@@ -20,6 +21,8 @@ export function connectToDebugger(url: string) {
         console.log(`Debugger error: ${err.message}`);
         // showToast("An error occurred with the debugger connection!", findAssetId("Small"));
     });
+
+
 }
 
 /**

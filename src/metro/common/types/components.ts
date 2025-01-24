@@ -132,6 +132,8 @@ interface StackProps {
     direction?: "vertical" | "horizontal";
     /** defaults to 8 */
     spacing?: number;
+
+    justify?: RN.ViewStyle["justifyContent"];
 }
 
 export type Stack = React.FC<React.PropsWithChildren<StackProps> & RN.ViewProps>;
@@ -245,6 +247,20 @@ interface TableCheckboxRowProps extends TableRowBaseProps {
 }
 
 export type TableCheckboxRow = FC<TableCheckboxRowProps>;
+
+interface SliderProps {
+    value: number;
+    step: number;
+    onValueChange: (value: number) => void;
+    minimumValue: number;
+    maximumValue: number;
+    onSlidingStart?: () => void;
+    onSlidingComplete?: (value: number) => void;
+    startIcon?: ReactNode;
+    endIcon?: ReactNode;
+}
+
+export type Slider = FC<SliderProps>;
 
 interface ContextMenuItem {
     label: string;

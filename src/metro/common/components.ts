@@ -44,6 +44,9 @@ export const TableSwitch = findSingular("FormSwitch");
 export const TableRadio = findSingular("FormRadio");
 export const TableCheckbox = findSingular("FormCheckbox");
 
+// Slider
+export const Slider = findProp("Slider") as t.Slider;
+
 // This is oddly required by some newer components like TableRadioGroup
 export const RedesignCompat = findProp("RedesignCompat");
 
@@ -53,6 +56,7 @@ export const FormCheckbox = findSingular("FormCheckbox");
 
 // Card
 export const Card = findProp("Card");
+
 
 // Alert
 export const AlertModal = findProp("AlertModal");
