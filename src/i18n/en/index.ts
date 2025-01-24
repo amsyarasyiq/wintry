@@ -26,7 +26,10 @@ const en = {
                 more_info: "More Info",
                 view_source: "View Source",
                 configurations: "Configurations",
-            },
+                authors: "Authors",
+                version: "Version",
+                id: "ID",
+            }
         },
         developer: {
             assetBrowser: "Asset Browser",

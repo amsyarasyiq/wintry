@@ -74,6 +74,18 @@ type RootTranslation = {
 				 * C​o​n​f​i​g​u​r​a​t​i​o​n​s
 				 */
 				configurations: string
+				/**
+				 * A​u​t​h​o​r​s
+				 */
+				authors: string
+				/**
+				 * V​e​r​s​i​o​n
+				 */
+				version: string
+				/**
+				 * I​D
+				 */
+				id: string
 			}
 		}
 		developer: {
@@ -153,6 +165,18 @@ export type TranslationFunctions = {
 				 * Configurations
 				 */
 				configurations: () => LocalizedString
+				/**
+				 * Authors
+				 */
+				authors: () => LocalizedString
+				/**
+				 * Version
+				 */
+				version: () => LocalizedString
+				/**
+				 * ID
+				 */
+				id: () => LocalizedString
 			}
 		}
 		developer: {

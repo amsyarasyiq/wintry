@@ -1,7 +1,5 @@
-import { useShallow } from "zustand/shallow";
 import { ActionSheet, Card, ContextMenu, IconButton, Text } from "../../../../metro/common";
 import type { WintryPluginInstance } from "../../../../plugins/types";
-import usePluginStore from "../../../../stores/usePluginStore";
 import { View } from "react-native";
 import { findAssetId } from "../../../../metro";
 import type React from "react";
@@ -10,14 +8,14 @@ import { t } from "../../../../i18n";
 import { RNGHScrollView } from "./common";
 import { SheetAwareIconButton } from "./SheetAwareIconButton";
 import { OptionSection } from "./options/OptionSection";
+import { showSheet } from "../../../utils/sheets";
+import { PluginDetailsSheet } from "./PluginDetailsSheet";
 
 interface PluginSheetComponentProps {
     plugin: WintryPluginInstance;
 }
 
 export default function PluginSheetComponent({ plugin }: PluginSheetComponentProps) {
-    const settings = usePluginStore(useShallow(state => state.settings[plugin.id]));
-
     return (
         <ActionSheet>
             <RNGHScrollView contentContainerStyle={{ marginBottom: 12 }}>
@@ -38,7 +36,7 @@ export default function PluginSheetComponent({ plugin }: PluginSheetComponentPro
                                 label: t.settings.plugins.info_sheet.details(),
                                 iconSource: findAssetId("CircleInformationIcon-primary"),
                                 action: () => {
-                                    alert(`${plugin.name} ${settings.enabled ? "Enabled" : "Disabled"}`);
+                                    showSheet("PluginDetailsSheet", PluginDetailsSheet, { plugin }, "stack");
                                 },
                             },
                         ]}
