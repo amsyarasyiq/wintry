@@ -9,11 +9,13 @@ declare module "#build-info" {
 }
 
 declare module "#plugin-context" {
-    export const meta: {
-        id: string;
-    };
+    export const {
+        meta,
+        definePlugin,
+        definePluginSettings
+    }: ReturnType<typeof import("./plugins/shared").getPluginContext>;
+
 
     import * as _default from "#plugin-context";
     export default _default;
-
 }

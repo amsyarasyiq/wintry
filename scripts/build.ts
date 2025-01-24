@@ -88,7 +88,7 @@ const config: BuildOptions = {
             name: "plugins-context",
             setup(build) {
                 build.onResolve({ filter: /^#plugin-context$/ }, args => ({
-                    path: args.path,
+                    path: `${args.path}#${args.importer}`,
                     namespace: "plugins-context",
                     pluginData: { importer: args.importer }
                 }));
@@ -109,7 +109,7 @@ const config: BuildOptions = {
                     return {
                         contents: makePluginContextModule(pluginId),
                         resolveDir: path.resolve("."),
-                        loader: "js"
+                        loader: "js",
                     };
                 });
             },

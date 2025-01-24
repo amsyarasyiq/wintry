@@ -1,12 +1,12 @@
 import { Devs } from "../../data/constants";
 import { byStoreName } from "../../metro/filters";
 import { waitFor } from "../../metro/internal/modules";
-import { definePlugin } from "../utils";
+import { definePlugin } from "#plugin-context";
 
 let patched: boolean;
 
 // Potential enhancement: Add warning on Experiments page when this plugin is enabled
-export default definePlugin("experiments", {
+export default definePlugin({
     name: "Experiments",
     description: "Exposes internal developer sections, allowing Discord experiments overriding",
     authors: [Devs.Pylix],

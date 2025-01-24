@@ -65,7 +65,7 @@ export function makePluginContextModule(id: string): string {
         import { getPluginContext } from "${relativePath}";    
         var context = getPluginContext(${JSON.stringify(id)});
 
-        export var { meta } = context;
+        export var { meta, definePlugin, definePluginSettings } = context;
         export default context;
     `;
 }

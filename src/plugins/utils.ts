@@ -15,9 +15,11 @@ type WithThis<T, This> = {
 };
 
 // Allows defining a plugin without the state property and allow extra properties
-type LooseWintryPlugin<P> = WithThis<P, WintryPluginInstance>;
+export type LooseWintryPlugin<P> = WithThis<P, WintryPluginInstance>;
 
-export function definePlugin<P extends WintryPlugin<D, O>, D extends DefinedOptions<O>, O extends OptionDefinitions>(
+const settingsDefRegistry = new Map<string, DefinedOptions<OptionDefinitions>>();
+
+export function registerPlugin<P extends WintryPlugin<D, O>, D extends DefinedOptions<O>, O extends OptionDefinitions>(
     id: string,
     plugin: LooseWintryPlugin<P>,
 ): P {
@@ -26,10 +28,8 @@ export function definePlugin<P extends WintryPlugin<D, O>, D extends DefinedOpti
         enabled: Boolean(plugin.preenabled === true || plugin.required || false),
     });
 
-    if (typeof plugin.settings === "object") {
-        plugin.settings.pluginId = id;
-
-        const def = plugin.settings.definition;
+    if (settingsDefRegistry.has(id)) {
+        const def = settingsDefRegistry.get(id)!.definition;
 
         // Set default values for settings
         for (const key in def) {
@@ -65,9 +65,9 @@ export function definePlugin<P extends WintryPlugin<D, O>, D extends DefinedOpti
     return plugin as P;
 }
 
-export function definePluginSettings<Def extends OptionDefinitions>(def: Def) {
+export function registerPluginSettings<Def extends OptionDefinitions>(id: string, def: Def) {
     const definition: DefinedOptions<Def> = {
-        pluginId: "",
+        pluginId: id,
         definition: def,
         get: () => usePluginStore.getState().settings[definition.pluginId] as any,
         use<T>(selector: (state: SettingsStore<Def>) => T) {
@@ -78,6 +78,8 @@ export function definePluginSettings<Def extends OptionDefinitions>(def: Def) {
         //     return ret;
         // },
     };
+
+    settingsDefRegistry.set(id, definition);
 
     return definition;
 }

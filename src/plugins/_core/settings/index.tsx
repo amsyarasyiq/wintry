@@ -7,10 +7,10 @@ import { byProps } from "../../../metro/filters";
 import { waitFor } from "../../../metro/internal/modules";
 import { createContextualPatcher } from "../../../patcher/contextual";
 import { findInReactTree } from "../../../utils/objects";
-import { definePlugin, definePluginSettings } from "../../utils";
 import { CustomPageRenderer } from "./CustomPageRenderer";
 import SettingsManager from "./SettingsManager";
 import WintryIcon from "./wintry.png";
+import { definePlugin, definePluginSettings } from "#plugin-context";
 
 const patcher = createContextualPatcher({ pluginName: "Settings" });
 
@@ -27,13 +27,11 @@ const settings = definePluginSettings({
     },
 });
 
-export default definePlugin("settings", {
+export default definePlugin({
     name: "Settings",
     description: "Provides a settings interface and debug information",
     authors: [Devs.Pylix],
     required: true,
-
-    settings,
 
     start() {
         patcher.addDisposer(
