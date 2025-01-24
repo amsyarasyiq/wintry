@@ -1,5 +1,5 @@
 {
-	"include": ["src"],
+	"include": ["src", "shims/types"],
 	"exclude": ["dist"],
 	"compilerOptions": {
 		// Enable latest features

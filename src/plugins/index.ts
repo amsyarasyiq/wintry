@@ -5,4 +5,5 @@ export const PLUGINS: Record<string, WintryPluginInstance> = {
     settings: require("../plugins/_core/settings").default,
     "no-track": require("../plugins/_core/no-track").default,
     experiments: require("../plugins/experiments").default,
+    dummy: require("../plugins/dummy").default,
 };

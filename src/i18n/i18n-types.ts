@@ -70,6 +70,10 @@ type RootTranslation = {
 				 * V​i​e​w​ ​S​o​u​r​c​e
 				 */
 				view_source: string
+				/**
+				 * C​o​n​f​i​g​u​r​a​t​i​o​n​s
+				 */
+				configurations: string
 			}
 		}
 		developer: {
@@ -145,6 +149,10 @@ export type TranslationFunctions = {
 				 * View Source
 				 */
 				view_source: () => LocalizedString
+				/**
+				 * Configurations
+				 */
+				configurations: () => LocalizedString
 			}
 		}
 		developer: {

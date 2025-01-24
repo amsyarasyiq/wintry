@@ -125,7 +125,7 @@ const lazyHandler: ProxyHandler<any> = {
 export function lazyValue<T, I extends ExemptedEntries>(factory: () => T, opts: LazyOptions<I> = {}): T {
     let cache: T;
 
-    const dummy = opts.hint !== "object" ? () => {} : {};
+    const dummy = opts.hint !== "object" ? () => { } : {};
     const proxyFactory = () => {
         if (!cache) {
             cache = factory();
@@ -192,6 +192,6 @@ export function lazyDestructure<T extends Record<PropertyKey, unknown>, I extend
     ) as T;
 }
 
-export function getProxyFactory<T>(obj: T): (() => T) | void {
-    return factories.get(obj) as (() => T) | void;
+export function getProxyFactory<T>(obj: T): (() => T) | undefined {
+    return factories.get(obj) as (() => T) | undefined;
 }

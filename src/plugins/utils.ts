@@ -30,18 +30,7 @@ export function registerPlugin<P extends WintryPlugin<D, O>, D extends DefinedOp
 
     if (settingsDefRegistry.has(id)) {
         const def = settingsDefRegistry.get(id)!.definition;
-
-        // Set default values for settings
-        for (const key in def) {
-            if (!(key in pluginSettings)) {
-                if ("default" in def[key]) {
-                    pluginSettings[key] = def[key].default;
-                } else if ("options" in def[key]) {
-                    const val = def[key].options.find(option => option.default === true)?.value;
-                    pluginSettings[key] = val;
-                }
-            }
-        }
+        setDefaultPluginSettings(def, pluginSettings);
     }
 
     usePluginStore.persist.rehydrate();
@@ -65,6 +54,50 @@ export function registerPlugin<P extends WintryPlugin<D, O>, D extends DefinedOp
     return plugin as P;
 }
 
+function setDefaultPluginSettings(def: OptionDefinitions, pluginSettings: PluginSettings) {
+    for (const [key, setting] of Object.entries(def)) {
+        if (key in pluginSettings) continue;
+
+        if ("default" in setting)
+            pluginSettings[key] = setting.default;
+        else {
+            switch (setting.type) {
+                case "string":
+                    pluginSettings[key] = "";
+                    break;
+                case "boolean":
+                    pluginSettings[key] = false;
+                    break;
+            }
+        }
+
+        if ("options" in setting) {
+            switch (setting.type) {
+                case "radio": {
+                    const defaultOption = setting.options.find(opt => opt.default);
+                    if (defaultOption != null)
+                        pluginSettings[key] = defaultOption?.value ?? null;
+                    else
+                        pluginSettings[key] = null;
+                    break;
+                }
+                case "select": {
+                    const defaults = setting.options
+                        .filter(opt => opt.default)
+                        .map(opt => opt.value);
+
+                    if (defaults.length > 0)
+                        pluginSettings[key] = defaults;
+
+                    else
+                        pluginSettings[key] = [];
+                    break;
+                }
+            }
+        }
+    }
+}
+
 export function registerPluginSettings<Def extends OptionDefinitions>(id: string, def: Def) {
     const definition: DefinedOptions<Def> = {
         pluginId: id,
@@ -82,4 +115,8 @@ export function registerPluginSettings<Def extends OptionDefinitions>(id: string
     settingsDefRegistry.set(id, definition);
 
     return definition;
+}
+
+export function getPluginSettings(id: string): OptionDefinitions {
+    return settingsDefRegistry.get(id)?.definition as OptionDefinitions;
 }

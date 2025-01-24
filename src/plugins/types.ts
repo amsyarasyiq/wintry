@@ -79,16 +79,16 @@ export type OptionDefinition =
     | SliderOptionDefinition
     | SelectOptionDefinition;
 
-type OptionDefToType<T extends OptionDefinition> = T extends StringOptionDefinition
+export type OptionDefToType<T extends OptionDefinition> = T extends StringOptionDefinition
     ? string
     : T extends BooleanOptionDefinition
     ? boolean
-    : T extends SelectOptionDefinition | RadioOptionDefinition
-    ? T["options"][number]["value"]
     : T extends RadioOptionDefinition
-    ? string
+    ? T["options"][number]["value"]
+    : T extends SelectOptionDefinition
+    ? T["options"][number]["value"][]
     : T extends SliderOptionDefinition
-    ? number
+    ? string[]
     : never;
 
 type OptionDefaultType<O extends OptionDefinition> = O extends RadioOptionDefinition | SelectOptionDefinition
@@ -124,7 +124,7 @@ interface StringOptionDefinition extends OptionDefinitionBase {
     placeholder?: string;
     default?: string;
     textArea?: boolean;
-    regexValidation?: string;
+    validate?: (value: string) => boolean;
 }
 
 interface BooleanOptionDefinition extends OptionDefinitionBase {

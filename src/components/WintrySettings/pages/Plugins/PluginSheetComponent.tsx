@@ -2,34 +2,25 @@ import { useShallow } from "zustand/shallow";
 import { ActionSheet, Card, ContextMenu, IconButton, Text } from "../../../../metro/common";
 import type { WintryPluginInstance } from "../../../../plugins/types";
 import usePluginStore from "../../../../stores/usePluginStore";
-import { ScrollView, View } from "react-native";
+import { View } from "react-native";
 import { findAssetId } from "../../../../metro";
-import type { ComponentProps } from "react";
-import { hideSheet } from "../../../utils/sheets";
+import type React from "react";
 import TitleComponent from "./TitleComponent";
 import { t } from "../../../../i18n";
+import { RNGHScrollView } from "./common";
+import { SheetAwareIconButton } from "./SheetAwareIconButton";
+import { OptionSection } from "./options/OptionSection";
 
 interface PluginSheetComponentProps {
     plugin: WintryPluginInstance;
 }
 
-function SheetAwareIconButton(props: ComponentProps<typeof IconButton>) {
-    const { onPress } = props;
-    props.onPress &&= () => {
-        hideSheet("PluginSheetComponent");
-        onPress?.();
-    };
-
-    return <IconButton {...props} />;
-}
-
 export default function PluginSheetComponent({ plugin }: PluginSheetComponentProps) {
-    // TODO: Make this a common function
     const settings = usePluginStore(useShallow(state => state.settings[plugin.id]));
 
     return (
         <ActionSheet>
-            <ScrollView contentContainerStyle={{ marginBottom: 12 }}>
+            <RNGHScrollView contentContainerStyle={{ marginBottom: 12 }}>
                 <View
                     style={{
                         flexDirection: "row",
@@ -85,15 +76,16 @@ export default function PluginSheetComponent({ plugin }: PluginSheetComponentPro
                         onPress={() => {}}
                     />
                 </View>
-                <View>
+                <View style={{ gap: 12 }}>
                     <InfoCard label={t.settings.plugins.description()}>{plugin.description}</InfoCard>
+                    <OptionSection plugin={plugin} />
                 </View>
-            </ScrollView>
+            </RNGHScrollView>
         </ActionSheet>
     );
 }
 
-function InfoCard({
+export function InfoCard({
     label,
     children,
 }: {
@@ -101,8 +93,8 @@ function InfoCard({
     children?: React.ReactNode | string;
 }) {
     return (
-        <Card>
-            <Text variant="text-md/semibold" color="text-secondary" style={{ marginBottom: 8 }}>
+        <Card spacing={{ padding: 0 }}>
+            <Text variant="heading-sm/semibold" color="text-secondary" style={{ marginBottom: 8 }}>
                 {label}
             </Text>
             {typeof children === "string" ? <Text variant="text-md/medium">{children}</Text> : children}

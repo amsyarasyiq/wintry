@@ -44,6 +44,9 @@ export const TableSwitch = findSingular("FormSwitch");
 export const TableRadio = findSingular("FormRadio");
 export const TableCheckbox = findSingular("FormCheckbox");
 
+// This is oddly required by some newer components like TableRadioGroup
+export const RedesignCompat = findProp("RedesignCompat");
+
 export const FormSwitch = findSingular("FormSwitch");
 export const FormRadio = findSingular("FormRadio");
 export const FormCheckbox = findSingular("FormCheckbox");

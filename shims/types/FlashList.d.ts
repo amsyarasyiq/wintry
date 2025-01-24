@@ -301,9 +301,9 @@ declare module "@shopify/flash-list" {
          * they might be deferred until JS thread is less busy.
          */
         onViewableItemsChanged?:
-            | ((info: { viewableItems: ViewToken[]; changed: ViewToken[] }) => void)
-            | null
-            | undefined;
+        | ((info: { viewableItems: ViewToken[]; changed: ViewToken[] }) => void)
+        | null
+        | undefined;
 
         /**
          * If provided, a standard RefreshControl will be added for "Pull to Refresh" functionality.

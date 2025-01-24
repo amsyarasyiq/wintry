@@ -25,6 +25,7 @@ const en = {
                 details: "Details",
                 more_info: "More Info",
                 view_source: "View Source",
+                configurations: "Configurations",
             },
         },
         developer: {

@@ -210,7 +210,7 @@ interface TableRowIconProps {
 export type TableRowIcon = React.FC<TableRowIconProps>;
 
 interface TableRowGroupProps {
-    title: string;
+    title?: string;
     children: ReactNode;
 }
 
@@ -218,7 +218,7 @@ export type TableRowGroup = React.FC<TableRowGroupProps>;
 
 interface TableRadioGroupProps {
     title: string;
-    value: string;
+    value: string | number | boolean;
     hasIcons?: boolean;
     onChange: <T extends string>(type: T) => void;
     children: ReactNode;
