@@ -181,6 +181,8 @@ interface TableRowBaseProps {
     arrow?: boolean;
     label: string | ReactNode;
     subLabel?: string | ReactNode;
+    start?: boolean;
+    end?: boolean;
     variant?: LiteralUnion<"danger", string>;
     icon?: JSX.Element | false | null;
     disabled?: boolean;
