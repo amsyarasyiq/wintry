@@ -1,7 +1,35 @@
-import { useState } from "react";
+import PageWrapper from "@components/WintrySettings/PageWrapper";
 import { t } from "@i18n";
-import { Button, TableRow, TableRowGroup, TableSwitchRow } from "@metro/common";
-import PageWrapper from "../../PageWrapper";
+import { TableRowGroup, TableRow, TableSwitchRow, Button } from "@metro/common";
+import { create } from "zustand";
+
+interface UpdaterStore {
+    autoUpdate: boolean;
+    notify: boolean;
+    isChecking: boolean;
+    setAutoUpdate: (value: boolean) => void;
+    setNotify: (value: boolean) => void;
+    checkForUpdates: () => void;
+}
+
+export const useUpdaterStore = create<UpdaterStore>(set => ({
+    autoUpdate: true,
+    notify: true,
+    isChecking: false,
+    setAutoUpdate: value => set({ autoUpdate: value }),
+    setNotify: value => set({ notify: value }),
+    checkForUpdates: () => {
+        set({ isChecking: true });
+        setTimeout(() => {
+            set({ isChecking: false });
+            if (Math.random() < 0.5) {
+                alert("No updates available");
+            } else {
+                alert("Updates available");
+            }
+        }, 3000);
+    },
+}));
 
 const DUMMY_INFO = {
     commitHash: "1234567",
@@ -10,29 +38,8 @@ const DUMMY_INFO = {
     repo: "pylixonly/wintry",
 };
 
-function useMockCheckForUpdates() {
-    const [isChecking, setIsChecking] = useState(false);
-
-    const checkForUpdates = () => {
-        setIsChecking(true);
-        setTimeout(() => {
-            setIsChecking(false);
-
-            if (Math.random() < 0.5) {
-                alert("No updates available");
-            } else {
-                alert("Updates available");
-            }
-        }, 3000);
-    };
-
-    return { checkForUpdates, isChecking };
-}
-
 export default function UpdaterPage() {
-    const [autoUpdate, setAutoUpdate] = useState(true);
-    const [notify, setNotify] = useState(true);
-    const { isChecking, checkForUpdates } = useMockCheckForUpdates();
+    const { autoUpdate, notify, isChecking, setAutoUpdate, setNotify, checkForUpdates } = useUpdaterStore();
 
     return (
         <PageWrapper style={{ paddingTop: 16, gap: 12 }}>
