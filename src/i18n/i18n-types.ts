@@ -45,6 +45,10 @@ type RootTranslation = {
 			 * D​e​v​e​l​o​p​e​r
 			 */
 			developer: string
+			/**
+			 * U​p​d​a​t​e​r
+			 */
+			updater: string
 		}
 		general: {
 			/**
@@ -100,6 +104,40 @@ type RootTranslation = {
 				tools: string
 			}
 		}
+		updater: {
+			/**
+			 * I​n​f​o
+			 */
+			info: string
+			/**
+			 * R​e​p​o​s​i​t​o​r​y
+			 */
+			repo: string
+			/**
+			 * S​e​t​t​i​n​g​s
+			 */
+			settings: string
+			/**
+			 * A​u​t​o​m​a​t​i​c​ ​U​p​d​a​t​e​s
+			 */
+			autoUpdate: string
+			/**
+			 * E​n​a​b​l​e​ ​a​u​t​o​m​a​t​i​c​ ​W​i​n​t​r​y​ ​u​p​d​a​t​e​s​ ​w​i​t​h​o​u​t​ ​p​r​o​m​p​t​s
+			 */
+			autoUpdateDescription: string
+			/**
+			 * N​o​t​i​f​y​ ​A​f​t​e​r​ ​U​p​d​a​t​e
+			 */
+			notify: string
+			/**
+			 * D​i​s​p​l​a​y​ ​a​ ​m​e​s​s​a​g​e​ ​o​n​c​e​ ​W​i​n​t​r​y​ ​i​s​ ​a​u​t​o​-​u​p​d​a​t​e​d
+			 */
+			notifyDescription: string
+			/**
+			 * C​h​e​c​k​ ​f​o​r​ ​U​p​d​a​t​e​s
+			 */
+			checkForUpdates: string
+		}
 	}
 }
 
@@ -136,6 +174,10 @@ export type TranslationFunctions = {
 			 * Developer
 			 */
 			developer: () => LocalizedString
+			/**
+			 * Updater
+			 */
+			updater: () => LocalizedString
 		}
 		general: {
 			/**
@@ -190,6 +232,40 @@ export type TranslationFunctions = {
 				 */
 				tools: () => LocalizedString
 			}
+		}
+		updater: {
+			/**
+			 * Info
+			 */
+			info: () => LocalizedString
+			/**
+			 * Repository
+			 */
+			repo: () => LocalizedString
+			/**
+			 * Settings
+			 */
+			settings: () => LocalizedString
+			/**
+			 * Automatic Updates
+			 */
+			autoUpdate: () => LocalizedString
+			/**
+			 * Enable automatic Wintry updates without prompts
+			 */
+			autoUpdateDescription: () => LocalizedString
+			/**
+			 * Notify After Update
+			 */
+			notify: () => LocalizedString
+			/**
+			 * Display a message once Wintry is auto-updated
+			 */
+			notifyDescription: () => LocalizedString
+			/**
+			 * Check for Updates
+			 */
+			checkForUpdates: () => LocalizedString
 		}
 	}
 }

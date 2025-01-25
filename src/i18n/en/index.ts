@@ -15,6 +15,7 @@ const en = {
             plugins: "Plugins",
             themes: "Themes",
             developer: "Developer",
+            updater: "Updater",
         },
         general: {
             info: "Info",
@@ -37,6 +38,16 @@ const en = {
                 tools: "Tools",
             },
         },
+        updater: {
+            info: "Info",
+            repo: "Repository",
+            settings: "Settings",
+            autoUpdate: "Automatic Updates",
+            autoUpdateDescription: "Enable automatic Wintry updates without prompts",
+            notify: "Notify After Update",
+            notifyDescription: "Display a message once Wintry is auto-updated",
+            checkForUpdates: "Check for Updates",
+        }
     },
 } satisfies BaseTranslation;
 

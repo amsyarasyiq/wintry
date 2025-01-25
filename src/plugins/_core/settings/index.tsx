@@ -56,6 +56,12 @@ export default definePlugin({
                         IconComponent: () => <TableRow.Icon source={findAssetId("WrenchIcon")} />,
                         render: () => import("../../../components/WintrySettings/pages/Developer"),
                     },
+                    {
+                        key: "WINTRY_UPDATER",
+                        title: () => t.settings.sections.updater(),
+                        IconComponent: () => <TableRow.Icon source={findAssetId("DownloadIcon")} />,
+                        render: () => import("../../../components/WintrySettings/pages/Updater"),
+                    },
                 ],
             }),
 
