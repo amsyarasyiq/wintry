@@ -1,6 +1,6 @@
-import { Devs } from "../../../data/constants";
-import { byProps } from "../../../metro/filters";
-import { waitFor } from "../../../metro/internal/modules";
+import { Devs } from "@data/constants";
+import { byProps } from "@metro/filters";
+import { waitFor } from "@metro/internal/modules";
 import { definePlugin } from "#plugin-context";
 
 export default definePlugin({

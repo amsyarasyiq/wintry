@@ -1,4 +1,4 @@
-import { RedesignCompat, TableRadioGroup, TableRadioRow } from "../../../../../metro/common";
+import { RedesignCompat, TableRadioGroup, TableRadioRow } from "@metro/common";
 import { usePluginSettings } from "../common/usePluginSettings";
 import { BaseCardOption } from "./BaseCardOption";
 import type { BaseOptionRowProps } from "./BaseOptionRowProps";

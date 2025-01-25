@@ -1,4 +1,4 @@
-import { NativeFileModule } from "../native";
+import { NativeFileModule } from "@native";
 
 /**
  * Removes all files in a directory from the path given

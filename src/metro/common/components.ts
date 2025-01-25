@@ -1,5 +1,5 @@
 import type { FlashListProps, Masonry } from "@shopify/flash-list";
-import { lazyDestructure, lazyValue } from "../../utils/lazy";
+import { lazyDestructure, lazyValue } from "@utils/lazy";
 import { find, findByProps } from "../api";
 import { createFilterDefinition } from "../factories";
 

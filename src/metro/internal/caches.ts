@@ -1,6 +1,6 @@
 import { requireModule } from "..";
 import { hasIndexInitialized } from "../..";
-import { kvStorage } from "../../utils/kvStorage";
+import { kvStorage } from "@utils/kvStorage";
 import { NativeClientInfoModule } from "../../native";
 import { ModuleFlags, ModulesMapInternal } from "./enums";
 import { metroEventEmitter } from "./events";

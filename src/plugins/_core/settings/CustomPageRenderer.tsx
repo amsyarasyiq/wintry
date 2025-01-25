@@ -1,5 +1,5 @@
+import { NavigationNative } from "@metro/common";
 import { useEffect } from "react";
-import { NavigationNative } from "../../../metro/common";
 
 export const CustomPageRenderer = () => {
     const navigation = NavigationNative.useNavigation();

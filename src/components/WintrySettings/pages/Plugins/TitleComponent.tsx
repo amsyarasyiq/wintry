@@ -1,8 +1,8 @@
 import { View } from "react-native";
-import { Avatar, AvatarPile, FluxUtils, Text } from "../../../../metro/common";
-import { findByName, findByProps, findByStoreName } from "../../../../metro";
-import { lazyDestructure } from "../../../../utils/lazy";
-import type { WintryPluginInstance } from "../../../../plugins/types";
+import { Avatar, AvatarPile, FluxUtils, Text } from "@metro/common";
+import { findByName, findByProps, findByStoreName } from "@metro";
+import { lazyDestructure } from "@utils/lazy";
+import type { WintryPluginInstance } from "@plugins/types";
 
 const showUserProfileActionSheet = findByName("showUserProfileActionSheet");
 const { getUser: maybeFetchUser } = lazyDestructure(() => findByProps("getUser", "fetchProfile"));

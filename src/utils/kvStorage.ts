@@ -1,5 +1,5 @@
 import { debounce } from "es-toolkit";
-import { writeFile } from "../api/fs";
+import { writeFile } from "@api/fs";
 
 const state: { [key in string]?: string } = window.__WINTRY_KV_STORAGE__ ?? {};
 

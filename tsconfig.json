@@ -2,6 +2,10 @@
 	"include": ["src", "shims/types"],
 	"exclude": ["dist"],
 	"compilerOptions": {
+		"baseUrl": ".",
+		"paths": {
+			"@*": ["src/*"]
+		},
 		// Enable latest features
 		"lib": ["ESNext", "DOM"],
 		"target": "ESNext",

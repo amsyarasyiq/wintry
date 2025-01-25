@@ -1,4 +1,4 @@
-import type { OptionDefinition } from "../../../../../plugins/types";
+import type { OptionDefinition } from "@plugins/types";
 import type React from "react";
 import type { BaseOptionRowProps } from "./BaseOptionRowProps";
 import { StringOptionRow } from "./StringOptionRow";

@@ -1,4 +1,4 @@
-import { after } from "../patcher";
+import { after } from "@patcher";
 
 let socket: WebSocket;
 

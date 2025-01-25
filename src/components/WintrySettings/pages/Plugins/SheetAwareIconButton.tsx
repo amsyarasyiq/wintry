@@ -1,5 +1,5 @@
-import { IconButton } from "../../../../metro/common";
-import { hideSheet } from "../../../utils/sheets";
+import { IconButton } from "@metro/common";
+import { hideSheet } from "@components/utils/sheets";
 import type { ComponentProps } from "react";
 
 export function SheetAwareIconButton(props: ComponentProps<typeof IconButton>) {

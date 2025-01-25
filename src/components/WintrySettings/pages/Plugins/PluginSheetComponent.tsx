@@ -1,15 +1,15 @@
-import { ActionSheet, Card, ContextMenu, IconButton, Text } from "../../../../metro/common";
-import type { WintryPluginInstance } from "../../../../plugins/types";
+import { ActionSheet, Card, ContextMenu, IconButton, Text } from "@metro/common";
+import type { WintryPluginInstance } from "@plugins/types";
 import { View } from "react-native";
-import { findAssetId } from "../../../../metro";
+import { findAssetId } from "@metro";
 import type React from "react";
 import TitleComponent from "./TitleComponent";
-import { t } from "../../../../i18n";
+import { t } from "@i18n";
 import { RNGHScrollView } from "./common";
-import { SheetAwareIconButton } from "./SheetAwareIconButton";
 import { OptionSection } from "./options/OptionSection";
-import { showSheet } from "../../../utils/sheets";
+import { showSheet } from "@components/utils/sheets";
 import { PluginDetailsSheet } from "./PluginDetailsSheet";
+import { SheetAwareIconButton } from "./SheetAwareIconButton";
 
 interface PluginSheetComponentProps {
     plugin: WintryPluginInstance;

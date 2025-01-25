@@ -3,11 +3,11 @@ import type {} from "fuzzysort";
 import { type ComponentProps, createContext, memo, useContext } from "react";
 import { View } from "react-native";
 import { useShallow } from "zustand/shallow";
-import { findAssetId, findByProps } from "../../../../metro";
-import { Card, FormSwitch, IconButton, Stack, Text, tokens } from "../../../../metro/common";
-import type { WintryPluginInstance } from "../../../../plugins/types";
-import usePluginStore from "../../../../stores/usePluginStore";
-import { showSheet } from "../../../utils/sheets";
+import { findAssetId, findByProps } from "@metro";
+import { Card, FormSwitch, IconButton, Stack, Text, tokens } from "@metro/common";
+import type { WintryPluginInstance } from "@plugins/types";
+import usePluginStore from "@stores/usePluginStore";
+import { showSheet } from "@components/utils/sheets";
 
 const PluginCardContext = createContext<{
     plugin: WintryPluginInstance;

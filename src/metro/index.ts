@@ -1,4 +1,4 @@
-import { lazyValue } from "../utils/lazy";
+import { lazyValue } from "@utils/lazy";
 import type { Metro } from "./types";
 
 export * from "./api";

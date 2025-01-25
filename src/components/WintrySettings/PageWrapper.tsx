@@ -1,5 +1,5 @@
 import type { StyleProp, ViewStyle } from "react-native";
-import { SafeAreaView } from "../../metro/common";
+import { SafeAreaView } from "@metro/common";
 
 interface PageWrapperProps {
     children: React.ReactNode;

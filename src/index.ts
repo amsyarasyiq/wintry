@@ -1,10 +1,10 @@
+import { after } from "./patcher";
 import { connectToDebugger, patchLogHook } from "./debug";
 import reportErrorOnInitialization from "./error-reporter";
 import { wintryGlobalObject } from "./globals";
 import { initializeMetro } from "./metro/internal";
 import { metroEventEmitter } from "./metro/internal/events";
 import { internal_getDefiner, waitFor } from "./metro/internal/modules";
-import { after } from "./patcher";
 import { initializePlugins } from "./stores/usePluginStore";
 import { isSafeModeEnabled } from "./stores/usePrefsStore";
 import hookDefineProperty from "./utils/objects";

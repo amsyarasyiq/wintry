@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { t } from "../../../../i18n";
-import { Button, TableRow, TableRowGroup, TableSwitchRow } from "../../../../metro/common";
+import { t } from "@i18n";
+import { Button, TableRow, TableRowGroup, TableSwitchRow } from "@metro/common";
 import PageWrapper from "../../PageWrapper";
 
 const DUMMY_INFO = {

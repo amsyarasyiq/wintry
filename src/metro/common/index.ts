@@ -1,4 +1,4 @@
-import { lazyDestructure } from "../../utils/lazy";
+import { lazyDestructure } from "@utils/lazy";
 import { findByFilePath, findByProps } from "../api";
 
 export * from "./components";

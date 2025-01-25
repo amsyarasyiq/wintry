@@ -1,16 +1,16 @@
-import { Devs } from "../../../data/constants";
-import { t } from "../../../i18n";
-import { findByName } from "../../../metro/api";
-import { findAssetId } from "../../../metro/assets";
-import { TableRow } from "../../../metro/common/components";
-import { byProps } from "../../../metro/filters";
-import { waitFor } from "../../../metro/internal/modules";
-import { createContextualPatcher } from "../../../patcher/contextual";
-import { findInReactTree } from "../../../utils/objects";
+import { Devs } from "@data/constants";
+import { t } from "@i18n";
+import { findByName } from "@metro/api";
+import { findAssetId } from "@metro/assets";
+import { TableRow } from "@metro/common/components";
+import { byProps } from "@metro/filters";
+import { waitFor } from "@metro/internal/modules";
+import { createContextualPatcher } from "@patcher/contextual";
+import { findInReactTree } from "@utils/objects";
 import { CustomPageRenderer } from "./CustomPageRenderer";
-import SettingsManager from "./SettingsManager";
 import WintryIcon from "./wintry.png";
 import { definePlugin, definePluginSettings } from "#plugin-context";
+import SettingsManager from "./SettingsManager";
 
 const patcher = createContextualPatcher({ pluginName: "Settings" });
 
@@ -42,25 +42,25 @@ export default definePlugin({
                         key: "WINTRY",
                         title: () => t.wintry(),
                         IconComponent: () => <TableRow.Icon source={{ uri: WintryIcon }} />,
-                        render: () => import("../../../components/WintrySettings/pages/Wintry"),
+                        render: () => import("@components/WintrySettings/pages/Wintry"),
                     },
                     {
                         key: "WINTRY_PLUGINS",
                         title: () => t.settings.sections.plugins(),
                         IconComponent: () => <TableRow.Icon source={findAssetId("ActivitiesIcon")} />,
-                        render: () => import("../../../components/WintrySettings/pages/Plugins"),
+                        render: () => import("@components/WintrySettings/pages/Plugins"),
                     },
                     {
                         key: "WINTRY_DEVELOPER",
                         title: () => t.settings.sections.developer(),
                         IconComponent: () => <TableRow.Icon source={findAssetId("WrenchIcon")} />,
-                        render: () => import("../../../components/WintrySettings/pages/Developer"),
+                        render: () => import("@components/WintrySettings/pages/Developer"),
                     },
                     {
                         key: "WINTRY_UPDATER",
                         title: () => t.settings.sections.updater(),
                         IconComponent: () => <TableRow.Icon source={findAssetId("DownloadIcon")} />,
-                        render: () => import("../../../components/WintrySettings/pages/Updater"),
+                        render: () => import("@components/WintrySettings/pages/Updater"),
                     },
                 ],
             }),

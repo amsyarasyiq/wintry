@@ -1,4 +1,4 @@
-import { before, instead } from "../../patcher";
+import { before, instead } from "@patcher";
 import { markExportsFlags, setupMetroCache } from "./caches";
 import { _importingModuleId, moduleRegistry, patchModule } from "./modules";
 

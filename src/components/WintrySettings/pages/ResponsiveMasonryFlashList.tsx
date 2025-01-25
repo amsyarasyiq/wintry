@@ -2,7 +2,7 @@ import { useMemo, useCallback } from "react";
 import { View, useWindowDimensions } from "react-native";
 import type { Masonry } from "@shopify/flash-list";
 import type { SetRequired } from "type-fest";
-import { MasonryFlashList } from "../../../metro/common";
+import { MasonryFlashList } from "@metro/common";
 import { omit } from "es-toolkit";
 
 export function ResponsiveMasonryFlashList<T>(

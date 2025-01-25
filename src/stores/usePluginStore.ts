@@ -2,13 +2,13 @@ import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import { hasIndexInitialized } from "..";
-import { kvStorage } from "../utils/kvStorage";
-import { metroEventEmitter } from "../metro/internal/events";
-import type { PluginSettings, PluginState } from "../plugins/types";
-import { getProxyFactory, lazyValue } from "../utils/lazy";
+import { kvStorage } from "@utils/kvStorage";
+import { metroEventEmitter } from "@metro/internal/events";
+import type { PluginSettings, PluginState } from "@plugins/types";
+import { getProxyFactory, lazyValue } from "@utils/lazy";
 
 // Prevent circular dependency
-const PLUGINS = lazyValue(() => require("../plugins").PLUGINS) as typeof import("../plugins").PLUGINS;
+const PLUGINS = lazyValue(() => require("@plugins").PLUGINS) as typeof import("@plugins").PLUGINS;
 
 export interface PluginStore {
     settings: Record<string, PluginSettings>;

@@ -1,5 +1,5 @@
 import type { SetRequired } from "type-fest";
-import type { Dev } from "../data/constants";
+import type { Dev } from "@data/constants";
 
 export enum StartAt {
     Init = 0,

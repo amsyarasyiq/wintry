@@ -1,8 +1,8 @@
-import { TableCheckboxRow, TableRowGroup } from "../../../../../metro/common";
-import { usePluginSettings } from "../common/usePluginSettings";
+import { TableCheckboxRow, TableRowGroup } from "@metro/common";
 import { BaseCardOption } from "./BaseCardOption";
 import type { BaseOptionRowProps } from "./BaseOptionRowProps";
 import { getIcon } from "../common/getIcon";
+import { usePluginSettings } from "../common/usePluginSettings";
 
 export function SelectOptionRow({ opt, plugin, settingKey }: BaseOptionRowProps<"select">) {
     const [selected, setSelected] = usePluginSettings<typeof opt>(plugin.id, settingKey);

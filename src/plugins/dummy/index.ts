@@ -1,5 +1,5 @@
 import { definePlugin, definePluginSettings } from "#plugin-context";
-import { Devs } from "../../data/constants";
+import { Devs } from "@data/constants";
 
 const settings = definePluginSettings({
     bunnyName: {

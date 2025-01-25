@@ -1,10 +1,10 @@
 import { useMemo } from "react";
-import { type Asset, getAssets } from "../../../../metro/assets";
-import { ActionSheet, FlashList, Stack, TableRow, TableRowGroup } from "../../../../metro/common/components";
-import Search, { useSearchQuery } from "../../../Search";
-import PageWrapper from "../../PageWrapper";
+import { type Asset, getAssets } from "@metro/assets";
+import { ActionSheet, FlashList, Stack, TableRow, TableRowGroup } from "@metro/common/components";
 import { Image, View, useWindowDimensions } from "react-native";
-import { showSheet } from "../../../utils/sheets";
+import { showSheet } from "@components/utils/sheets";
+import Search, { useSearchQuery } from "@components/Search";
+import PageWrapper from "@components/WintrySettings/PageWrapper";
 
 // Constants
 const REDESIGN_ICON_PATH = "/assets/design/components/Icon/native/redesign/generated/images";

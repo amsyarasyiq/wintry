@@ -1,5 +1,5 @@
-import { Card, Text } from "../../../../../metro/common";
-import type { OptionDefinition } from "../../../../../plugins/types";
+import { Card, Text } from "@metro/common";
+import type { OptionDefinition } from "@plugins/types";
 import type React from "react";
 
 export function BaseCardOption<O extends OptionDefinition>({ opt, children }: { opt: O; children: React.ReactNode }) {

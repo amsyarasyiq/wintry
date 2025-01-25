@@ -1,4 +1,4 @@
-import { findByProps } from "../../metro";
+import { findByProps } from "@metro";
 
 const actionSheet = findByProps("openLazy", "hideActionSheet");
 

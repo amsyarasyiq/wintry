@@ -1,10 +1,10 @@
 import type { BaseOptionRowProps } from "./BaseOptionRowProps";
-import { Card, Slider, Stack, Text } from "../../../../../metro/common";
+import { Card, Slider, Stack, Text } from "@metro/common";
 import {} from "react";
 import { Pressable, View } from "react-native";
 import { usePluginSettings } from "../common/usePluginSettings";
-import { lazyValue } from "../../../../../utils/lazy";
-import { findByProps } from "../../../../../metro";
+import { lazyValue } from "@utils/lazy";
+import { findByProps } from "@metro";
 
 const { CirclePlusIcon } = lazyValue(() => findByProps("CirclePlusIcon"));
 const { CircleMinusIcon } = lazyValue(() => findByProps("CircleMinusIcon"));

@@ -1,5 +1,5 @@
 import { _patcherDelaySymbol } from "../patcher/patcher";
-import { lazyValue } from "../utils/lazy";
+import { lazyValue } from "@utils/lazy";
 import { findImmediate } from "./api";
 import { waitFor } from "./internal/modules";
 import type { FilterFn, LazyModuleContext } from "./types";

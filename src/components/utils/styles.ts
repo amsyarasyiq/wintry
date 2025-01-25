@@ -1,6 +1,6 @@
 import type { ImageStyle, TextStyle, ViewStyle } from "react-native";
-import { findByProps } from "../../metro";
-import { lazyDestructure, lazyValue } from "../../utils/lazy";
+import { findByProps } from "@metro";
+import { lazyDestructure, lazyValue } from "@utils/lazy";
 
 type NamedStyles<T> = { [P in keyof T]: ViewStyle | TextStyle | ImageStyle };
 

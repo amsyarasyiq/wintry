@@ -1,7 +1,7 @@
 import { View } from "react-native";
-import { t } from "../../../../../i18n";
-import type { WintryPluginInstance } from "../../../../../plugins/types";
-import { getPluginSettings } from "../../../../../plugins/utils";
+import { t } from "@i18n";
+import type { WintryPluginInstance } from "@plugins/types";
+import { getPluginSettings } from "@plugins/utils";
 import { InfoCard } from "../PluginSheetComponent";
 import { OptionDefRow } from "./OptionDefRow";
 

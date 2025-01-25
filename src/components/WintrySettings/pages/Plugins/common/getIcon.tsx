@@ -1,6 +1,6 @@
-import { TableRow } from "../../../../../metro/common";
-import type { OptionDefinition } from "../../../../../plugins/types";
-import { findAssetId } from "../../../../../metro";
+import { TableRow } from "@metro/common";
+import type { OptionDefinition } from "@plugins/types";
+import { findAssetId } from "@metro";
 
 export function getIcon(icon: OptionDefinition["icon"]): JSX.Element | undefined {
     if (!icon) return;

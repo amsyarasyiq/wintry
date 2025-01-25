@@ -1,5 +1,5 @@
-import { findByProps } from "../../../../../metro";
-import { lazyValue } from "../../../../../utils/lazy";
+import { findByProps } from "@metro";
+import { lazyValue } from "@utils/lazy";
 
 const RNGestureHandlerModule = findByProps("NativeViewGestureHandler");
 

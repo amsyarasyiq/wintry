@@ -1,4 +1,4 @@
-import { NativeClientInfoModule } from "../native";
+import { NativeClientInfoModule } from "@native";
 
 export function getDebugInfo() {
     // Hermes

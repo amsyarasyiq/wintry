@@ -1,4 +1,4 @@
-import { lazyValue } from "../utils/lazy";
+import { lazyValue } from "@utils/lazy";
 
 function getModule<T = any>(...names: string[]): T {
     const moduleProxy = window.nativeModuleProxy;

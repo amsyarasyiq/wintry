@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Image, View, type StyleProp, type ViewStyle } from "react-native";
-import { t } from "../i18n";
-import { findAssetId } from "../metro/assets";
-import { TextInput } from "../metro/common/components";
+import { t } from "@i18n";
+import { findAssetId } from "@metro/assets";
+import { TextInput } from "@metro/common/components";
 
 export interface SearchProps {
     queryRef?: ReturnType<typeof useSearchQuery>;

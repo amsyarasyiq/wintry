@@ -1,4 +1,4 @@
-import { TableSwitchRow } from "../../../../../metro/common";
+import { TableSwitchRow } from "@metro/common";
 import { usePluginSettings } from "../common/usePluginSettings";
 import type { BaseOptionRowProps } from "./BaseOptionRowProps";
 import { getIcon } from "../common/getIcon";

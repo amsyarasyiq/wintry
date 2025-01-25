@@ -1,5 +1,5 @@
 import { toDefaulted } from "es-toolkit/compat";
-import usePluginStore from "../stores/usePluginStore";
+import usePluginStore from "@stores/usePluginStore";
 import type {
     DefinedOptions,
     OptionDefinitions,

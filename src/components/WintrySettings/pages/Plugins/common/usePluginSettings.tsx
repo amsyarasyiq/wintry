@@ -1,6 +1,6 @@
 import { useShallow } from "zustand/shallow";
-import type { OptionDefinition, OptionDefToType } from "../../../../../plugins/types";
-import usePluginStore from "../../../../../stores/usePluginStore";
+import type { OptionDefinition, OptionDefToType } from "@plugins/types";
+import usePluginStore from "@stores/usePluginStore";
 
 export function usePluginSettings<O extends OptionDefinition>(id: string, key: string) {
     type RetType = OptionDefToType<O>;

@@ -1,5 +1,5 @@
+import { lazyValue } from "@utils/lazy";
 import "no-expose";
-import { lazyValue } from "./utils/lazy";
 
 export const wintryGlobalExports = (window.__wintry_exports = lazyValue(
     () => require("!wintry_global!").default as Record<string, any>,
