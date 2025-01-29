@@ -106,6 +106,13 @@ export function registerPluginSettings<Def extends OptionDefinitions>(id: string
         use<T>(selector: (state: SettingsStore<Def>) => T) {
             return usePluginStore(state => selector(state.settings[this.pluginId] as SettingsStore<Def>));
         },
+        subscribe(selector, listener, options) {
+            return usePluginStore.subscribe(
+                state => selector(state.settings[this.pluginId] as SettingsStore<Def>),
+                (state, prevState) => listener(state, prevState),
+                options,
+            );
+        },
         // TODO: Implement this
         // withPrivateSettings<T>() {
         //     return ret;

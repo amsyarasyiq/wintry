@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { createJSONStorage, persist } from "zustand/middleware";
+import { createJSONStorage, persist, subscribeWithSelector } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import { hasIndexInitialized } from "..";
 import { kvStorage } from "@utils/kvStorage";
@@ -104,38 +104,40 @@ export function initializePlugins() {
 }
 
 const usePluginStore = create(
-    persist(
-        immer<PluginStore>(set => ({
-            settings: {} as Record<string, PluginSettings>,
-            states: {} as Record<string, PluginState>,
+    subscribeWithSelector(
+        persist(
+            immer<PluginStore>(set => ({
+                settings: {} as Record<string, PluginSettings>,
+                states: {} as Record<string, PluginState>,
 
-            /**
-             * Toggle a plugin's enabled state
-             */
-            togglePlugin: (id: string, value?: boolean, startOrStop = true) =>
-                set(draft => {
-                    const target = value ?? !draft.settings[id].enabled;
-                    if (target === draft.settings[id].enabled) return;
+                /**
+                 * Toggle a plugin's enabled state
+                 */
+                togglePlugin: (id: string, value?: boolean, startOrStop = true) =>
+                    set(draft => {
+                        const target = value ?? !draft.settings[id].enabled;
+                        if (target === draft.settings[id].enabled) return;
 
-                    draft.settings[id].enabled = target;
-                    if (startOrStop) {
-                        if (draft.settings[id].enabled) {
-                            startPlugin(draft, id);
-                        } else {
-                            cleanupPlugin(draft, id);
+                        draft.settings[id].enabled = target;
+                        if (startOrStop) {
+                            if (draft.settings[id].enabled) {
+                                startPlugin(draft, id);
+                            } else {
+                                cleanupPlugin(draft, id);
+                            }
                         }
-                    }
-                }),
+                    }),
 
-            startPlugin: (id: string) => set(draft => startPlugin(draft, id)),
-            cleanupPlugin: (id: string) => set(draft => cleanupPlugin(draft, id)),
-        })),
-        {
-            name: "plugin-store",
-            storage: createJSONStorage(() => kvStorage),
-            partialize: state => ({ settings: state.settings }),
-        },
-    ),
+                startPlugin: (id: string) => set(draft => startPlugin(draft, id)),
+                cleanupPlugin: (id: string) => set(draft => cleanupPlugin(draft, id)),
+            })),
+            {
+                name: "plugin-store",
+                storage: createJSONStorage(() => kvStorage),
+                partialize: state => ({ settings: state.settings }),
+            },
+        ),
+    )
 );
 
 export default usePluginStore;

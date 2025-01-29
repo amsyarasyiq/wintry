@@ -7,6 +7,9 @@ const settings = definePluginSettings({
         label: "Bunny Name",
         description: "Name of the bunny.",
         placeholder: "Fluffy",
+        validate: (value: string) => {
+            return Boolean(value.match(/^[a-zA-Z]+$/));
+        },
     },
     winterCoat: {
         type: "boolean",
@@ -74,8 +77,8 @@ export default definePlugin({
     required: true,
 
     start() {
-        console.log({
-            settings
-        })
+        // console.log({
+        //     settings
+        // })
     },
 });

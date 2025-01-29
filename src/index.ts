@@ -24,7 +24,6 @@ function initialize() {
             initializePlugins();
         }
 
-
         // Uncomment this to log error boundaries
         const { byName } = require("./metro/filters");
         waitFor(byName("ErrorBoundary"), module => {

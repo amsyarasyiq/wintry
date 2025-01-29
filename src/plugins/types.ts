@@ -1,5 +1,6 @@
 import type { SetRequired } from "type-fest";
 import type { Dev } from "@data/constants";
+import type usePluginStore from "@stores/usePluginStore";
 
 export enum StartAt {
     Init = 0,
@@ -108,6 +109,11 @@ export interface DefinedOptions<Def extends OptionDefinitions> {
     definition: Def;
     get: () => SettingsStore<Def>;
     use: <T>(selector: (state: SettingsStore<Def>) => T) => T;
+    subscribe: <T>(
+        selector: (state: SettingsStore<Def>) => T,
+        listener: (state: T, prevState: T) => void,
+        options?: Parameters<typeof usePluginStore.subscribe>[2],
+    ) => () => void;
 }
 
 type OptionType = "string" | "boolean" | "select" | "radio" | "slider";
