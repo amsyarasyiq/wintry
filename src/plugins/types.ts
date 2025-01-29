@@ -89,7 +89,7 @@ export type OptionDefToType<T extends OptionDefinition> = T extends StringOption
     : T extends SelectOptionDefinition
     ? T["options"][number]["value"][]
     : T extends SliderOptionDefinition
-    ? (string | number)
+    ? T["points"][number]
     : never;
 
 type OptionDefaultType<O extends OptionDefinition> = O extends RadioOptionDefinition | SelectOptionDefinition

@@ -27,11 +27,13 @@ export default definePlugin({
     start() {
         settings.subscribe(
             s => [s.avatarRadius, s.bubbleRadius],
-            s => {
-                const [avatarRadius, bubbleRadius] = s;
-                BubbleModule.setRadius(Number(avatarRadius), Number(bubbleRadius));
+            ([avatarRadius, bubbleRadius]) => {
+                BubbleModule.setRadius(avatarRadius, bubbleRadius);
             },
-            { equalityFn: shallow }
+            {
+                equalityFn: shallow,
+                fireImmediately: true
+            }
         )
     },
 });
