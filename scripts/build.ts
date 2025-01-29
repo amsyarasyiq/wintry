@@ -6,7 +6,7 @@ import yargs from "yargs-parser";
 import { printBuildSuccess } from "./util";
 import path from "path";
 import globalPlugin from "esbuild-plugin-globals";
-import { makePluginContextModule, makeRequireModule } from "./modules";
+import { makeAssetModule, makePluginContextModule, makeRequireModule } from "./modules";
 
 const metroDeps: string[] = await (async () => {
     const ast = await swc.parseFile(path.resolve("./shims/depsModule.ts"));
@@ -48,9 +48,6 @@ const config: BuildOptions = {
     footer: {
         js: "//# sourceURL=wintry",
     },
-    loader: {
-        ".png": "dataurl",
-    },
     platform: "browser",
     define: {
         window: "globalThis",
@@ -83,6 +80,28 @@ const config: BuildOptions = {
                     return { contents: script, loader: "js", resolveDir: path.resolve(".") };
                 });
             },
+        },
+        {
+            name: "asset-loader",
+            setup(build) {
+                build.onResolve({ filter: /\.png$/ }, args => {
+                    const fullPathToAsset = path.resolve(path.dirname(args.importer), args.path);
+                    const filePath = args.path[0] === "@" ? `src/${args.path.slice(1)}` : path.relative(".", fullPathToAsset);
+
+                    return {
+                        path: filePath.replaceAll(path.sep, "/"),
+                        namespace: "asset-loader",
+                    };
+                });
+
+                build.onLoad({ filter: /.*/, namespace: "asset-loader" }, async args => {
+                    return {
+                        contents: await makeAssetModule(args.path),
+                        loader: "js",
+                        resolveDir: path.resolve(".")
+                    };
+                });
+            }
         },
         {
             name: "plugins-context",
@@ -166,7 +185,7 @@ const config: BuildOptions = {
                     return { contents: result.code };
                 });
             },
-        },
+        }
     ],
 };
 

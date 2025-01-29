@@ -29,4 +29,7 @@ export const FluxUtils = findByProps("useStateFromStores");
 
 // React
 export const React = findByProps("createElement") as typeof import("react");
+
+// React Native
 export const ReactNative = findByProps("AppRegistry") as typeof import("react-native");
+export const assetsRegistry = findByProps("getAssetByID");

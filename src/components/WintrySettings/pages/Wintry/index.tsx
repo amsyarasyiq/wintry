@@ -3,7 +3,6 @@ import { t } from "@i18n";
 import { findAssetId } from "@metro";
 import { TableRow, TableRowGroup } from "@metro/common/components";
 import { NativeClientInfoModule } from "@native";
-import WintryIcon from "@plugins/_core/settings/wintry.png";
 import PageWrapper from "../../PageWrapper";
 
 export default function WintryPage() {
@@ -12,7 +11,7 @@ export default function WintryPage() {
             <TableRowGroup title={t.settings.general.info()}>
                 <TableRow
                     label={t.wintry()}
-                    icon={<TableRow.Icon source={{ uri: WintryIcon }} />}
+                    icon={<TableRow.Icon source={require("@assets/wintry.png")} />}
                     trailing={<TableRow.TrailingText text={`${commitHash} (${branch})`} />}
                 />
                 <TableRow

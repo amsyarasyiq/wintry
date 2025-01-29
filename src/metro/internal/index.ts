@@ -21,6 +21,31 @@ export function initializeMetro() {
     );
 
     patchModule(
+        exports => exports.name === "resolveAssetSource",
+        ({ module: { exports: resolveAssetSource } }) => {
+            type WintryAsset = {
+                __wintry: boolean
+                width: number
+                height: number
+                dataurl: string
+            }
+
+            // Transform the asset from a data URL
+            resolveAssetSource.addCustomSourceTransformer(({ asset }: { asset: WintryAsset }) => {
+                if (asset.__wintry) {
+                    return {
+                        __packager_asset: true,
+                        width: asset.width,
+                        height: asset.height,
+                        uri: asset.dataurl,
+                        scale: 1
+                    };
+                }
+            });
+        },
+    )
+
+    patchModule(
         exports => exports.fileFinishedImporting,
         state => {
             before(state.module.exports, "fileFinishedImporting", (args: any) => {

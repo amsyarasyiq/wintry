@@ -1,6 +1,7 @@
-import { fileURLToPath, Glob } from "bun";
+import { file, fileURLToPath, Glob } from "bun";
 import { readFile, exists } from "node:fs/promises";
 import path from "node:path";
+import sizeOf from "image-size";
 
 async function gatherExportedModules() {
     const glob = new Glob("src/!{i18n,plugins}/**/*.{ts,tsx}");
@@ -67,5 +68,28 @@ export function makePluginContextModule(id: string): string {
 
         export var { meta, definePlugin, definePluginSettings } = context;
         export default context;
+    `;
+}
+
+export async function makeAssetModule(absolutePath: string): Promise<string> {
+    const fileBuffer = await file(absolutePath).arrayBuffer();
+    const dimensions = sizeOf(absolutePath);
+    const base64Data = Buffer.from(fileBuffer).toString("base64");
+
+    const asset = {
+        __wintry: true,
+        __packager_asset: true,
+        width: dimensions.width,
+        height: dimensions.height,
+        httpServerLocation: absolutePath,
+        dataurl: `data:image/png;base64,${base64Data}`,
+        scales: [1],
+        name: path.basename(absolutePath),
+        type: dimensions.type,
+    };
+
+    return `
+        import { assetsRegistry } from "@metro/common";
+        module.exports = assetsRegistry.registerAsset(${JSON.stringify(asset)});
     `;
 }

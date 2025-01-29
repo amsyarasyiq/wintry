@@ -8,7 +8,6 @@ import { waitFor } from "@metro/internal/modules";
 import { createContextualPatcher } from "@patcher/contextual";
 import { findInReactTree } from "@utils/objects";
 import { CustomPageRenderer } from "./CustomPageRenderer";
-import WintryIcon from "./wintry.png";
 import { definePlugin, definePluginSettings } from "#plugin-context";
 import SettingsManager from "./SettingsManager";
 
@@ -41,7 +40,7 @@ export default definePlugin({
                     {
                         key: "WINTRY",
                         title: () => t.wintry(),
-                        IconComponent: () => <TableRow.Icon source={{ uri: WintryIcon }} />,
+                        IconComponent: () => <TableRow.Icon source={require("@assets/wintry.png")} />,
                         render: () => import("@components/WintrySettings/pages/Wintry"),
                     },
                     {
