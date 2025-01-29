@@ -33,6 +33,8 @@ const en = {
         },
         general: {
             info: "Info",
+            quick_actions: "Quick Actions",
+            reload: "Reload Discord"
         },
         plugins: {
             description: "Description",

@@ -1,4 +1,4 @@
-import { commitHash } from "#build-info";
+import { branch, commitHash } from "#build-info";
 import { NativeClientInfoModule, NativeDeviceModule } from "@native";
 import React from "react";
 import { Platform, type PlatformAndroidStatic, type PlatformIOSStatic } from "react-native";
@@ -9,7 +9,8 @@ export function getVersions() {
 
     return {
         bunny: {
-            commitHash
+            commitHash,
+            branch
         },
         discord: {
             version: NativeClientInfoModule.Version,

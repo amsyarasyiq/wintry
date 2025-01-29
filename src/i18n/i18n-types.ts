@@ -99,6 +99,14 @@ type RootTranslation = {
 			 * I​n​f​o
 			 */
 			info: string
+			/**
+			 * Q​u​i​c​k​ ​A​c​t​i​o​n​s
+			 */
+			quick_actions: string
+			/**
+			 * R​e​l​o​a​d​ ​D​i​s​c​o​r​d
+			 */
+			reload: string
 		}
 		plugins: {
 			/**
@@ -272,6 +280,14 @@ export type TranslationFunctions = {
 			 * Info
 			 */
 			info: () => LocalizedString
+			/**
+			 * Quick Actions
+			 */
+			quick_actions: () => LocalizedString
+			/**
+			 * Reload Discord
+			 */
+			reload: () => LocalizedString
 		}
 		plugins: {
 			/**
