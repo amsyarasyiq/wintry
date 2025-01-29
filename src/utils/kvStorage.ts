@@ -1,15 +1,15 @@
 import { debounce } from "es-toolkit";
 import { writeFile } from "@api/fs";
+import { LoaderPayload } from "@native/loader";
 
-const state: { [key in string]?: string } = window.__WINTRY_KV_STORAGE__ ?? {};
+const state: { [key in string]?: string } = JSON.parse(LoaderPayload.preload?.["kv.json"] ?? "{}");
 
 const saveState = debounce(() => {
-    const script = `globalThis.__WINTRY_KV_STORAGE__=${JSON.stringify(state)}`;
-    writeFile("preload/wt-kvStorage.js", script);
+    writeFile("preload/kv.json", JSON.stringify(state));
 }, 500);
 
 function getItem(key: string) {
-    return state[key] || null;
+    return state[key] ?? null;
 }
 
 function setItem(key: string, value: string | null) {

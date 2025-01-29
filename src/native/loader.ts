@@ -25,7 +25,7 @@ interface LoaderPayload {
     initConfig: InitConfig;
     constants: LoaderConstants;
     modules: LoaderModules;
-    jsonstorage: Record<string, any>;
+    preload: Record<string, string>;
 }
 
 type InteropReturn = Promise<{ ret: string } | { err: string }>;
