@@ -4,6 +4,7 @@ import type { WintryPluginInstance } from "./types";
 export const PLUGINS: Record<string, WintryPluginInstance> = {
     settings: require("@plugins/_core/settings").default,
     "no-track": require("@plugins/_core/no-track").default,
+    "error-boundary": require("@plugins/_core/error-boundary").default,
     experiments: require("@plugins/experiments").default,
     dummy: require("@plugins/dummy").default,
     "chat-tweaks": require("@plugins/chat-tweaks").default,

@@ -1,65 +1,72 @@
-import { NativeClientInfoModule } from "@native";
+import { commitHash } from "#build-info";
+import { NativeClientInfoModule, NativeDeviceModule } from "@native";
+import React from "react";
+import { Platform, type PlatformAndroidStatic, type PlatformIOSStatic } from "react-native";
 
-export function getDebugInfo() {
-    // Hermes
+export function getVersions() {
     const hermesProps = window.HermesInternal.getRuntimeProperties();
     const hermesVer = hermesProps["OSS Release Version"];
-    const padding = "for RN ";
-
-    // RN
-    // const PlatformConstants = Platform.constants as RNConstants;
-    // const rnVer = PlatformConstants.reactNativeVersion;
 
     return {
+        bunny: {
+            commitHash
+        },
         discord: {
             version: NativeClientInfoModule.Version,
             build: NativeClientInfoModule.Build,
-        },
-        react: {
-            // version: React.version,
-            // nativeVersion: hermesVer.startsWith(padding) ? hermesVer.substring(padding.length) : `${rnVer.major}.${rnVer.minor}.${rnVer.patch}`,
         },
         hermes: {
             version: hermesVer,
             buildType: hermesProps.Build,
             bytecodeVersion: hermesProps["Bytecode Version"],
         },
-        // ...Platform.select(
-        //     {
-        //         android: {
-        //             os: {
-        //                 name: "Android",
-        //                 version: PlatformConstants.Release,
-        //                 sdk: PlatformConstants.Version
-        //             },
-        //         },
-        //         ios: {
-        //             os: {
-        //                 name: PlatformConstants.systemName,
-        //                 version: PlatformConstants.osVersion
-        //             },
-        //         }
-        //     }
-        // )!,
-        // ...Platform.select(
-        //     {
-        //         android: {
-        //             device: {
-        //                 manufacturer: PlatformConstants.Manufacturer,
-        //                 brand: PlatformConstants.Brand,
-        //                 model: PlatformConstants.Model,
-        //                 codename: DeviceManager.device
-        //             }
-        //         },
-        //         ios: {
-        //             device: {
-        //                 manufacturer: DeviceManager.deviceManufacturer,
-        //                 brand: DeviceManager.deviceBrand,
-        //                 model: DeviceManager.deviceModel,
-        //                 codename: DeviceManager.device
-        //             }
-        //         }
-        //     }
-        // )!
+        react: {
+            version: React.version,
+        },
+        reactNative: {
+            version: Platform.constants.reactNativeVersion,
+        }
+    }
+}
+
+function getAndroidDebugInfo() {
+    const PlatformConstants = Platform.constants as PlatformAndroidStatic["constants"];
+
+    return {
+        os: {
+            name: "Android",
+            version: PlatformConstants.Release,
+            sdk: PlatformConstants.Version
+        },
+        device: {
+            manufacturer: PlatformConstants.Manufacturer,
+            brand: PlatformConstants.Brand,
+            model: PlatformConstants.Model
+        }
+    };
+}
+
+function getIOSDebugInfo() {
+    const PlatformConstants = Platform.constants as PlatformIOSStatic["constants"];
+    return {
+        os: {
+            name: PlatformConstants.systemName,
+            version: PlatformConstants.osVersion
+        },
+        device: {
+            manufacturer: NativeDeviceModule.deviceManufacturer,
+            brand: NativeDeviceModule.deviceBrand,
+            model: NativeDeviceModule.deviceModel
+        }
+    };
+}
+
+export function getDebugInfo() {
+    return {
+        ...getVersions(),
+        ...Platform.select({
+            android: getAndroidDebugInfo(),
+            ios: getIOSDebugInfo(),
+        })!
     };
 }

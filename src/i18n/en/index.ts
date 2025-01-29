@@ -10,6 +10,20 @@ const en = {
             },
         },
     },
+    error_boundary: {
+        uh_oh: "Uh oh.",
+        retry_render: "Retry Render",
+        reload: "Reload Discord",
+        safe_mode: "Safe Mode",
+        screen: {
+            copy: "Copy",
+            show_more: "Show more",
+            show_less: "Show less",
+            component_stack: "Component Stack",
+            call_stack: "Call Stack",
+            description: "An error occurred while rendering a component. This may have been caused by a plugin, Wintry, or Discord itself.",
+        }
+    },
     settings: {
         sections: {
             plugins: "Plugins",

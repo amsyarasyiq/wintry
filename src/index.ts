@@ -1,10 +1,10 @@
-import { after } from "./patcher";
+
 import { connectToDebugger, patchLogHook } from "./debug";
 import reportErrorOnInitialization from "./error-reporter";
 import { wintryGlobalObject } from "./globals";
 import { initializeMetro } from "./metro/internal";
 import { metroEventEmitter } from "./metro/internal/events";
-import { internal_getDefiner, waitFor } from "./metro/internal/modules";
+import { internal_getDefiner, } from "./metro/internal/modules";
 import { initializePlugins } from "./stores/usePluginStore";
 import { isSafeModeEnabled } from "./stores/usePrefsStore";
 import hookDefineProperty from "./utils/objects";
@@ -23,14 +23,6 @@ function initialize() {
         if (!isSafeModeEnabled()) {
             initializePlugins();
         }
-
-        // Uncomment this to log error boundaries
-        const { byName } = require("./metro/filters");
-        waitFor(byName("ErrorBoundary"), module => {
-            after(module.prototype, "render", function f(this: any) {
-                this.state.error && console.log(this.state.error?.stack);
-            });
-        });
 
         return () => {
             hasIndexInitialized = true;

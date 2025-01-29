@@ -6,7 +6,7 @@ type DisposableFn = (...props: any[]) => () => unknown;
 
 export type ContextualPatcher = ReturnType<typeof createContextualPatcher>;
 
-export function createContextualPatcher({ pluginName }: { pluginName: string }) {
+export function createContextualPatcher({ pluginId }: { pluginId: string }) {
     let disposed = false;
     const unpatches: (() => void)[] = [];
 
@@ -27,7 +27,7 @@ export function createContextualPatcher({ pluginName }: { pluginName: string }) 
     }
 
     return {
-        pluginName: pluginName,
+        pluginId: pluginId,
 
         before: shimDisposableFn(unpatches, patchers.before),
         instead: shimDisposableFn(unpatches, patchers.instead),

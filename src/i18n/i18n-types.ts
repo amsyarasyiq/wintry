@@ -31,6 +31,50 @@ type RootTranslation = {
 			}
 		}
 	}
+	error_boundary: {
+		/**
+		 * U​h​ ​o​h​.
+		 */
+		uh_oh: string
+		/**
+		 * R​e​t​r​y​ ​R​e​n​d​e​r
+		 */
+		retry_render: string
+		/**
+		 * R​e​l​o​a​d​ ​D​i​s​c​o​r​d
+		 */
+		reload: string
+		/**
+		 * S​a​f​e​ ​M​o​d​e
+		 */
+		safe_mode: string
+		screen: {
+			/**
+			 * C​o​p​y
+			 */
+			copy: string
+			/**
+			 * S​h​o​w​ ​m​o​r​e
+			 */
+			show_more: string
+			/**
+			 * S​h​o​w​ ​l​e​s​s
+			 */
+			show_less: string
+			/**
+			 * C​o​m​p​o​n​e​n​t​ ​S​t​a​c​k
+			 */
+			component_stack: string
+			/**
+			 * C​a​l​l​ ​S​t​a​c​k
+			 */
+			call_stack: string
+			/**
+			 * A​n​ ​e​r​r​o​r​ ​o​c​c​u​r​r​e​d​ ​w​h​i​l​e​ ​r​e​n​d​e​r​i​n​g​ ​a​ ​c​o​m​p​o​n​e​n​t​.​ ​T​h​i​s​ ​m​a​y​ ​h​a​v​e​ ​b​e​e​n​ ​c​a​u​s​e​d​ ​b​y​ ​a​ ​p​l​u​g​i​n​,​ ​W​i​n​t​r​y​,​ ​o​r​ ​D​i​s​c​o​r​d​ ​i​t​s​e​l​f​.
+			 */
+			description: string
+		}
+	}
 	settings: {
 		sections: {
 			/**
@@ -158,6 +202,50 @@ export type TranslationFunctions = {
 				 */
 				placeholder: () => LocalizedString
 			}
+		}
+	}
+	error_boundary: {
+		/**
+		 * Uh oh.
+		 */
+		uh_oh: () => LocalizedString
+		/**
+		 * Retry Render
+		 */
+		retry_render: () => LocalizedString
+		/**
+		 * Reload Discord
+		 */
+		reload: () => LocalizedString
+		/**
+		 * Safe Mode
+		 */
+		safe_mode: () => LocalizedString
+		screen: {
+			/**
+			 * Copy
+			 */
+			copy: () => LocalizedString
+			/**
+			 * Show more
+			 */
+			show_more: () => LocalizedString
+			/**
+			 * Show less
+			 */
+			show_less: () => LocalizedString
+			/**
+			 * Component Stack
+			 */
+			component_stack: () => LocalizedString
+			/**
+			 * Call Stack
+			 */
+			call_stack: () => LocalizedString
+			/**
+			 * An error occurred while rendering a component. This may have been caused by a plugin, Wintry, or Discord itself.
+			 */
+			description: () => LocalizedString
 		}
 	}
 	settings: {
