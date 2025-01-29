@@ -74,7 +74,6 @@ export default definePlugin({
     name: "Dummy",
     description: "Does nothing!",
     authors: [Devs.Pylix],
-    required: true,
 
     start() {
         // console.log({
