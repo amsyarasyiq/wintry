@@ -21,7 +21,7 @@ interface ButtonProps {
     iconPosition?: "start" | "end";
     scaleAmountInPx?: number;
     icon?: RN.ImageSourcePropType | ReactNode;
-    style?: Style;
+    style?: RN.StyleProp<RN.ViewStyle>;
     grow?: boolean;
 }
 
