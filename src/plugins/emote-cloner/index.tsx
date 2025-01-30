@@ -13,6 +13,7 @@ import {
     TextInput,
     constants,
     toasts,
+    FluxUtils,
 } from "@metro/common";
 import { createContextualPatcher } from "@patcher/contextual";
 import { findInReactTree } from "@utils/objects";
@@ -67,10 +68,13 @@ function useSlots(
     guild: PartialGuild,
     emojiNode: EmojiNode,
 ): { isAnimated: boolean; availableSlots: number; maxSlots: number } {
-    // Subscribe to store changes
+    const guildEmojis = FluxUtils.useStateFromStores(
+        [EmojiStore],
+        () => EmojiStore.getGuilds()[guild.id]?.emojis ?? [],
+    );
+
     return useMemo(() => {
         const maxSlots = guild.getMaxEmojiSlots();
-        const guildEmojis = EmojiStore.getGuilds()[guild.id]?.emojis ?? [];
         const isAnimated = emojiNode.src.includes(".gif");
         const currentCount = guildEmojis.filter((e: { animated: boolean }) => e?.animated === isAnimated).length;
         const availableSlots = maxSlots - currentCount;
@@ -80,7 +84,7 @@ function useSlots(
             maxSlots,
             isAnimated,
         };
-    }, [guild, emojiNode]);
+    }, [guild, emojiNode, guildEmojis]);
 }
 
 function UploadInfoCard() {
