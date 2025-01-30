@@ -24,6 +24,7 @@ import { useEmojiAdderStore } from "./useEmojiAdderStore";
 import type { PartialGuild, EmojiNode } from "./types";
 import { useShallow } from "zustand/shallow";
 import { lazyDestructure } from "@utils/lazy";
+import { isError } from "@utils/errors/isError";
 
 const patcher = createContextualPatcher({ pluginId: meta.id });
 const CustomEmojiContent = findByFilePath("modules/messages/native/emoji/CustomEmojiContent.tsx");
@@ -46,12 +47,12 @@ function ServerRow({
     emojiNode,
 }: { start: boolean; end: boolean; guild: PartialGuild; emojiNode: EmojiNode }) {
     const [isPending, uploadEmoji] = useEmojiAdderStore(useShallow(s => [s.isPending, s.uploadEmoji]));
-    const { isAnimated, availableSlots, maxSlots } = useSlots(guild, emojiNode);
+    const { isAnimated, availableSlots, maxSlots, hasDuplicate } = useSlots(guild, emojiNode);
 
     return (
         <TableRow
             label={guild.name}
-            subLabel={`${availableSlots}/${maxSlots} slots available (${isAnimated ? "animated" : "static"})`}
+            subLabel={`${availableSlots}/${maxSlots}${isAnimated ? " animated" : " static"} slots available ${hasDuplicate ? "(has duplicate name)" : ""}`}
             disabled={isPending != null || availableSlots <= 0}
             icon={<GuildIcon guild={guild} size="NORMAL" animate={false} />}
             onPress={() => {
@@ -67,7 +68,8 @@ function ServerRow({
 function useSlots(
     guild: PartialGuild,
     emojiNode: EmojiNode,
-): { isAnimated: boolean; availableSlots: number; maxSlots: number } {
+): { isAnimated: boolean; availableSlots: number; maxSlots: number; hasDuplicate: boolean } {
+    const currentAlt = useEmojiAdderStore(s => s.customAlt) || emojiNode.alt;
     const guildEmojis = FluxUtils.useStateFromStores(
         [EmojiStore],
         () => EmojiStore.getGuilds()[guild.id]?.emojis ?? [],
@@ -77,14 +79,14 @@ function useSlots(
         const maxSlots = guild.getMaxEmojiSlots();
         const isAnimated = emojiNode.src.includes(".gif");
         const currentCount = guildEmojis.filter((e: { animated: boolean }) => e?.animated === isAnimated).length;
-        const availableSlots = maxSlots - currentCount;
 
         return {
-            availableSlots,
+            hasDuplicate: guildEmojis.some((e: { name: string }) => e.name === currentAlt),
+            availableSlots: maxSlots - currentCount,
             maxSlots,
             isAnimated,
         };
-    }, [guild, emojiNode, guildEmojis]);
+    }, [currentAlt, guild, emojiNode, guildEmojis]);
 }
 
 function UploadInfoCard() {
@@ -105,7 +107,7 @@ function UploadInfoCard() {
                         <Text style={{ marginTop: 4 }}>Server: {guildId}</Text>
                         {error && (
                             <Text style={{ marginTop: 4, color: "#ff4444" }}>
-                                Error: {error.message || "Unknown error occurred"}
+                                Error: {isError(error) ? error.message : String(error) || "Unknown error occurred"}
                             </Text>
                         )}
                         {emojiNode && <Text style={{ marginTop: 4 }}>Emoji name: {emojiNode.alt}</Text>}
@@ -125,7 +127,7 @@ function EmoteStealerActionSheet({ emojiNode }: { emojiNode: EmojiNode }) {
     ) as PartialGuild[];
 
     return (
-        <ActionSheet scrollable>
+        <ActionSheet>
             <ScrollView style={{ gap: 12 }}>
                 <BottomSheetTitleHeader title={`Clone ${emojiNode.alt}`} />
                 <BottomSheetFlashList
@@ -134,6 +136,8 @@ function EmoteStealerActionSheet({ emojiNode }: { emojiNode: EmojiNode }) {
                         <View style={{ gap: 12, paddingVertical: 12 }}>
                             <TextInput
                                 label="Emoji Name"
+                                description="The name of the emoji to be uploaded"
+                                placeholder={emojiNode.alt}
                                 value={customAlt ?? emojiNode.alt}
                                 onChange={text => useEmojiAdderStore.setState({ customAlt: text })}
                             />
@@ -177,15 +181,15 @@ export default definePlugin({
 
     start() {
         // TODO: Once we have own own toast, use that instead
-        useEmojiAdderStore.subscribe(s => {
-            if (s.isPending) {
+        useEmojiAdderStore.subscribe((s, p) => {
+            if (s.isPending && s.isPending !== p.isPending) {
                 toasts.open({
                     key: "emote-stealer-uploading",
                     content: "Uploading emoji...",
                 });
             }
 
-            if (s.lastUploadInfo) {
+            if (s.lastUploadInfo && s.lastUploadInfo !== p.lastUploadInfo) {
                 toasts.open({
                     key: "emote-stealer-upload-result",
                     content: s.lastUploadInfo.error ? "Upload failed" : "Upload successful",

@@ -1,10 +1,14 @@
 import { create } from "zustand";
 import type { EmojiNode } from "./types";
+import { findByProps } from "@metro";
+import { fetchAsDataUrl } from "@utils/network/fetchAsDataUrl";
+
+export const Emojis = findByProps("uploadEmoji");
 
 interface UploadInfo {
     guildId: string;
     emojiNode: EmojiNode;
-    error: Error | null;
+    error: unknown | null;
 }
 
 interface EmojiAdderStore {
@@ -13,7 +17,7 @@ interface EmojiAdderStore {
     customAlt: string | null;
 
     cleanup: () => void;
-    uploadEmoji: (guildId: string, emojiNode: EmojiNode) => void;
+    uploadEmoji: (guildId: string, emojiNode: EmojiNode) => Promise<void>;
 }
 
 export const useEmojiAdderStore = create<EmojiAdderStore>((set, get) => ({
@@ -23,23 +27,25 @@ export const useEmojiAdderStore = create<EmojiAdderStore>((set, get) => ({
 
     cleanup: () => set({ lastUploadInfo: null, customAlt: null }),
 
-    uploadEmoji: (guildId, emojiNode) => {
+    uploadEmoji: async (guildId, emojiNode) => {
         set({
             isPending: guildId,
             lastUploadInfo: null,
         });
 
-        setTimeout(() => {
-            // TODO: Implement actual upload logic
-            if (get().isPending === guildId) {
-                if (Math.random() > 0.5) {
-                    set({ lastUploadInfo: { guildId, emojiNode, error: new Error("Failed to upload emoji") } });
-                } else {
-                    set({ lastUploadInfo: { guildId, emojiNode, error: null } });
-                }
-            }
+        try {
+            const dataUrl = await fetchAsDataUrl(emojiNode.src);
+            await Emojis.uploadEmoji({
+                guildId,
+                image: dataUrl,
+                name: get().customAlt ?? emojiNode.alt,
+            });
 
+            set({ lastUploadInfo: { guildId, emojiNode, error: null } });
+        } catch (error) {
+            set({ lastUploadInfo: { guildId, emojiNode, error } });
+        } finally {
             set({ isPending: null });
-        }, 1000);
+        }
     },
 }));
