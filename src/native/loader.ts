@@ -37,11 +37,6 @@ export function isModuleRegistered(module: string) {
 }
 
 export function isFunctionRegistered(module: string, function_: string) {
-    console.log(LoaderPayload?.modules?.[module]?.functions?.[function_], {
-        module,
-        function_,
-        functions: LoaderPayload.modules
-    });
     return LoaderPayload.modules[module]?.functions[function_] !== undefined;
 }
 

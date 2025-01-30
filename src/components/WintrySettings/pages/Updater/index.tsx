@@ -1,6 +1,7 @@
 import PageWrapper from "@components/WintrySettings/PageWrapper";
 import { t } from "@i18n";
 import { TableRowGroup, TableRow, TableSwitchRow, Button } from "@metro/common";
+import UpdaterModule from "@native/modules/UpdaterModule";
 import { create } from "zustand";
 
 interface UpdaterStore {
@@ -20,14 +21,22 @@ export const useUpdaterStore = create<UpdaterStore>(set => ({
     setNotify: value => set({ notify: value }),
     checkForUpdates: () => {
         set({ isChecking: true });
-        setTimeout(() => {
-            set({ isChecking: false });
-            if (Math.random() < 0.5) {
-                alert("No updates available");
-            } else {
-                alert("Updates available");
-            }
-        }, 3000);
+        UpdaterModule.updateBundle()
+            .then(ret => {
+                if (ret === true) {
+                    alert("Updated successfully. Restart Discord to apply changes.");
+                } else if (ret === false) {
+                    alert("No updates available");
+                } else {
+                    alert("An error occurred. Please try again later.");
+                }
+            })
+            .catch(() => {
+                alert("An error occurred");
+            })
+            .finally(() => {
+                set({ isChecking: false });
+            });
     },
 }));
 
