@@ -12,6 +12,7 @@ import {
     Text,
     TextInput,
     constants,
+    toasts,
 } from "@metro/common";
 import { createContextualPatcher } from "@patcher/contextual";
 import { findInReactTree } from "@utils/objects";
@@ -127,7 +128,6 @@ function EmoteStealerActionSheet({ emojiNode }: { emojiNode: EmojiNode }) {
                     style={{ flex: 1 }}
                     ListHeaderComponent={
                         <View style={{ gap: 12, paddingVertical: 12 }}>
-                            <UploadInfoCard />
                             <TextInput
                                 label="Emoji Name"
                                 value={customAlt ?? emojiNode.alt}
@@ -172,6 +172,23 @@ export default definePlugin({
     authors: [Devs.Pylix],
 
     start() {
+        // TODO: Once we have own own toast, use that instead
+        useEmojiAdderStore.subscribe(s => {
+            if (s.isPending) {
+                toasts.open({
+                    key: "emote-stealer-uploading",
+                    content: "Uploading emoji...",
+                });
+            }
+
+            if (s.lastUploadInfo) {
+                toasts.open({
+                    key: "emote-stealer-upload-result",
+                    content: s.lastUploadInfo.error ? "Upload failed" : "Upload successful",
+                });
+            }
+        });
+
         patcher.after(CustomEmojiContent, "default", ([{ emojiNode }]: any, res) => {
             if (!emojiNode) return;
 
