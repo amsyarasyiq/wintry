@@ -1,19 +1,20 @@
 import { definePlugin, meta } from "#plugin-context";
 import { showSheet } from "@components/utils/sheets";
 import { Devs } from "@data/constants";
-import { findByFilePath, findByProps, findByStoreName } from "@metro";
+import { findByFilePath, findByStoreName } from "@metro";
 import {
     ActionSheet,
     BottomSheetTitleHeader,
     Button,
     Card,
-    type FlashList,
+    FlashList,
     TableRow,
     Text,
     TextInput,
     constants,
     toasts,
     FluxUtils,
+    clipboard,
 } from "@metro/common";
 import { createContextualPatcher } from "@patcher/contextual";
 import { findInReactTree } from "@utils/objects";
@@ -23,7 +24,6 @@ import { Fragment } from "react/jsx-runtime";
 import { useEmojiAdderStore } from "./useEmojiAdderStore";
 import type { PartialGuild, EmojiNode } from "./types";
 import { useShallow } from "zustand/shallow";
-import { lazyDestructure } from "@utils/lazy";
 import { isError } from "@utils/errors/isError";
 
 const patcher = createContextualPatcher({ pluginId: meta.id });
@@ -35,10 +35,6 @@ const Icon = findByFilePath("uikit-native/Icon.tsx");
 const GuildStore = findByStoreName("GuildStore");
 const PermissionStore = findByStoreName("PermissionStore");
 const EmojiStore = findByStoreName("EmojiStore");
-
-const { BottomSheetFlashList } = lazyDestructure(() => findByProps("BottomSheetFlashList")) as {
-    BottomSheetFlashList: typeof FlashList;
-};
 
 function ServerRow({
     start,
@@ -130,7 +126,7 @@ function EmoteStealerActionSheet({ emojiNode }: { emojiNode: EmojiNode }) {
         <ActionSheet>
             <ScrollView style={{ gap: 12 }}>
                 <BottomSheetTitleHeader title={`Clone ${emojiNode.alt}`} />
-                <BottomSheetFlashList
+                <FlashList
                     style={{ flex: 1 }}
                     ListHeaderComponent={
                         <View style={{ gap: 12, paddingVertical: 12 }}>
@@ -163,14 +159,25 @@ function EmoteStealerActionSheet({ emojiNode }: { emojiNode: EmojiNode }) {
 
 function StealButtons({ emojiNode, style }: { emojiNode: EmojiNode; style?: StyleProp<ViewStyle> }) {
     return (
-        <Button
-            style={style}
-            text="Clone"
-            onPress={() => {
-                useEmojiAdderStore.getState().cleanup();
-                showSheet("EmoteStealerActionSheet", EmoteStealerActionSheet, { emojiNode }, "stack");
-            }}
-        />
+        <View style={[{ gap: 8 }, style]}>
+            <Button
+                text="Clone"
+                onPress={() => {
+                    useEmojiAdderStore.getState().cleanup();
+                    showSheet("EmoteStealerActionSheet", EmoteStealerActionSheet, { emojiNode }, "stack");
+                }}
+            />
+            <Button
+                text="Copy URL"
+                onPress={async () => {
+                    await clipboard.setString(emojiNode.src);
+                    toasts.open({
+                        key: "emote-stealer-copied-url",
+                        content: "Copied URL to clipboard",
+                    });
+                }}
+            />
+        </View>
     );
 }
 
