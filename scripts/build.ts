@@ -1,5 +1,5 @@
 import swc from "@swc/core";
-import { $, fileURLToPath, } from "bun";
+import { $, fileURLToPath } from "bun";
 import crypto from "crypto";
 import { build, type BuildOptions } from "esbuild";
 import yargs from "yargs-parser";
@@ -86,7 +86,8 @@ const config: BuildOptions = {
             setup(build) {
                 build.onResolve({ filter: /\.png$/ }, args => {
                     const fullPathToAsset = path.resolve(path.dirname(args.importer), args.path);
-                    const filePath = args.path[0] === "@" ? `src/${args.path.slice(1)}` : path.relative(".", fullPathToAsset);
+                    const filePath =
+                        args.path[0] === "@" ? `src/${args.path.slice(1)}` : path.relative(".", fullPathToAsset);
 
                     return {
                         path: filePath.replaceAll(path.sep, "/"),
@@ -98,10 +99,34 @@ const config: BuildOptions = {
                     return {
                         contents: await makeAssetModule(args.path),
                         loader: "js",
-                        resolveDir: path.resolve(".")
+                        resolveDir: path.resolve("."),
                     };
                 });
-            }
+            },
+        },
+        {
+            name: "lazy-resolver",
+            setup(build) {
+                build.onResolve({ filter: /.*/ }, args => {
+                    if (args.with.lazy === "on") {
+                        return {
+                            path: args.path,
+                            namespace: "resolve-lazy",
+                        };
+                    }
+
+                    return null;
+                });
+
+                build.onLoad({ filter: /.*/, namespace: "resolve-lazy" }, async args => {
+                    const pathFromRoot = path.relative(".", args.path);
+                    return {
+                        contents: `module.exports = require("@utils/lazy").lazyObjectGetter(() => require("${pathFromRoot}"))`,
+                        loader: "js",
+                        resolveDir: path.resolve("."),
+                    };
+                });
+            },
         },
         {
             name: "plugins-context",
@@ -109,7 +134,7 @@ const config: BuildOptions = {
                 build.onResolve({ filter: /^#plugin-context$/ }, args => ({
                     path: `${args.path}#${args.importer}`,
                     namespace: "plugins-context",
-                    pluginData: { importer: args.importer }
+                    pluginData: { importer: args.importer },
                 }));
 
                 build.onLoad({ filter: /.*/, namespace: "plugins-context" }, args => {
@@ -117,7 +142,8 @@ const config: BuildOptions = {
                     const pluginPath = fileURLToPath(import.meta.resolve("../src/plugins"));
 
                     // Extract plugin ID from the import path
-                    const pluginId = path.relative(pluginPath, importer)
+                    const pluginId = path
+                        .relative(pluginPath, importer)
                         .split(path.sep)
                         .find(segment => !segment.startsWith("_"));
 
@@ -158,6 +184,9 @@ const config: BuildOptions = {
                                     runtime: "automatic",
                                 },
                             },
+                            experimental: {
+                                keepImportAssertions: true,
+                            },
                         },
                         // https://github.com/facebook/hermes/blob/3815fec63d1a6667ca3195160d6e12fee6a0d8d5/doc/Features.md
                         // https://github.com/facebook/hermes/issues/696#issuecomment-1396235791
@@ -185,7 +214,7 @@ const config: BuildOptions = {
                     return { contents: result.code };
                 });
             },
-        }
+        },
     ],
 };
 

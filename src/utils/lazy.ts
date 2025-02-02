@@ -125,7 +125,7 @@ const lazyHandler: ProxyHandler<any> = {
 export function lazyValue<T, I extends ExemptedEntries>(factory: () => T, opts: LazyOptions<I> = {}): T {
     let cache: T;
 
-    const dummy = opts.hint !== "object" ? () => { } : {};
+    const dummy = opts.hint !== "object" ? () => {} : {};
     const proxyFactory = () => {
         if (!cache) {
             cache = factory();
@@ -194,4 +194,27 @@ export function lazyDestructure<T extends Record<PropertyKey, unknown>, I extend
 
 export function getProxyFactory<T>(obj: T): (() => T) | undefined {
     return factories.get(obj) as (() => T) | undefined;
+}
+
+/**
+ * Similar to lazyValue, but only for objects and much simpler. It will only handle the getter for the object.
+ *
+ * @example
+ * const RN = lazyObjectGetter(() => require("react-native"));
+ *
+ * function MyComponent() {
+ *    const { View, Text } = RN;
+ *    return <View><Text>Hello, world!</Text></View>;
+ * }
+ */
+
+export function lazyObjectGetter<T extends Record<string, unknown>>(factory: () => T): T {
+    let cache: T;
+
+    const proxy: T = new Proxy({} as T, {
+        get: (_, p: string) => (cache ??= factory())[p],
+        getPrototypeOf: () => proxy,
+    });
+
+    return proxy;
 }
