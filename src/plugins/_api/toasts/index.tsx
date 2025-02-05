@@ -3,24 +3,17 @@ import { createStyles } from "@components/utils/styles";
 import { Devs } from "@data/constants";
 import { findByFilePath, findByStoreName } from "@metro";
 import { Card, FluxUtils, PressableScale, Text } from "@metro/common";
-import { metroEventEmitter } from "@metro/internal/events";
 import { createContextualPatcher } from "@patcher/contextual";
 import { showToast, useToastStore } from "@stores/useToastStore";
-import { createRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { Swipeable, ToasterBase, useToast } from "react-native-customizable-toast" with { lazy: "on" };
 import type { ToastItemProps, ToasterMethods } from "react-native-customizable-toast";
 import { SlideInUp, SlideOutUp, clamp, withSpring } from "react-native-reanimated";
 
 const patcher = createContextualPatcher({ pluginId: meta.id });
 
+const ToastStore = findByStoreName("ToastStore");
 const ToastContainer = findByFilePath("modules/toast/native/ToastContainer.tsx", true);
-
-let CustomToasterRef: React.MutableRefObject<ToasterMethods<CustomToaster>>;
-
-metroEventEmitter.once("metroReady", () => {
-    // @ts-expect-error - It is actually mutable
-    CustomToasterRef = createRef<ToasterMethods<CustomToaster>>();
-});
 
 const useStyles = createStyles(() => ({
     container: {
@@ -34,13 +27,6 @@ const useStyles = createStyles(() => ({
         minHeight: 48,
     },
 }));
-
-export const CustomToasterHelper = {
-    show: (options: CustomToaster) => CustomToasterRef.current?.show(options)!,
-    hide: (id: string) => CustomToasterRef.current?.hide(id),
-    filter: (fn: (value: CustomToaster, index: number) => void) => CustomToasterRef.current?.filter(fn),
-    update: (id: string, options: Partial<CustomToaster>) => CustomToasterRef.current?.update(id, options),
-};
 
 type CustomToaster = {
     text: string;
@@ -63,11 +49,37 @@ const CustomToastComponent = () => {
 };
 
 export const CustomToaster = () => {
-    const ToastStore = findByStoreName("ToastStore");
+    const ref = useRef<ToasterMethods<CustomToaster>>(null);
+    const toastIdMap = useMemo(() => new Map<string, string>(), []);
+
+    const toasts = useToastStore(state => state.toasts);
     const isDiscordToastDisplaying = FluxUtils.useStateFromStores([ToastStore], () => ToastStore.getContent()) != null;
 
+    useEffect(() => {
+        for (const toast of toasts) {
+            const { id, type, content } = toast;
+
+            if (toastIdMap.has(id)) {
+                ref.current?.update(id, { text: type === "generic" ? content.text : "Not implemented." });
+            } else {
+                const libId = ref.current?.show({
+                    text: type === "generic" ? content.text : "Not implemented (updating).",
+                });
+
+                if (libId != null) toastIdMap.set(id, libId);
+            }
+        }
+
+        for (const [id, libId] of toastIdMap) {
+            if (!toasts.some(t => t.id === id)) {
+                toastIdMap.delete(id);
+                ref.current?.hide(libId);
+            }
+        }
+    }, [toasts, toastIdMap]);
+
     return (
-        <ToasterBase<typeof CustomToasterRef>
+        <ToasterBase<typeof ref>
             entering={SlideInUp.springify().mass(0.1).damping(10).stiffness(100).overshootClamping(1)}
             exiting={SlideOutUp.springify()
                 .mass(0.35)
@@ -77,7 +89,7 @@ export const CustomToaster = () => {
                 .restSpeedThreshold(0.1)}
             useSafeArea={true}
             // @ts-expect-error - Passing function as ref is valid.
-            ref={(r: ToasterMethods<CustomToaster>) => r && (CustomToasterRef.current = r)}
+            ref={(r: ToasterMethods<CustomToaster>) => r && (ref.current = r)}
             itemStyle={({ itemLayout: { y }, gesture: { translationY }, displayFromBottom }: ToastItemProps) => {
                 "worklet";
 
@@ -111,27 +123,27 @@ export default definePlugin({
 
     start() {
         // Testing purposes
-        window.ToasterHelper = CustomToasterHelper;
-        window.demoToast = () => {
-            const id = CustomToasterHelper.show({
-                text: "Hello, world!",
-                dismissible: true,
-            });
+        // window.ToasterHelper = CustomToasterHelper;
+        // window.demoToast = () => {
+        //     const id = CustomToasterHelper.show({
+        //         text: "Hello, world!",
+        //         dismissible: true,
+        //     });
 
-            setTimeout(() => {
-                CustomToasterHelper.update(id, {
-                    text: "Bye-bye, world!",
-                });
+        //     setTimeout(() => {
+        //         CustomToasterHelper.update(id, {
+        //             text: "Bye-bye, world!",
+        //         });
 
-                setTimeout(() => {
-                    CustomToasterHelper.hide(id);
-                }, 3000);
-            }, 1000);
-        };
+        //         setTimeout(() => {
+        //             CustomToasterHelper.hide(id);
+        //         }, 3000);
+        //     }, 1000);
+        // };
 
-        useToastStore.subscribe(() => {
-            console.log(useToastStore.getState().toasts);
-        });
+        // useToastStore.subscribe(() => {
+        //     console.log(useToastStore.getState());
+        // });
 
         window.showToast = showToast;
 

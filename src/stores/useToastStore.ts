@@ -148,8 +148,16 @@ class Toast {
     }
 }
 
-export function showToast(config: Omit<ToastConfig, "id">) {
-    const toast = new Toast(config);
+export function showToast(
+    config: Omit<ToastConfig, "id" | "content"> & {
+        content: string | GenericToastContent | CustomToastContent;
+    },
+) {
+    if (typeof config.content === "string") {
+        config.content = { text: config.content } as GenericToastContent;
+    }
+
+    const toast = new Toast(config as ToastConfig);
     toast.show();
     return toast;
 }
