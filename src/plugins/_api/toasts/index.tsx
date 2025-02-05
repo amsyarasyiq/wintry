@@ -4,7 +4,7 @@ import { Devs } from "@data/constants";
 import { findByFilePath, findByStoreName } from "@metro";
 import { Card, FluxUtils, PressableScale, Text } from "@metro/common";
 import { createContextualPatcher } from "@patcher/contextual";
-import { showToast, useToastStore } from "@stores/useToastStore";
+import { showToast, useToastStore, type ToastInstance } from "@stores/useToastStore";
 import { useEffect, useMemo, useRef } from "react";
 import { Swipeable, ToasterBase, useToast } from "react-native-customizable-toast" with { lazy: "on" };
 import type { ToastItemProps, ToasterMethods } from "react-native-customizable-toast";
@@ -20,36 +20,45 @@ const useStyles = createStyles(() => ({
         marginTop: 10,
         marginHorizontal: 10,
     },
-    touchable: {
+    card: {
         alignItems: "center",
         flexDirection: "row",
         borderRadius: 5,
-        minHeight: 48,
+        minHeight: 24,
     },
 }));
 
-type CustomToaster = {
-    text: string;
-    dismissible?: boolean;
-};
-
 const CustomToastComponent = () => {
     const styles = useStyles();
-    const { text, hide, dismissible = true } = useToast<CustomToaster>();
+    const { hide, ...toast } = useToast<ToastInstance>();
 
-    return (
-        <Swipeable onSwipe={hide} disabled={!dismissible}>
-            <PressableScale style={styles.touchable} onPress={hide} disabled={!dismissible}>
-                <Card style={styles.container}>
-                    <Text variant="display-lg">{text}</Text>
-                </Card>
-            </PressableScale>
-        </Swipeable>
-    );
+    if (toast == null) return null;
+
+    if (toast.type === "generic") {
+        return (
+            <Swipeable onSwipe={() => toast.options?.onDismiss?.()} disabled={!toast.options?.dismissible}>
+                <PressableScale style={styles.container} onPress={() => toast.content.onPress?.()}>
+                    <Card style={styles.card}>
+                        <Text variant="text-sm/semibold">{toast.content.text}</Text>
+                    </Card>
+                </PressableScale>
+            </Swipeable>
+        );
+    }
+
+    // return (
+    //     <Swipeable onSwipe={hide} disabled={!dismissible}>
+    //         <PressableScale style={styles.touchable} onPress={hide} disabled={!dismissible}>
+    //             <Card style={styles.container}>
+    //                 <Text variant="display-lg">{text}</Text>
+    //             </Card>
+    //         </PressableScale>
+    //     </Swipeable>
+    // );
 };
 
 export const CustomToaster = () => {
-    const ref = useRef<ToasterMethods<CustomToaster>>(null);
+    const ref = useRef<ToasterMethods<ToastInstance>>(null);
     const toastIdMap = useMemo(() => new Map<string, string>(), []);
 
     const toasts = useToastStore(state => state.toasts);
@@ -57,15 +66,12 @@ export const CustomToaster = () => {
 
     useEffect(() => {
         for (const toast of toasts) {
-            const { id, type, content } = toast;
+            const { id } = toast;
 
             if (toastIdMap.has(id)) {
-                ref.current?.update(id, { text: type === "generic" ? content.text : "Not implemented." });
+                ref.current?.update(id, toast);
             } else {
-                const libId = ref.current?.show({
-                    text: type === "generic" ? content.text : "Not implemented (updating).",
-                });
-
+                const libId = ref.current?.show(toast);
                 if (libId != null) toastIdMap.set(id, libId);
             }
         }
@@ -109,7 +115,7 @@ export const CustomToaster = () => {
                     ],
                 };
             }}
-            onSwipeEdge={({ filter }) => filter(e => !e.dismissible)}
+            onSwipeEdge={({ filter }) => filter(t => t.options?.dismissible === false)}
             render={CustomToastComponent}
         />
     );
