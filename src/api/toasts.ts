@@ -8,10 +8,6 @@ export interface ToastOptions {
      */
     dismissible?: boolean;
     /**
-     * @default top
-     */
-    position?: "top" | "bottom";
-    /**
      * @default undefined
      */
     onDismiss?: () => void;
@@ -68,7 +64,6 @@ export class Toast {
             options: {
                 duration: 5000,
                 dismissible: true,
-                position: "top",
                 ...config.options,
             },
         };
