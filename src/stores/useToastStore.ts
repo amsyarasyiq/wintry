@@ -18,6 +18,11 @@ export const useToastStore = create<ToastStore>(set => {
             set(state => {
                 const toast = { id, type, content, options } as ToastInstance;
 
+                if (timeouts.has(id)) {
+                    clearTimeout(timeouts.get(id)!);
+                    timeouts.delete(id);
+                }
+
                 if (options.duration && options.duration > 0) {
                     const timeout = setTimeout(() => {
                         set(state => {
