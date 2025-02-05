@@ -6,7 +6,7 @@ import { ModuleFlags, ModulesMapInternal } from "./enums";
 import { metroEventEmitter } from "./events";
 import { isBadModuleExports, moduleRegistry } from "./modules";
 
-const CACHE_VERSION = 8;
+const CACHE_VERSION = 9;
 const WINTRY_METRO_CACHE_KEY = "__wintry_metro_cache_key__";
 
 type ModulesMap = {
