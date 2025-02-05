@@ -2,8 +2,10 @@ import type { ToastInstance } from "@api/toasts";
 import { createStyles } from "@components/utils/styles";
 import { PressableScale, Text, tokens } from "@metro/common";
 import { useToastStore } from "@stores/useToastStore";
+import { useCallback } from "react";
 import { View } from "react-native";
 import { Swipeable, useToast } from "react-native-customizable-toast" with { lazy: "on" };
+import { useShallow } from "zustand/shallow";
 
 const useContainerStyles = createStyles(() => ({
     container: {
@@ -29,15 +31,21 @@ const useContainerStyles = createStyles(() => ({
 
 export function ToastComponent() {
     const containerStyles = useContainerStyles();
-    const updateToast = useToastStore(state => state.updateToast);
-    const { hide, toast } = useToast<{ toast: ToastInstance }>();
+    const [updateToast, hideToast] = useToastStore(useShallow(state => [state.updateToast, state.hideToast]));
+    const { toast } = useToast<{ toast: ToastInstance }>();
+
+    // biome-ignore lint/correctness/useExhaustiveDependencies: Not needed
+    const onDismiss = useCallback(() => {
+        toast.options?.onDismiss?.();
+        hideToast(toast.id);
+    }, []);
 
     if (toast.id == null) return null;
     const { type, content, options = {} } = toast;
 
     if (type === "generic") {
         return (
-            <Swipeable onSwipe={() => options.onDismiss?.()} disabled={!options.dismissible}>
+            <Swipeable onSwipe={onDismiss} disabled={!options.dismissible}>
                 <PressableScale style={containerStyles.container} onPress={() => content.onPress?.()}>
                     <View style={[containerStyles.contentContainer, options.contentContainerStyle]}>
                         <Text variant="text-sm/semibold">{toast.content.text}</Text>
@@ -52,7 +60,7 @@ export function ToastComponent() {
 
         const toastContent = (
             <View style={[containerStyles.contentContainer, options.contentContainerStyle]}>
-                <CustomComponent hide={hide} update={options => updateToast(toast.id, options)} />
+                <CustomComponent hide={() => hideToast(toast.id)} update={options => updateToast(toast.id, options)} />
             </View>
         );
 
@@ -63,7 +71,7 @@ export function ToastComponent() {
         );
 
         return (
-            <Swipeable onSwipe={() => options.onDismiss?.()} disabled={!options.dismissible}>
+            <Swipeable onSwipe={onDismiss} disabled={!options.dismissible}>
                 {wrappedContent}
             </Swipeable>
         );
