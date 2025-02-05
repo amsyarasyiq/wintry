@@ -1,5 +1,5 @@
 import swc from "@swc/core";
-import { $, fileURLToPath } from "bun";
+import { $, file, fileURLToPath } from "bun";
 import crypto from "crypto";
 import { build, type BuildOptions } from "esbuild";
 import yargs from "yargs-parser";
@@ -7,6 +7,7 @@ import { printBuildSuccess } from "./util";
 import path from "path";
 import globalPlugin from "esbuild-plugin-globals";
 import { makeAssetModule, makePluginContextModule, makeRequireModule } from "./modules";
+import babel from "@babel/core";
 
 const metroDeps: string[] = await (async () => {
     const ast = await swc.parseFile(path.resolve("./shims/depsModule.ts"));
@@ -60,6 +61,8 @@ const config: BuildOptions = {
         "!wintry-deps-shim!": "./shims/depsModule",
         "react/jsx-runtime": "./shims/jsxRuntime",
         "no-expose": "./shims/emptyModule",
+
+        "react-native-customizable-toast": "./node_modules/react-native-customizable-toast/src/index.ts",
     },
     plugins: [
         globalPlugin({
@@ -119,7 +122,7 @@ const config: BuildOptions = {
                 });
 
                 build.onLoad({ filter: /.*/, namespace: "resolve-lazy" }, async args => {
-                    const pathFromRoot = path.relative(".", args.path);
+                    const pathFromRoot = path.relative(".", args.path).replaceAll(path.sep, "/");
                     return {
                         contents: `module.exports = require("@utils/lazy").lazyObjectGetter(() => require("${pathFromRoot}"))`,
                         loader: "js",
@@ -160,17 +163,30 @@ const config: BuildOptions = {
             },
         },
         {
-            name: "swc",
+            name: "syntax-aware-loader",
             setup(build) {
                 build.onLoad({ filter: /\.[cm]?[jt]sx?$/ }, async args => {
-                    const result = await swc.transformFile(args.path, {
+                    let transformedCode = await file(args.path).text();
+
+                    let imports: string[] | null = null;
+                    try {
+                        imports = new Bun.Transpiler({ loader: "tsx", autoImportJSX: true })
+                            .scanImports(transformedCode)
+                            .map(i => i.path);
+                    } catch {
+                        console.log(`Failed to parse imports for ${args.path}`);
+                    }
+
+                    const swcTransform = await swc.transformFile(args.path, {
                         jsc: {
                             externalHelpers: true,
-                            // Some external libraries ships jsx syntax in js file?
-                            parser: {
-                                syntax: "typescript",
-                                tsx: true,
-                            },
+                            // Why? Because some libraries use .js extension for ts/tsx/jsx files
+                            parser: args.path.includes("node_modules")
+                                ? {
+                                      syntax: "typescript",
+                                      tsx: true,
+                                  }
+                                : undefined,
                             transform: {
                                 constModules: {
                                     globals: {
@@ -211,7 +227,32 @@ const config: BuildOptions = {
                         },
                     });
 
-                    return { contents: result.code };
+                    const hasWorkletSyntax = contents => ["'worklet'", '"worklet"'].find(fn => contents.includes(fn));
+                    if (imports && !imports.includes("react-native-reanimated") && !hasWorkletSyntax(transformedCode)) {
+                        transformedCode = swcTransform.code;
+                    } else {
+                        const babelTransform = await babel.transformAsync(swcTransform.code, {
+                            minified: false,
+                            compact: false,
+                            filename: args.path,
+                            caller: {
+                                name: "syntax-aware-loader",
+                                supportsStaticESM: true,
+                            },
+                            plugins: [
+                                "react-native-reanimated/plugin",
+                                // Required because Reanimated plugin uses const and let
+                                "@babel/plugin-transform-block-scoping",
+                            ],
+                            generatorOpts: {
+                                importAttributesKeyword: "with",
+                            },
+                        });
+
+                        transformedCode = babelTransform?.code!;
+                    }
+
+                    return { contents: transformedCode };
                 });
             },
         },

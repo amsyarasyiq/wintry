@@ -6,7 +6,7 @@ import { ModuleFlags, ModulesMapInternal } from "./enums";
 import { metroEventEmitter } from "./events";
 import { isBadModuleExports, moduleRegistry } from "./modules";
 
-const CACHE_VERSION = 1;
+const CACHE_VERSION = 8;
 const WINTRY_METRO_CACHE_KEY = "__wintry_metro_cache_key__";
 
 type ModulesMap = {
@@ -118,7 +118,7 @@ export function* iterateModulesForCache(uniq: string, fullLookup: boolean) {
                 throw new Error(`Module '${id}' is getting forcefully initialized before the index module!`);
 
             exports = requireModule(id);
-        } catch { }
+        } catch {}
 
         if (isBadModuleExports(exports)) continue;
         yield [id, exports];
