@@ -6,7 +6,6 @@ import {
     ActionSheet,
     BottomSheetTitleHeader,
     Button,
-    Card,
     FlashList,
     TableRow,
     Text,
@@ -18,13 +17,14 @@ import {
 } from "@metro/common";
 import { createContextualPatcher } from "@patcher/contextual";
 import { findInReactTree } from "@utils/objects";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { Keyboard, ScrollView, View, type StyleProp, type ViewStyle } from "react-native";
 import { Fragment } from "react/jsx-runtime";
 import { useEmojiAdderStore } from "./useEmojiAdderStore";
 import type { PartialGuild, EmojiNode } from "./types";
 import { useShallow } from "zustand/shallow";
 import { isError } from "@utils/errors/isError";
+import { Toast, type CustomToastRendererProps } from "@api/toasts";
 
 const patcher = createContextualPatcher({ pluginId: meta.id });
 const CustomEmojiContent = findByFilePath("modules/messages/native/emoji/CustomEmojiContent.tsx");
@@ -85,15 +85,22 @@ function useSlots(
     }, [currentAlt, guild, emojiNode, guildEmojis]);
 }
 
-function UploadInfoCard() {
+function UploadInfoCard({ update }: CustomToastRendererProps) {
     const { isPending, lastUploadInfo } = useEmojiAdderStore();
 
     if (!isPending && !lastUploadInfo) return null;
 
     const { guildId, emojiNode, error } = lastUploadInfo ?? {};
 
+    // biome-ignore lint/correctness/useExhaustiveDependencies: update is not memoized
+    useEffect(() => {
+        if (lastUploadInfo) {
+            update({ options: { duration: 3000 } });
+        }
+    }, [lastUploadInfo]);
+
     return (
-        <Card style={{ padding: 12 }}>
+        <View style={{ width: "100%", minHeight: 64, justifyContent: "center", alignItems: "center" }}>
             {isPending ? (
                 <Text variant="text-lg/semibold">Uploading emoji...</Text>
             ) : (
@@ -110,7 +117,7 @@ function UploadInfoCard() {
                     </>
                 )
             )}
-        </Card>
+        </View>
     );
 }
 
@@ -187,20 +194,22 @@ export default definePlugin({
     authors: [Devs.Pylix],
 
     start() {
-        // TODO: Once we have own own toast, use that instead
-        useEmojiAdderStore.subscribe((s, p) => {
-            if (s.isPending && s.isPending !== p.isPending) {
-                toasts.open({
-                    key: "emote-stealer-uploading",
-                    content: "Uploading emoji...",
-                });
-            }
+        const toast = new Toast({
+            type: "custom",
+            content: {
+                render: UploadInfoCard,
+            },
+            options: {
+                duration: Number.MAX_SAFE_INTEGER,
+            },
+        });
 
-            if (s.lastUploadInfo && s.lastUploadInfo !== p.lastUploadInfo) {
-                toasts.open({
-                    key: "emote-stealer-upload-result",
-                    content: s.lastUploadInfo.error ? "Upload failed" : "Upload successful",
-                });
+        useEmojiAdderStore.subscribe((s, p) => {
+            if (
+                (s.isPending && s.isPending !== p.isPending) ||
+                (s.lastUploadInfo && s.lastUploadInfo !== p.lastUploadInfo)
+            ) {
+                toast.show();
             }
         });
 
