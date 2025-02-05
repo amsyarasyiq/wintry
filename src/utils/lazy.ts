@@ -196,24 +196,29 @@ export function getProxyFactory<T>(obj: T): (() => T) | undefined {
     return factories.get(obj) as (() => T) | undefined;
 }
 
-/**
- * Similar to lazyValue, but only for objects and much simpler. It will only handle the getter for the object.
- *
- * @example
- * const RN = lazyObjectGetter(() => require("react-native"));
- *
- * function MyComponent() {
- *    const { View, Text } = RN;
- *    return <View><Text>Hello, world!</Text></View>;
- * }
- */
-
-export function lazyObjectGetter<T extends Record<string, unknown>>(factory: () => T): T {
+export function lazyObjectGetter<T extends Record<string, unknown> & ((...args: unknown[]) => unknown)>(
+    factory: () => T,
+): T {
     let cache: T;
+    const getCache = () => (cache ??= factory());
 
-    const proxy: T = new Proxy({} as T, {
-        get: (_, p: string) => (cache ??= factory())[p],
-        getPrototypeOf: () => proxy,
+    const proxy: T = new Proxy((() => {}) as T, {
+        apply: (_, __, args) => {
+            // @ts-ignore - check this later
+            return getCache().default?.(...args);
+        },
+        // @ts-ignore - check this later
+        get: (_, p: string) => getCache()?.default?.[p] ?? cache?.[p],
+        getPrototypeOf: () =>
+            new Proxy(
+                {},
+                {
+                    get: (_, p: string) => {
+                        // @ts-ignore - check this later
+                        return getCache()?.[p];
+                    },
+                },
+            ),
     });
 
     return proxy;
