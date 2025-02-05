@@ -5,10 +5,8 @@ import { hasIndexInitialized } from "..";
 import { kvStorage } from "@utils/kvStorage";
 import { metroEventEmitter } from "@metro/internal/events";
 import type { PluginSettings, PluginState } from "@plugins/types";
-import { getProxyFactory, lazyValue } from "@utils/lazy";
-
-// Prevent circular dependency
-const PLUGINS = lazyValue(() => require("@plugins").PLUGINS) as typeof import("@plugins").PLUGINS;
+import { getProxyFactory } from "@utils/lazy";
+import { PLUGINS } from "@plugins" with { lazy: "on" };
 
 export interface PluginStore {
     settings: Record<string, PluginSettings>;
@@ -137,7 +135,7 @@ const usePluginStore = create(
                 partialize: state => ({ settings: state.settings }),
             },
         ),
-    )
+    ),
 );
 
 export default usePluginStore;

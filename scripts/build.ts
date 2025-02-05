@@ -1,5 +1,5 @@
 import swc from "@swc/core";
-import { $, fileURLToPath, } from "bun";
+import { $, file, fileURLToPath } from "bun";
 import crypto from "crypto";
 import { build, type BuildOptions } from "esbuild";
 import yargs from "yargs-parser";
@@ -7,6 +7,7 @@ import { printBuildSuccess } from "./util";
 import path from "path";
 import globalPlugin from "esbuild-plugin-globals";
 import { makeAssetModule, makePluginContextModule, makeRequireModule } from "./modules";
+import babel from "@babel/core";
 
 const metroDeps: string[] = await (async () => {
     const ast = await swc.parseFile(path.resolve("./shims/depsModule.ts"));
@@ -60,6 +61,8 @@ const config: BuildOptions = {
         "!wintry-deps-shim!": "./shims/depsModule",
         "react/jsx-runtime": "./shims/jsxRuntime",
         "no-expose": "./shims/emptyModule",
+
+        "react-native-customizable-toast": "./node_modules/react-native-customizable-toast/src/index.ts",
     },
     plugins: [
         globalPlugin({
@@ -86,7 +89,8 @@ const config: BuildOptions = {
             setup(build) {
                 build.onResolve({ filter: /\.png$/ }, args => {
                     const fullPathToAsset = path.resolve(path.dirname(args.importer), args.path);
-                    const filePath = args.path[0] === "@" ? `src/${args.path.slice(1)}` : path.relative(".", fullPathToAsset);
+                    const filePath =
+                        args.path[0] === "@" ? `src/${args.path.slice(1)}` : path.relative(".", fullPathToAsset);
 
                     return {
                         path: filePath.replaceAll(path.sep, "/"),
@@ -98,10 +102,34 @@ const config: BuildOptions = {
                     return {
                         contents: await makeAssetModule(args.path),
                         loader: "js",
-                        resolveDir: path.resolve(".")
+                        resolveDir: path.resolve("."),
                     };
                 });
-            }
+            },
+        },
+        {
+            name: "lazy-resolver",
+            setup(build) {
+                build.onResolve({ filter: /.*/ }, args => {
+                    if (args.with.lazy === "on") {
+                        return {
+                            path: args.path,
+                            namespace: "resolve-lazy",
+                        };
+                    }
+
+                    return null;
+                });
+
+                build.onLoad({ filter: /.*/, namespace: "resolve-lazy" }, async args => {
+                    const pathFromRoot = path.relative(".", args.path).replaceAll(path.sep, "/");
+                    return {
+                        contents: `module.exports = require("@utils/lazy").lazyObjectGetter(() => require("${pathFromRoot}"))`,
+                        loader: "js",
+                        resolveDir: path.resolve("."),
+                    };
+                });
+            },
         },
         {
             name: "plugins-context",
@@ -109,7 +137,7 @@ const config: BuildOptions = {
                 build.onResolve({ filter: /^#plugin-context$/ }, args => ({
                     path: `${args.path}#${args.importer}`,
                     namespace: "plugins-context",
-                    pluginData: { importer: args.importer }
+                    pluginData: { importer: args.importer },
                 }));
 
                 build.onLoad({ filter: /.*/, namespace: "plugins-context" }, args => {
@@ -117,7 +145,8 @@ const config: BuildOptions = {
                     const pluginPath = fileURLToPath(import.meta.resolve("../src/plugins"));
 
                     // Extract plugin ID from the import path
-                    const pluginId = path.relative(pluginPath, importer)
+                    const pluginId = path
+                        .relative(pluginPath, importer)
                         .split(path.sep)
                         .find(segment => !segment.startsWith("_"));
 
@@ -134,17 +163,30 @@ const config: BuildOptions = {
             },
         },
         {
-            name: "swc",
+            name: "syntax-aware-loader",
             setup(build) {
                 build.onLoad({ filter: /\.[cm]?[jt]sx?$/ }, async args => {
-                    const result = await swc.transformFile(args.path, {
+                    let transformedCode = await file(args.path).text();
+
+                    let imports: string[] | null = null;
+                    try {
+                        imports = new Bun.Transpiler({ loader: "tsx", autoImportJSX: true })
+                            .scanImports(transformedCode)
+                            .map(i => i.path);
+                    } catch {
+                        console.log(`Failed to parse imports for ${args.path}`);
+                    }
+
+                    const swcTransform = await swc.transformFile(args.path, {
                         jsc: {
                             externalHelpers: true,
-                            // Some external libraries ships jsx syntax in js file?
-                            parser: {
-                                syntax: "typescript",
-                                tsx: true,
-                            },
+                            // Why? Because some libraries use .js extension for ts/tsx/jsx files
+                            parser: args.path.includes("node_modules")
+                                ? {
+                                      syntax: "typescript",
+                                      tsx: true,
+                                  }
+                                : undefined,
                             transform: {
                                 constModules: {
                                     globals: {
@@ -157,6 +199,9 @@ const config: BuildOptions = {
                                 react: {
                                     runtime: "automatic",
                                 },
+                            },
+                            experimental: {
+                                keepImportAssertions: true,
                             },
                         },
                         // https://github.com/facebook/hermes/blob/3815fec63d1a6667ca3195160d6e12fee6a0d8d5/doc/Features.md
@@ -182,10 +227,35 @@ const config: BuildOptions = {
                         },
                     });
 
-                    return { contents: result.code };
+                    const hasWorkletSyntax = contents => ["'worklet'", '"worklet"'].find(fn => contents.includes(fn));
+                    if (imports && !imports.includes("react-native-reanimated") && !hasWorkletSyntax(transformedCode)) {
+                        transformedCode = swcTransform.code;
+                    } else {
+                        const babelTransform = await babel.transformAsync(swcTransform.code, {
+                            minified: false,
+                            compact: false,
+                            filename: args.path,
+                            caller: {
+                                name: "syntax-aware-loader",
+                                supportsStaticESM: true,
+                            },
+                            plugins: [
+                                "react-native-reanimated/plugin",
+                                // Required because Reanimated plugin uses const and let
+                                "@babel/plugin-transform-block-scoping",
+                            ],
+                            generatorOpts: {
+                                importAttributesKeyword: "with",
+                            },
+                        });
+
+                        transformedCode = babelTransform?.code!;
+                    }
+
+                    return { contents: transformedCode };
                 });
             },
-        }
+        },
     ],
 };
 
