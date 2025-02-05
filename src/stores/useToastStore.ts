@@ -19,6 +19,10 @@ interface ToastOptions {
      * @default undefined
      */
     onAutoClose?: () => void;
+    /**
+     * @default false
+     */
+    fullWidth?: boolean;
 }
 
 interface ToastInstanceBase {
@@ -134,8 +138,7 @@ class Toast {
     show() {
         useToastStore.getState().showToast({
             id: this.id,
-            content: this.config.content,
-            options: this.config.options,
+            ...this.config,
         });
     }
 

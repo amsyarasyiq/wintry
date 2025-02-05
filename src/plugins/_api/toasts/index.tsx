@@ -1,11 +1,12 @@
 import { definePlugin, meta } from "#plugin-context";
 import { createStyles } from "@components/utils/styles";
 import { Devs } from "@data/constants";
-import { findByFilePath, findByStoreName } from "@metro";
-import { Card, FluxUtils, PressableScale, Text } from "@metro/common";
+import { findAssetId, findByFilePath, findByStoreName } from "@metro";
+import { Button, FluxUtils, PressableScale, Text, tokens } from "@metro/common";
 import { createContextualPatcher } from "@patcher/contextual";
 import { showToast, useToastStore, type ToastInstance } from "@stores/useToastStore";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Image, View } from "react-native";
 import { Swipeable, ToasterBase, useToast } from "react-native-customizable-toast" with { lazy: "on" };
 import type { ToastItemProps, ToasterMethods } from "react-native-customizable-toast";
 import { SlideInUp, SlideOutUp, clamp, withSpring } from "react-native-reanimated";
@@ -15,46 +16,71 @@ const patcher = createContextualPatcher({ pluginId: meta.id });
 const ToastStore = findByStoreName("ToastStore");
 const ToastContainer = findByFilePath("modules/toast/native/ToastContainer.tsx", true);
 
-const useStyles = createStyles(() => ({
+const useContainerStyles = createStyles(() => ({
     container: {
-        marginTop: 10,
-        marginHorizontal: 10,
-    },
-    card: {
-        alignItems: "center",
+        marginTop: tokens.spacing.PX_8,
+        marginHorizontal: tokens.spacing.PX_12,
+        alignSelf: "center",
         flexDirection: "row",
-        borderRadius: 5,
-        minHeight: 24,
+        justifyContent: "center",
+        shadowColor: tokens.colors.TOAST_CONTAINER_SHADOW_COLOR,
+    },
+    contentContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+        borderRadius: tokens.radii.xxl,
+        padding: tokens.spacing.PX_8,
+        paddingHorizontal: tokens.spacing.PX_12,
+        backgroundColor: tokens.colors.TOAST_BG,
+        borderColor: tokens.colors.BORDER_SUBTLE,
+        borderWidth: 1,
+        ...tokens.shadows.SHADOW_HIGH,
     },
 }));
 
 const CustomToastComponent = () => {
-    const styles = useStyles();
+    const containerStyles = useContainerStyles();
     const { hide, ...toast } = useToast<ToastInstance>();
 
-    if (toast == null) return null;
+    if (toast.id == null) return null;
+    const { type, content, options = {} } = toast;
 
-    if (toast.type === "generic") {
+    if (type === "generic") {
         return (
-            <Swipeable onSwipe={() => toast.options?.onDismiss?.()} disabled={!toast.options?.dismissible}>
-                <PressableScale style={styles.container} onPress={() => toast.content.onPress?.()}>
-                    <Card style={styles.card}>
+            <Swipeable onSwipe={() => options.onDismiss?.()} disabled={!options.dismissible}>
+                <PressableScale style={containerStyles.container} onPress={() => content.onPress?.()}>
+                    <View style={[containerStyles.contentContainer, options.fullWidth && { width: "100%" }]}>
                         <Text variant="text-sm/semibold">{toast.content.text}</Text>
-                    </Card>
+                    </View>
                 </PressableScale>
             </Swipeable>
         );
     }
 
-    // return (
-    //     <Swipeable onSwipe={hide} disabled={!dismissible}>
-    //         <PressableScale style={styles.touchable} onPress={hide} disabled={!dismissible}>
-    //             <Card style={styles.container}>
-    //                 <Text variant="display-lg">{text}</Text>
-    //             </Card>
-    //         </PressableScale>
-    //     </Swipeable>
-    // );
+    if (type === "custom") {
+        const { render: CustomComponent, wrapPressable = true } = content;
+
+        const toastContent = (
+            <View style={[containerStyles.contentContainer, options.fullWidth && { width: "100%" }]}>
+                <CustomComponent hide={hide} />
+            </View>
+        );
+
+        const wrappedContent = wrapPressable ? (
+            <PressableScale style={containerStyles.container}>{toastContent}</PressableScale>
+        ) : (
+            <View style={containerStyles.container}>{toastContent}</View>
+        );
+
+        return (
+            <Swipeable onSwipe={() => options.onDismiss?.()} disabled={!options.dismissible}>
+                {wrappedContent}
+            </Swipeable>
+        );
+    }
+
+    if (__DEV__) throw new Error(`Unknown toast type: ${type}`);
+    return null;
 };
 
 export const CustomToaster = () => {
@@ -128,28 +154,36 @@ export default definePlugin({
     required: true,
 
     start() {
-        // Testing purposes
-        // window.ToasterHelper = CustomToasterHelper;
-        // window.demoToast = () => {
-        //     const id = CustomToasterHelper.show({
-        //         text: "Hello, world!",
-        //         dismissible: true,
-        //     });
+        const DemoComponent = ({ hide }: { hide: () => void }) => {
+            const [update, setUpdate] = useState(false);
 
-        //     setTimeout(() => {
-        //         CustomToasterHelper.update(id, {
-        //             text: "Bye-bye, world!",
-        //         });
+            useEffect(() => {
+                setInterval(() => {
+                    setUpdate(v => !v);
+                }, 1000);
+            }, []);
 
-        //         setTimeout(() => {
-        //             CustomToasterHelper.hide(id);
-        //         }, 3000);
-        //     }, 1000);
-        // };
+            return (
+                <View style={{ flexDirection: "row", gap: 8, alignItems: "center", minHeight: 48 }}>
+                    <Image source={findAssetId("ic_checkmark")} style={{ width: 24, height: 24 }} />
+                    <Text>{update ? "Updating" : "Updated!"}</Text>
+                    {update && <Button text={"Dismiss"} onPress={hide} />}
+                </View>
+            );
+        };
 
-        // useToastStore.subscribe(() => {
-        //     console.log(useToastStore.getState());
-        // });
+        window.demoToast = () => {
+            showToast({
+                type: "custom",
+                content: {
+                    render: DemoComponent,
+                },
+                options: {
+                    dismissible: true,
+                    duration: 10000,
+                },
+            });
+        };
 
         window.showToast = showToast;
 
