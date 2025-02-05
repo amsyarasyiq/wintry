@@ -52,7 +52,7 @@ export function ToastsRenderer() {
                 .restSpeedThreshold(0.1)}
             useSafeArea={true}
             // @ts-expect-error - Passing function as ref is valid.
-            ref={(r: ToasterMethods<CustomToaster>) => r && (ref.current = r)}
+            ref={(r: (typeof ref)["current"]) => r && (ref.current = r)}
             itemStyle={toastStyleWorklet}
             onSwipeEdge={({ filter }) => filter(t => t.options?.dismissible === false)}
             render={ToastComponent}
