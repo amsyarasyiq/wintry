@@ -2,11 +2,11 @@ import { definePlugin, meta } from "#plugin-context";
 import { createStyles } from "@components/utils/styles";
 import { Devs } from "@data/constants";
 import { findByFilePath, findByStoreName } from "@metro";
-import { Card, FluxUtils, Text } from "@metro/common";
+import { Card, FluxUtils, PressableScale, Text } from "@metro/common";
 import { metroEventEmitter } from "@metro/internal/events";
 import { createContextualPatcher } from "@patcher/contextual";
+import { showToast, useToastStore } from "@stores/useToastStore";
 import { createRef } from "react";
-import { Pressable } from "react-native";
 import { Swipeable, ToasterBase, useToast } from "react-native-customizable-toast" with { lazy: "on" };
 import type { ToastItemProps, ToasterMethods } from "react-native-customizable-toast";
 import { SlideInUp, SlideOutUp, clamp, withSpring } from "react-native-reanimated";
@@ -31,7 +31,6 @@ const useStyles = createStyles(() => ({
         alignItems: "center",
         flexDirection: "row",
         borderRadius: 5,
-        padding: 10,
         minHeight: 48,
     },
 }));
@@ -54,11 +53,11 @@ const CustomToastComponent = () => {
 
     return (
         <Swipeable onSwipe={hide} disabled={!dismissible}>
-            <Card style={styles.container}>
-                <Pressable style={styles.touchable} onPress={hide} disabled={!dismissible}>
+            <PressableScale style={styles.touchable} onPress={hide} disabled={!dismissible}>
+                <Card style={styles.container}>
                     <Text variant="display-lg">{text}</Text>
-                </Pressable>
-            </Card>
+                </Card>
+            </PressableScale>
         </Swipeable>
     );
 };
@@ -79,12 +78,7 @@ export const CustomToaster = () => {
             useSafeArea={true}
             // @ts-expect-error - Passing function as ref is valid.
             ref={(r: ToasterMethods<CustomToaster>) => r && (CustomToasterRef.current = r)}
-            itemStyle={({
-                itemLayout: { y },
-                gesture: { translationY },
-                properties: { loading },
-                displayFromBottom,
-            }: ToastItemProps) => {
+            itemStyle={({ itemLayout: { y }, gesture: { translationY }, displayFromBottom }: ToastItemProps) => {
                 "worklet";
 
                 const translateY = clamp(translationY.value, -y.value, 0);
@@ -134,6 +128,12 @@ export default definePlugin({
                 }, 3000);
             }, 1000);
         };
+
+        useToastStore.subscribe(() => {
+            console.log(useToastStore.getState().toasts);
+        });
+
+        window.showToast = showToast;
 
         patcher.after(ToastContainer, "type", (_, res) => {
             return (
