@@ -1,6 +1,7 @@
 import type { ToastInstance } from "@api/toasts";
 import { createStyles } from "@components/utils/styles";
 import { PressableScale, Text, tokens } from "@metro/common";
+import { useToastStore } from "@stores/useToastStore";
 import { View } from "react-native";
 import { Swipeable, useToast } from "react-native-customizable-toast" with { lazy: "on" };
 
@@ -28,7 +29,8 @@ const useContainerStyles = createStyles(() => ({
 
 export function ToastComponent() {
     const containerStyles = useContainerStyles();
-    const { hide, ...toast } = useToast<ToastInstance>();
+    const updateToast = useToastStore(state => state.updateToast);
+    const { hide, toast } = useToast<{ toast: ToastInstance }>();
 
     if (toast.id == null) return null;
     const { type, content, options = {} } = toast;
@@ -50,7 +52,7 @@ export function ToastComponent() {
 
         const toastContent = (
             <View style={[containerStyles.contentContainer, options.contentContainerStyle]}>
-                <CustomComponent hide={hide} />
+                <CustomComponent hide={hide} update={options => updateToast(toast.id, options)} />
             </View>
         );
 

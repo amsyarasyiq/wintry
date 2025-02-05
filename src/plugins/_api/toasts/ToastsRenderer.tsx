@@ -11,7 +11,7 @@ import { findByStoreName } from "@metro";
 const ToastStore = findByStoreName("ToastStore");
 
 export function ToastsRenderer() {
-    const ref = useRef<ToasterMethods<ToastInstance>>(null);
+    const ref = useRef<ToasterMethods<{ toast: ToastInstance }>>(null);
 
     // The toast library has its own store, so we need to keep it and ours in sync
     const toastRegistry = useMemo(() => new Map<string, string>(), []);
@@ -25,9 +25,9 @@ export function ToastsRenderer() {
             const { id } = toast;
 
             if (toastRegistry.has(id)) {
-                ref.current?.update(id, toast);
+                ref.current?.update(id, { toast });
             } else {
-                const libId = ref.current?.show(toast);
+                const libId = ref.current?.show({ toast });
                 if (libId != null) toastRegistry.set(id, libId);
             }
         }
@@ -54,7 +54,7 @@ export function ToastsRenderer() {
             // @ts-expect-error - Passing function as ref is valid.
             ref={(r: (typeof ref)["current"]) => r && (ref.current = r)}
             itemStyle={toastStyleWorklet}
-            onSwipeEdge={({ filter }) => filter(t => t.options?.dismissible === false)}
+            onSwipeEdge={({ filter }) => filter(({ toast }) => toast.options?.dismissible === false)}
             render={ToastComponent}
         />
     );
