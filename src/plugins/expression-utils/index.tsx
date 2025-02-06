@@ -212,8 +212,8 @@ function StealButtons({ emojiNode, style }: { emojiNode: EmojiNode; style?: Styl
 }
 
 export default definePlugin({
-    name: "Emote Cloner",
-    description: "Clone emotes to other servers.",
+    name: "ExpressionUtils",
+    description: "Adds more emotes and stickers utilities such as cloning or copying links.",
     authors: [Devs.Pylix],
 
     start() {
