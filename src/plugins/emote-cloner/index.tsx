@@ -23,7 +23,7 @@ import { Fragment } from "react/jsx-runtime";
 import { useEmojiAdderStore } from "./useEmojiAdderStore";
 import type { PartialGuild, EmojiNode } from "./types";
 import { useShallow } from "zustand/shallow";
-import { Toast, type CustomToastRendererProps } from "@api/toasts";
+import { Toast } from "@api/toasts";
 import Animated, { CurvedTransition } from "react-native-reanimated";
 import { isError } from "@utils/errors/isError";
 import Codeblock from "@components/Codeblock";
@@ -101,9 +101,9 @@ function useSlots(
     }, [currentAlt, guild, emojiNode, guildEmojis]);
 }
 
-function UploadStatusView({ update }: CustomToastRendererProps) {
+function UploadStatusView() {
     const styles = useStyles();
-    const { status, recentUploadDetails } = useEmojiAdderStore();
+    const [status, recentUploadDetails] = useEmojiAdderStore(useShallow(s => [s.status, s.recentUploadDetails]));
 
     if (status === "idle" && !recentUploadDetails) {
         return null;
