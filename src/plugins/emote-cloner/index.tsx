@@ -17,7 +17,7 @@ import {
 } from "@metro/common";
 import { createContextualPatcher } from "@patcher/contextual";
 import { findInReactTree } from "@utils/objects";
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import { ActivityIndicator, Image, Keyboard, ScrollView, View, type StyleProp, type ViewStyle } from "react-native";
 import { Fragment } from "react/jsx-runtime";
 import { useEmojiAdderStore } from "./useEmojiAdderStore";
@@ -104,13 +104,6 @@ function useSlots(
 function UploadStatusView({ update }: CustomToastRendererProps) {
     const styles = useStyles();
     const { status, recentUploadDetails } = useEmojiAdderStore();
-
-    // biome-ignore lint/correctness/useExhaustiveDependencies: update is not memoized
-    useEffect(() => {
-        if (recentUploadDetails) {
-            update({ options: { duration: 3000 } });
-        }
-    }, [recentUploadDetails]);
 
     if (status === "idle" && !recentUploadDetails) {
         return null;
@@ -257,8 +250,16 @@ export default definePlugin({
                 (s.recentUploadDetails && s.recentUploadDetails !== p.recentUploadDetails)
             ) {
                 toast.show();
-            } else if (s.status === "idle") {
+
+                if (s.status === "success" || s.status === "error") {
+                    toast.update({ options: { duration: 5000 } });
+                }
+            }
+
+            // Post-cleanup
+            if (s.status === "idle") {
                 toast.hide();
+                toast.update({ options: { duration: Number.MAX_SAFE_INTEGER } });
             }
         });
 
