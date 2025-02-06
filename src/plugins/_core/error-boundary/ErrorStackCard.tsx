@@ -1,11 +1,12 @@
 import { INDEX_BUNDLE_FILE } from "@components/ErrorCard";
-import { clipboard, constants } from "@metro/common";
+import { constants } from "@metro/common";
 import { Card, Text } from "@metro/common/components";
 import parseErrorStack, { type StackFrame } from "@utils/errors/parseErrorStack";
 import { useState } from "react";
 import { Pressable, View } from "react-native";
 import { CollapsibleHandler } from "./CollapsibleHandler";
 import { t } from "@i18n";
+import { copyToClipboard } from "@utils/clipboard";
 
 export default function ErrorStackCard(props: {
     error: Error & { stack: string };
@@ -34,7 +35,7 @@ export default function ErrorStackCard(props: {
                 <CollapsibleHandler
                     collapsed={collapsed}
                     setCollapsed={setCollapsed}
-                    onCopy={() => clipboard.setString(props.error.stack)}
+                    onCopy={() => copyToClipboard(props.error.stack, { toast: false })}
                 />
             </View>
         </Card>

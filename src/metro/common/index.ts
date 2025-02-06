@@ -8,7 +8,6 @@ export const constants = findByProps("Fonts", "Permissions");
 export const channels = findByProps("getVoiceChannelId");
 export const i18n = findByProps("Messages");
 export const url = findByProps("openURL", "openDeeplink");
-export const clipboard = findByProps("setString", "getString", "hasString");
 export const assets = findByProps("registerAsset");
 export const invites = findByProps("acceptInviteAndTransitionToInviteChannel");
 export const commands = findByProps("getBuiltInCommands");

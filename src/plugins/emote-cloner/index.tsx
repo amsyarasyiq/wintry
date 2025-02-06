@@ -2,19 +2,7 @@ import { definePlugin, meta } from "#plugin-context";
 import { showSheet } from "@components/utils/sheets";
 import { Devs } from "@data/constants";
 import { findAssetId, findByFilePath, findByProps, findByStoreName } from "@metro";
-import {
-    ActionSheet,
-    Button,
-    FlashList,
-    TableRow,
-    Text,
-    TextInput,
-    constants,
-    toasts,
-    FluxUtils,
-    clipboard,
-    tokens,
-} from "@metro/common";
+import { ActionSheet, Button, FlashList, TableRow, Text, TextInput, constants, FluxUtils, tokens } from "@metro/common";
 import { createContextualPatcher } from "@patcher/contextual";
 import { findInReactTree } from "@utils/objects";
 import { useMemo } from "react";
@@ -29,6 +17,7 @@ import { isError } from "@utils/errors/isError";
 import Codeblock from "@components/Codeblock";
 import { createStyles } from "@components/utils/styles";
 import { lazyDestructure } from "@utils/lazy";
+import { copyToClipboard } from "@utils/clipboard";
 
 const patcher = createContextualPatcher({ pluginId: meta.id });
 const CustomEmojiContent = findByFilePath("modules/messages/native/emoji/CustomEmojiContent.tsx");
@@ -217,16 +206,7 @@ function StealButtons({ emojiNode, style }: { emojiNode: EmojiNode; style?: Styl
                     showSheet("EmoteStealerActionSheet", EmoteStealerActionSheet, { emojiNode }, "stack");
                 }}
             />
-            <Button
-                text="Copy URL"
-                onPress={async () => {
-                    await clipboard.setString(emojiNode.src);
-                    toasts.open({
-                        key: "emote-stealer-copied-url",
-                        content: "Copied URL to clipboard",
-                    });
-                }}
-            />
+            <Button text="Copy URL" onPress={() => copyToClipboard(emojiNode.src)} />
         </View>
     );
 }
