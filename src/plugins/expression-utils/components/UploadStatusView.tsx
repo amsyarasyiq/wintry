@@ -31,8 +31,8 @@ const useStyles = createStyles(() => ({
         alignItems: "center",
     },
     rowContainer: {
-        flexDirection: "row",
         gap: 8,
+        flexDirection: "row",
         alignItems: "center",
     },
     centeredContainer: {
@@ -44,6 +44,14 @@ const useStyles = createStyles(() => ({
         height: 24,
     },
 }));
+
+function ToastText({ children }: { children: string }) {
+    return (
+        <Text numberOfLines={1} ellipsizeMode="tail" style={{ maxWidth: "40%" }} variant="text-md/semibold">
+            {children}
+        </Text>
+    );
+}
 
 // Then in your component, replace the inline styles with the style references:
 export default function UploadStatusView() {
@@ -74,14 +82,14 @@ export default function UploadStatusView() {
                     {emojiNode && (
                         <View style={styles.rowContainer}>
                             <GuildIcon guild={guild} size="XSMALL" animate={false} />
-                            <Text variant="text-md/semibold">{guild.name}</Text>
+                            <ToastText>{guild.name}</ToastText>
                             <ArrowSmallLeftIcon />
                             <Image source={{ uri: emojiNode.src }} style={styles.emojiImage} />
-                            <Text variant="text-md/semibold">
+                            <ToastText>
                                 {customAlt && customAlt !== emojiNode.alt
                                     ? `:${customAlt}: (${emojiNode.alt})`
                                     : `:${emojiNode.alt}:`}
-                            </Text>
+                            </ToastText>
                         </View>
                     )}
                 </View>
