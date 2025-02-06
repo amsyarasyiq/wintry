@@ -2,7 +2,6 @@ import { create } from "zustand";
 import type { EmojiNode } from "../types";
 import { findByProps } from "@metro";
 import { fetchAsDataUrl } from "@utils/network/fetchAsDataUrl";
-import { delay } from "es-toolkit";
 
 export const Emojis = findByProps("uploadEmoji");
 
@@ -37,14 +36,11 @@ export const useEmojiAdderStore = create<EmojiAdderStore>((set, get) => ({
 
         try {
             const dataUrl = await fetchAsDataUrl(emojiNode.src);
-            // await Emojis.uploadEmoji({
-            //     guildId,
-            //     image: dataUrl,
-            //     name: get().customAlt ?? emojiNode.alt,
-            // });
-
-            await delay(1000);
-            if (Math.random() > 0.5) throw new Error("Failed to upload emoji");
+            await Emojis.uploadEmoji({
+                guildId,
+                image: dataUrl,
+                name: get().customAlt ?? emojiNode.alt,
+            });
 
             set({ status: "success" });
             set({
