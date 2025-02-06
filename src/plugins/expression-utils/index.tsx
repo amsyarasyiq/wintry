@@ -1,7 +1,7 @@
 import { definePlugin, meta } from "#plugin-context";
 import { hideSheet, showSheet } from "@components/utils/sheets";
 import { Devs } from "@data/constants";
-import { findAssetId, findByFilePath, findByProps, findByStoreName } from "@metro";
+import { findAssetId, findByFilePath, findByFilePathImmediate, findByProps, findByStoreName } from "@metro";
 import {
     ActionSheet,
     Button,
@@ -16,7 +16,7 @@ import {
 } from "@metro/common";
 import { createContextualPatcher } from "@patcher/contextual";
 import { findInReactTree } from "@utils/objects";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import {
     ActivityIndicator,
     Dimensions,
@@ -270,6 +270,41 @@ async function openMediaModal(src: string) {
     });
 }
 
+const Surrogates = findByProps("convertSurrogateToName");
+
+function openEmojiActionSheet({
+    id,
+    name,
+    animated,
+}: {
+    id: string;
+    name: string;
+    animated?: boolean;
+}) {
+    try {
+        showSheet(
+            "MessageEmojiActionSheet",
+            findByFilePathImmediate("modules/messages/native/emoji/MessageEmojiActionSheet.tsx", true),
+            {
+                emojiNode: id
+                    ? {
+                          id: id,
+                          alt: name,
+                          src: `https://cdn.discordapp.com/emojis/${id}.${animated ? "gif" : "webp"}?size=128`,
+                      }
+                    : {
+                          content: Surrogates.convertSurrogateToName(name),
+                          surrogate: name,
+                      },
+            },
+
+            "stack",
+        );
+    } catch (err) {
+        console.log("Failed to open action sheet", err);
+    }
+}
+
 export default definePlugin({
     name: "ExpressionUtils",
     description: "Adds more emotes and stickers utilities such as cloning or copying links.",
@@ -363,6 +398,36 @@ export default definePlugin({
 
             addStealButton(emojiNode, res);
             makeEmojiIconPressable(emojiNode, res);
+        });
+
+        const MessageReactionsContent = findByFilePath("modules/reactions/native/MessageReactionsContent.tsx");
+
+        patcher.after(MessageReactionsContent, "MessageReactionsContent", (_, { props }) => {
+            const unpatchReactionsHeader = patcher.detached.after(props.header, "type", (_, res) => {
+                // Unpatch on unmount
+                useEffect(() => unpatchReactionsHeader as () => void, []);
+
+                try {
+                    const tabsRow = res.props.children[0];
+                    const { tabs, onSelect } = tabsRow.props;
+
+                    // Wrap the tabs in a TouchableOpacity so we can add a long press handler
+                    tabsRow.props.tabs = tabs.map((tab: any, i: number) => (
+                        <PressableScale
+                            key={i}
+                            onPress={() => onSelect(tab.props.index)}
+                            onLongPress={() => {
+                                const { emoji } = tab.props.reaction;
+                                openEmojiActionSheet(emoji);
+                            }}
+                        >
+                            {tab}
+                        </PressableScale>
+                    ));
+                } catch {
+                    console.error("Failed to patch reaction header.");
+                }
+            });
         });
     },
 });
