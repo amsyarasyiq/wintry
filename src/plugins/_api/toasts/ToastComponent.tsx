@@ -3,7 +3,7 @@ import { createStyles } from "@components/utils/styles";
 import { PressableScale, Text, tokens } from "@metro/common";
 import { useToastStore } from "@stores/useToastStore";
 import { useCallback, useState, type PropsWithChildren } from "react";
-import { View, type StyleProp, type TextLayoutEventData, type ViewStyle } from "react-native";
+import { View, useWindowDimensions, type StyleProp, type TextLayoutEventData, type ViewStyle } from "react-native";
 import { Swipeable, useToast } from "react-native-customizable-toast" with { lazy: "on" };
 import Animated, { LinearTransition } from "react-native-reanimated";
 import { useShallow } from "zustand/shallow";
@@ -45,15 +45,20 @@ function ToastContainer({
     onDismiss: () => void;
     onPress?: () => void;
 }>) {
+    const { width: screenWidth } = useWindowDimensions();
     const containerStyles = useContainerStyles();
 
     return (
         <Swipeable onSwipe={onDismiss} disabled={!dismissible}>
             <PressableScale style={containerStyles.pressable} disabled={!onPress} onPress={() => onPress?.()}>
-                <View style={containerStyles.container}>
+                <View style={[containerStyles.container]}>
                     <Animated.View
                         layout={LinearTransition.springify().duration(500).dampingRatio(0.5)}
-                        style={[containerStyles.contentContainer, contentContainerStyle]}
+                        style={[
+                            { maxWidth: screenWidth - 16 },
+                            containerStyles.contentContainer,
+                            contentContainerStyle,
+                        ]}
                     >
                         {children}
                     </Animated.View>

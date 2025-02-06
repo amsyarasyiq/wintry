@@ -73,7 +73,7 @@ function useToastStyleWorklet() {
         return {
             transform: [
                 {
-                    // 50 is hardcoded. If you don't like it, implement a way to measure the actual height of the toast.
+                    // TODO: 50 is hardcoded. If you don't like it, implement a way to measure the actual height of the toast.
                     translateY: withSpring(clamp(translationY.value, -y.value, 0) + (isDiscordToastActive ? 50 : 0), {
                         mass: 0.35,
                         damping: 15,
