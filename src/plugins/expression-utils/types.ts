@@ -9,3 +9,11 @@ export interface PartialGuild {
     name: string;
     getMaxEmojiSlots: () => number;
 }
+
+export interface EmojiUploadFailure {
+    ok: false;
+    headers: Record<string, string>;
+    body: { name: [string] };
+    text: string;
+    status: number;
+}

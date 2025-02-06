@@ -7,7 +7,7 @@ import Animated, { CurvedTransition } from "react-native-reanimated";
 import { GuildIcon, GuildStore } from "../common";
 import { useShallow } from "zustand/shallow";
 import { useEmojiAdderStore } from "../stores/useEmojiAdderStore";
-import type { PartialGuild } from "../types";
+import type { EmojiUploadFailure, PartialGuild } from "../types";
 import { lazyDestructure } from "@utils/lazy";
 import { isError } from "@utils/errors/isError";
 
@@ -44,6 +44,25 @@ const useStyles = createStyles(() => ({
         height: 24,
     },
 }));
+
+function getErrorText(error: unknown) {
+    if (isError(error) && error.stack) {
+        return error.stack;
+    }
+
+    if (error != null && typeof error === "object") {
+        try {
+            if ("body" in error && "ok" in error && error.ok === false) {
+                const response = error as EmojiUploadFailure;
+                return response.body.name.join("/");
+            }
+
+            return JSON.stringify(error, null, 4);
+        } catch {}
+    }
+
+    return String(error);
+}
 
 function ToastText({ children }: { children: string }) {
     return (
@@ -100,7 +119,7 @@ export default function UploadStatusView() {
                         <Image source={findAssetId("XLargeBoldIcon")} style={styles.xIcon} />
                         <Text variant="text-lg/semibold">Upload Failed</Text>
                     </View>
-                    <Codeblock>{`${((isError(error) && error.stack) || String(error)).slice(0, 100)}...`}</Codeblock>
+                    <Codeblock>{`${getErrorText(error).slice(0, 300)}...`}</Codeblock>
                 </View>
             )}
         </Animated.View>
