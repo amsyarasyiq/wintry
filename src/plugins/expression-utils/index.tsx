@@ -1,12 +1,32 @@
 import { definePlugin, meta } from "#plugin-context";
-import { showSheet } from "@components/utils/sheets";
+import { hideSheet, showSheet } from "@components/utils/sheets";
 import { Devs } from "@data/constants";
 import { findAssetId, findByFilePath, findByProps, findByStoreName } from "@metro";
-import { ActionSheet, Button, FlashList, TableRow, Text, TextInput, constants, FluxUtils, tokens } from "@metro/common";
+import {
+    ActionSheet,
+    Button,
+    FlashList,
+    TableRow,
+    Text,
+    TextInput,
+    constants,
+    FluxUtils,
+    tokens,
+    PressableScale,
+} from "@metro/common";
 import { createContextualPatcher } from "@patcher/contextual";
 import { findInReactTree } from "@utils/objects";
 import { useMemo } from "react";
-import { ActivityIndicator, Image, Keyboard, ScrollView, View, type StyleProp, type ViewStyle } from "react-native";
+import {
+    ActivityIndicator,
+    Dimensions,
+    Image,
+    Keyboard,
+    ScrollView,
+    View,
+    type StyleProp,
+    type ViewStyle,
+} from "react-native";
 import { Fragment } from "react/jsx-runtime";
 import { useEmojiAdderStore } from "./useEmojiAdderStore";
 import type { PartialGuild, EmojiNode } from "./types";
@@ -211,6 +231,45 @@ function StealButtons({ emojiNode, style }: { emojiNode: EmojiNode; style?: Styl
     );
 }
 
+function getSizeAsync(src: string): Promise<[width: number, height: number]> {
+    return new Promise((resolve, reject) => {
+        Image.getSize(
+            src,
+            (width, height) => {
+                resolve([width, height]);
+            },
+            reject,
+        );
+    });
+}
+
+const mediaModalUtil = findByProps("openMediaModal");
+
+async function openMediaModal(src: string) {
+    const [width, height] = await getSizeAsync(src);
+    const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
+
+    hideSheet("MessageEmojiActionSheet");
+    mediaModalUtil.openMediaModal({
+        initialSources: [
+            {
+                uri: src,
+                sourceURI: src,
+                width,
+                height,
+            },
+        ],
+        initialIndex: 0,
+        originLayout: {
+            width: 128,
+            height: 128,
+            x: screenWidth / 2 - 64,
+            y: screenHeight - 64,
+            resizeMode: "fill",
+        },
+    });
+}
+
 export default definePlugin({
     name: "ExpressionUtils",
     description: "Adds more emotes and stickers utilities such as cloning or copying links.",
@@ -246,15 +305,13 @@ export default definePlugin({
             }
         });
 
-        patcher.after(CustomEmojiContent, "default", ([{ emojiNode }]: any, res) => {
-            if (!emojiNode) return;
-
-            const createStealButton = (paddingTop: number) => (
-                <StealButtons style={{ paddingTop }} emojiNode={emojiNode} key="steal-button" />
-            );
-
+        function addStealButton(emojiNode: EmojiNode, element: any) {
             const insertAtIndex = (container: unknown[], index: number, paddingTop: number) => {
-                container.splice(index, 0, createStealButton(paddingTop));
+                container.splice(
+                    index,
+                    0,
+                    <StealButtons style={{ paddingTop }} emojiNode={emojiNode} key="steal-button" />,
+                );
             };
 
             const findLastElementIndex = (tree: any, predicate: (c: any) => boolean) => {
@@ -262,14 +319,14 @@ export default definePlugin({
                 return [container, container?.findLastIndex?.(predicate) ?? -1];
             };
 
-            const [buttonContainer, buttonIndex] = findLastElementIndex(res, c => c?.type?.name === "Button");
+            const [buttonContainer, buttonIndex] = findLastElementIndex(element, c => c?.type?.name === "Button");
             if (buttonIndex >= 0) {
                 insertAtIndex(buttonContainer, buttonIndex + 1, 8);
                 return;
             }
 
             const [dividerContainer, dividerIndex] = findLastElementIndex(
-                res,
+                element,
                 (c: any) => c?.type === Fragment && c.props.children[0].type.name === "FormDivider",
             );
 
@@ -279,7 +336,33 @@ export default definePlugin({
             }
 
             // If no button or divider is found, just push it to the end
-            res.props.children.push(createStealButton(12));
+            element.props.children.push(
+                <StealButtons style={{ paddingTop: 12 }} emojiNode={emojiNode} key="steal-button" />,
+            );
+        }
+
+        function makeEmojiIconPressable(emojiNode: EmojiNode, element: any) {
+            const emojiDetailsChildren = findInReactTree(element, c => c[0]?.type?.name === "FastImageAndroid");
+            if (!emojiDetailsChildren) return;
+
+            // Wrap the emoji icon with a PressableScale
+            const emojiDetails = emojiDetailsChildren[0];
+            emojiDetailsChildren[0] = (
+                <PressableScale
+                    onPress={() => {
+                        openMediaModal(emojiNode.src);
+                    }}
+                >
+                    {emojiDetails}
+                </PressableScale>
+            );
+        }
+
+        patcher.after(CustomEmojiContent, "default", ([{ emojiNode }]: any, res) => {
+            if (!emojiNode) return;
+
+            addStealButton(emojiNode, res);
+            makeEmojiIconPressable(emojiNode, res);
         });
     },
 });
