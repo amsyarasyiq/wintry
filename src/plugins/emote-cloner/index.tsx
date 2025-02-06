@@ -1,7 +1,7 @@
 import { definePlugin, meta } from "#plugin-context";
 import { showSheet } from "@components/utils/sheets";
 import { Devs } from "@data/constants";
-import { findAssetId, findByFilePath, findByStoreName } from "@metro";
+import { findAssetId, findByFilePath, findByProps, findByStoreName } from "@metro";
 import {
     ActionSheet,
     Button,
@@ -28,6 +28,7 @@ import Animated, { CurvedTransition } from "react-native-reanimated";
 import { isError } from "@utils/errors/isError";
 import Codeblock from "@components/Codeblock";
 import { createStyles } from "@components/utils/styles";
+import { lazyDestructure } from "@utils/lazy";
 
 const patcher = createContextualPatcher({ pluginId: meta.id });
 const CustomEmojiContent = findByFilePath("modules/messages/native/emoji/CustomEmojiContent.tsx");
@@ -38,6 +39,7 @@ const Icon = findByFilePath("uikit-native/Icon.tsx");
 const GuildStore = findByStoreName("GuildStore");
 const PermissionStore = findByStoreName("PermissionStore");
 const EmojiStore = findByStoreName("EmojiStore");
+const { ArrowSmallLeftIcon } = lazyDestructure(() => findByProps("ArrowSmallLeftIcon"));
 
 const useStyles = createStyles(() => ({
     checkmarkIcon: {
@@ -109,7 +111,7 @@ function UploadStatusView() {
         return null;
     }
 
-    const { guildId, emojiNode, error } = recentUploadDetails ?? {};
+    const { guildId, emojiNode, customAlt, error } = recentUploadDetails ?? {};
     const guild = GuildStore.getGuild(guildId) as PartialGuild;
 
     return (
@@ -131,11 +133,15 @@ function UploadStatusView() {
                     </View>
                     {emojiNode && (
                         <View style={{ flexDirection: "row", gap: 8 }}>
-                            <Text variant="text-md/normal">
-                                {guild.name} {"<-"}
-                            </Text>
+                            <GuildIcon guild={guild} size="XSMALL" animate={false} />
+                            <Text variant="text-md/semibold">{guild.name}</Text>
+                            <ArrowSmallLeftIcon />
                             <Image source={{ uri: emojiNode.src }} style={{ width: 24, height: 24 }} />
-                            <Text variant="text-md/normal">{emojiNode.alt}</Text>
+                            <Text variant="text-md/semibold">
+                                {customAlt && customAlt !== emojiNode.alt
+                                    ? `:${customAlt}: (${emojiNode.alt})`
+                                    : `:${emojiNode.alt}:`}
+                            </Text>
                         </View>
                     )}
                 </View>
@@ -166,11 +172,8 @@ function EmoteStealerActionSheet({ emojiNode }: { emojiNode: EmojiNode }) {
             <ScrollView style={{ gap: 12 }}>
                 <View style={{ alignItems: "center" }}>
                     <Text variant="heading-lg/bold">
-                        Clone
-                        {"  "}
+                        Clone :{emojiNode.alt}:{"  "}
                         <Image resizeMode="contain" source={{ uri: emojiNode.src }} style={{ width: 24, height: 24 }} />
-                        {"  "}
-                        {emojiNode.alt}
                     </Text>
                 </View>
                 <FlashList

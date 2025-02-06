@@ -9,6 +9,7 @@ export const Emojis = findByProps("uploadEmoji");
 interface UploadInfo {
     guildId: string;
     emojiNode: EmojiNode;
+    customAlt: string | null;
     error: unknown | null;
 }
 
@@ -46,10 +47,12 @@ export const useEmojiAdderStore = create<EmojiAdderStore>((set, get) => ({
             if (Math.random() > 0.5) throw new Error("Failed to upload emoji");
 
             set({ status: "success" });
-            set({ recentUploadDetails: { guildId, emojiNode, error: null } });
+            set({
+                recentUploadDetails: { guildId, emojiNode, customAlt: get().customAlt ?? emojiNode.alt, error: null },
+            });
         } catch (error) {
             set({ status: "error" });
-            set({ recentUploadDetails: { guildId, emojiNode, error } });
+            set({ recentUploadDetails: { guildId, emojiNode, customAlt: null, error } });
         }
     },
 }));
