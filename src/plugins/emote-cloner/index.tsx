@@ -1,10 +1,9 @@
 import { definePlugin, meta } from "#plugin-context";
 import { showSheet } from "@components/utils/sheets";
 import { Devs } from "@data/constants";
-import { findByFilePath, findByStoreName } from "@metro";
+import { findAssetId, findByFilePath, findByStoreName } from "@metro";
 import {
     ActionSheet,
-    BottomSheetTitleHeader,
     Button,
     FlashList,
     TableRow,
@@ -14,17 +13,21 @@ import {
     toasts,
     FluxUtils,
     clipboard,
+    tokens,
 } from "@metro/common";
 import { createContextualPatcher } from "@patcher/contextual";
 import { findInReactTree } from "@utils/objects";
 import { useEffect, useMemo } from "react";
-import { Keyboard, ScrollView, View, type StyleProp, type ViewStyle } from "react-native";
+import { ActivityIndicator, Image, Keyboard, ScrollView, View, type StyleProp, type ViewStyle } from "react-native";
 import { Fragment } from "react/jsx-runtime";
 import { useEmojiAdderStore } from "./useEmojiAdderStore";
 import type { PartialGuild, EmojiNode } from "./types";
 import { useShallow } from "zustand/shallow";
-import { isError } from "@utils/errors/isError";
 import { Toast, type CustomToastRendererProps } from "@api/toasts";
+import Animated, { CurvedTransition } from "react-native-reanimated";
+import { isError } from "@utils/errors/isError";
+import Codeblock from "@components/Codeblock";
+import { createStyles } from "@components/utils/styles";
 
 const patcher = createContextualPatcher({ pluginId: meta.id });
 const CustomEmojiContent = findByFilePath("modules/messages/native/emoji/CustomEmojiContent.tsx");
@@ -36,20 +39,33 @@ const GuildStore = findByStoreName("GuildStore");
 const PermissionStore = findByStoreName("PermissionStore");
 const EmojiStore = findByStoreName("EmojiStore");
 
+const useStyles = createStyles(() => ({
+    checkmarkIcon: {
+        width: 24,
+        height: 24,
+        tintColor: tokens.colors.TEXT_POSITIVE,
+    },
+    xIcon: {
+        width: 24,
+        height: 24,
+        tintColor: tokens.colors.TEXT_DANGER,
+    },
+}));
+
 function ServerRow({
     start,
     end,
     guild,
     emojiNode,
 }: { start: boolean; end: boolean; guild: PartialGuild; emojiNode: EmojiNode }) {
-    const [isPending, uploadEmoji] = useEmojiAdderStore(useShallow(s => [s.isPending, s.uploadEmoji]));
+    const [status, uploadEmoji] = useEmojiAdderStore(useShallow(s => [s.status, s.uploadEmoji]));
     const { isAnimated, availableSlots, maxSlots, hasDuplicate } = useSlots(guild, emojiNode);
 
     return (
         <TableRow
             label={guild.name}
             subLabel={`${availableSlots}/${maxSlots}${isAnimated ? " animated" : " static"} slots available ${hasDuplicate ? "(has duplicate name)" : ""}`}
-            disabled={isPending != null || availableSlots <= 0}
+            disabled={status === "pending" || availableSlots <= 0}
             icon={<GuildIcon guild={guild} size="NORMAL" animate={false} />}
             onPress={() => {
                 Keyboard.dismiss();
@@ -85,39 +101,62 @@ function useSlots(
     }, [currentAlt, guild, emojiNode, guildEmojis]);
 }
 
-function UploadInfoCard({ update }: CustomToastRendererProps) {
-    const { isPending, lastUploadInfo } = useEmojiAdderStore();
-
-    if (!isPending && !lastUploadInfo) return null;
-
-    const { guildId, emojiNode, error } = lastUploadInfo ?? {};
+function UploadStatusView({ update }: CustomToastRendererProps) {
+    const styles = useStyles();
+    const { status, recentUploadDetails } = useEmojiAdderStore();
 
     // biome-ignore lint/correctness/useExhaustiveDependencies: update is not memoized
     useEffect(() => {
-        if (lastUploadInfo) {
+        if (recentUploadDetails) {
             update({ options: { duration: 3000 } });
         }
-    }, [lastUploadInfo]);
+    }, [recentUploadDetails]);
+
+    if (status === "idle" && !recentUploadDetails) {
+        return null;
+    }
+
+    const { guildId, emojiNode, error } = recentUploadDetails ?? {};
+    const guild = GuildStore.getGuild(guildId) as PartialGuild;
 
     return (
-        <View style={{ width: "100%", minHeight: 64, justifyContent: "center", alignItems: "center" }}>
-            {isPending ? (
-                <Text variant="text-lg/semibold">Uploading emoji...</Text>
-            ) : (
-                lastUploadInfo && (
-                    <>
-                        <Text variant="text-lg/semibold">{!error ? "✅ Upload Successful" : "❌ Upload Failed"}</Text>
-                        <Text style={{ marginTop: 4 }}>Server: {guildId}</Text>
-                        {error && (
-                            <Text style={{ marginTop: 4, color: "#ff4444" }}>
-                                Error: {isError(error) ? error.message : String(error) || "Unknown error occurred"}
-                            </Text>
-                        )}
-                        {emojiNode && <Text style={{ marginTop: 4 }}>Emoji name: {emojiNode.alt}</Text>}
-                    </>
-                )
+        <Animated.View
+            layout={CurvedTransition}
+            style={{ paddingVertical: 12, paddingHorizontal: 24, justifyContent: "center", alignItems: "center" }}
+        >
+            {status === "pending" && (
+                <View style={{ flexDirection: "row", gap: 8, alignItems: "center" }}>
+                    <ActivityIndicator size="small" />
+                    <Text variant="text-lg/semibold">Uploading emoji...</Text>
+                </View>
             )}
-        </View>
+            {status === "success" && (
+                <View style={{ gap: 8, alignItems: "center" }}>
+                    <View style={{ flexDirection: "row", gap: 8, alignItems: "center" }}>
+                        <Image source={findAssetId("CheckmarkLargeBoldIcon")} style={styles.checkmarkIcon} />
+                        <Text variant="text-lg/semibold">Upload Successful</Text>
+                    </View>
+                    {emojiNode && (
+                        <View style={{ flexDirection: "row", gap: 8 }}>
+                            <Text variant="text-md/normal">
+                                {guild.name} {"<-"}
+                            </Text>
+                            <Image source={{ uri: emojiNode.src }} style={{ width: 24, height: 24 }} />
+                            <Text variant="text-md/normal">{emojiNode.alt}</Text>
+                        </View>
+                    )}
+                </View>
+            )}
+            {status === "error" && error != null && (
+                <View style={{ gap: 8, alignItems: "center" }}>
+                    <View style={{ flexDirection: "row", gap: 8, alignItems: "center" }}>
+                        <Image source={findAssetId("XLargeBoldIcon")} style={styles.xIcon} />
+                        <Text variant="text-lg/semibold">Upload Failed</Text>
+                    </View>
+                    <Codeblock>{`${((isError(error) && error.stack) || String(error)).slice(0, 100)}...`}</Codeblock>
+                </View>
+            )}
+        </Animated.View>
     );
 }
 
@@ -132,7 +171,15 @@ function EmoteStealerActionSheet({ emojiNode }: { emojiNode: EmojiNode }) {
     return (
         <ActionSheet>
             <ScrollView style={{ gap: 12 }}>
-                <BottomSheetTitleHeader title={`Clone ${emojiNode.alt}`} />
+                <View style={{ alignItems: "center" }}>
+                    <Text variant="heading-lg/bold">
+                        Clone
+                        {"  "}
+                        <Image resizeMode="contain" source={{ uri: emojiNode.src }} style={{ width: 24, height: 24 }} />
+                        {"  "}
+                        {emojiNode.alt}
+                    </Text>
+                </View>
                 <FlashList
                     style={{ flex: 1 }}
                     ListHeaderComponent={
@@ -197,7 +244,7 @@ export default definePlugin({
         const toast = new Toast({
             type: "custom",
             content: {
-                render: UploadInfoCard,
+                render: UploadStatusView,
             },
             options: {
                 duration: Number.MAX_SAFE_INTEGER,
@@ -206,10 +253,12 @@ export default definePlugin({
 
         useEmojiAdderStore.subscribe((s, p) => {
             if (
-                (s.isPending && s.isPending !== p.isPending) ||
-                (s.lastUploadInfo && s.lastUploadInfo !== p.lastUploadInfo)
+                (s.status !== "idle" && s.status !== p.status) ||
+                (s.recentUploadDetails && s.recentUploadDetails !== p.recentUploadDetails)
             ) {
                 toast.show();
+            } else if (s.status === "idle") {
+                toast.hide();
             }
         });
 

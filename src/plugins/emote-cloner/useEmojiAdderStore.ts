@@ -2,6 +2,7 @@ import { create } from "zustand";
 import type { EmojiNode } from "./types";
 import { findByProps } from "@metro";
 import { fetchAsDataUrl } from "@utils/network/fetchAsDataUrl";
+import { delay } from "es-toolkit";
 
 export const Emojis = findByProps("uploadEmoji");
 
@@ -12,8 +13,8 @@ interface UploadInfo {
 }
 
 interface EmojiAdderStore {
-    isPending: string | null;
-    lastUploadInfo: UploadInfo | null;
+    status: "idle" | "pending" | "success" | "error";
+    recentUploadDetails: UploadInfo | null;
     customAlt: string | null;
 
     cleanup: () => void;
@@ -21,31 +22,34 @@ interface EmojiAdderStore {
 }
 
 export const useEmojiAdderStore = create<EmojiAdderStore>((set, get) => ({
-    isPending: null,
-    lastUploadInfo: null,
+    status: "idle",
+    recentUploadDetails: null,
     customAlt: null,
 
-    cleanup: () => set({ lastUploadInfo: null, customAlt: null }),
+    cleanup: () => set({ status: "idle", recentUploadDetails: null, customAlt: null }),
 
     uploadEmoji: async (guildId, emojiNode) => {
         set({
-            isPending: guildId,
-            lastUploadInfo: null,
+            status: "pending",
+            recentUploadDetails: null,
         });
 
         try {
             const dataUrl = await fetchAsDataUrl(emojiNode.src);
-            await Emojis.uploadEmoji({
-                guildId,
-                image: dataUrl,
-                name: get().customAlt ?? emojiNode.alt,
-            });
+            // await Emojis.uploadEmoji({
+            //     guildId,
+            //     image: dataUrl,
+            //     name: get().customAlt ?? emojiNode.alt,
+            // });
 
-            set({ lastUploadInfo: { guildId, emojiNode, error: null } });
+            await delay(1000);
+            if (Math.random() > 0.5) throw new Error("Failed to upload emoji");
+
+            set({ status: "success" });
+            set({ recentUploadDetails: { guildId, emojiNode, error: null } });
         } catch (error) {
-            set({ lastUploadInfo: { guildId, emojiNode, error } });
-        } finally {
-            set({ isPending: null });
+            set({ status: "error" });
+            set({ recentUploadDetails: { guildId, emojiNode, error } });
         }
     },
 }));
