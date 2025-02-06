@@ -14,6 +14,10 @@ export interface ToastOptions {
     /**
      * @default undefined
      */
+    onPress?: () => void;
+    /**
+     * @default undefined
+     */
     onAutoClose?: () => void;
     /**
      * @default undefined
@@ -36,7 +40,6 @@ export interface CustomToastRendererProps {
 
 interface GenericToastContent {
     text: string;
-    onPress?: () => void;
     // icon?: React.ReactNode;
 }
 

@@ -6,7 +6,7 @@ interface ToastStore {
     toasts: ToastInstance[];
     showToast(props: ToastConfig): void;
     hideToast(id: string): void;
-    updateToast(id: string, options: Partial<Omit<ToastInstance, "id">>): void;
+    updateToast(id: string, config: Partial<Omit<ToastInstance, "id">>): void;
 }
 
 export const useToastStore = create<ToastStore>(set => {

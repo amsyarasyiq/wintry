@@ -4,7 +4,14 @@ import { useToastStore } from "@stores/useToastStore";
 import { useEffect, useMemo, useRef } from "react";
 import { ToasterBase } from "react-native-customizable-toast" with { lazy: "on" };
 import type { ToastItemProps, ToasterMethods } from "react-native-customizable-toast";
-import { SlideInUp, SlideOutUp, clamp, withSpring } from "react-native-reanimated";
+import {
+    type ComplexAnimationBuilder,
+    FadeInUp,
+    clamp,
+    withSpring,
+    FadeOutUp,
+    LinearTransition,
+} from "react-native-reanimated";
 import { ToastComponent } from "./ToastComponent";
 import { findByStoreName } from "@metro";
 
@@ -41,18 +48,16 @@ export function ToastsRenderer() {
         }
     }, [toasts, toastRegistry]);
 
+    const setupSpringMotion = (spring: ComplexAnimationBuilder) =>
+        spring.mass(0.35).damping(15).stiffness(350).restDisplacementThreshold(0.1).restSpeedThreshold(0.1);
+
     return (
-        <ToasterBase<typeof ref>
-            entering={SlideInUp.springify().mass(0.1).damping(10).stiffness(100).overshootClamping(1)}
-            exiting={SlideOutUp.springify()
-                .mass(0.35)
-                .damping(15)
-                .stiffness(350)
-                .restDisplacementThreshold(0.1)
-                .restSpeedThreshold(0.1)}
+        <ToasterBase
+            ref={ref}
+            entering={setupSpringMotion(FadeInUp.springify())}
+            exiting={setupSpringMotion(FadeOutUp.springify())}
+            layout={LinearTransition.springify().duration(500).dampingRatio(0.5)}
             useSafeArea={true}
-            // @ts-expect-error - Passing function as ref is valid.
-            ref={(r: (typeof ref)["current"]) => r && (ref.current = r)}
             itemStyle={toastStyleWorklet}
             onSwipeEdge={({ filter }) => filter(({ toast }) => toast.options?.dismissible === false)}
             render={ToastComponent}
@@ -70,10 +75,11 @@ function useToastStyleWorklet() {
                 {
                     // 50 is hardcoded. If you don't like it, implement a way to measure the actual height of the toast.
                     translateY: withSpring(clamp(translationY.value, -y.value, 0) + (isDiscordToastActive ? 50 : 0), {
-                        mass: 0.1,
-                        damping: 10,
-                        stiffness: 100,
-                        overshootClamping: true,
+                        mass: 0.35,
+                        damping: 15,
+                        stiffness: 350,
+                        restDisplacementThreshold: 0.1,
+                        restSpeedThreshold: 0.1,
                     }),
                 },
                 displayFromBottom ? { rotate: "-180deg" } : { rotate: "0deg" },
