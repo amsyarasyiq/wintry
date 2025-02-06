@@ -1,19 +1,26 @@
 import type { ToastInstance } from "@api/toasts";
 import { createStyles } from "@components/utils/styles";
 import { PressableScale, Text, tokens } from "@metro/common";
-import { View } from "react-native";
+import { useToastStore } from "@stores/useToastStore";
+import { useCallback, useState, type PropsWithChildren } from "react";
+import { View, useWindowDimensions, type StyleProp, type TextLayoutEventData, type ViewStyle } from "react-native";
 import { Swipeable, useToast } from "react-native-customizable-toast" with { lazy: "on" };
+import Animated, { LinearTransition } from "react-native-reanimated";
+import { useShallow } from "zustand/shallow";
 
 const useContainerStyles = createStyles(() => ({
-    container: {
+    pressable: {
         marginTop: tokens.spacing.PX_8,
         marginHorizontal: tokens.spacing.PX_12,
+    },
+    container: {
         alignSelf: "center",
         flexDirection: "row",
         justifyContent: "center",
         shadowColor: tokens.colors.TOAST_CONTAINER_SHADOW_COLOR,
     },
     contentContainer: {
+        overflow: "hidden",
         flexDirection: "row",
         alignItems: "center",
         borderRadius: tokens.radii.xxl,
@@ -26,50 +33,113 @@ const useContainerStyles = createStyles(() => ({
     },
 }));
 
-export function ToastComponent() {
+function ToastContainer({
+    children,
+    contentContainerStyle,
+    dismissible,
+    onDismiss,
+    onPress,
+}: PropsWithChildren<{
+    contentContainerStyle?: StyleProp<ViewStyle>;
+    dismissible: boolean;
+    onDismiss: () => void;
+    onPress?: () => void;
+}>) {
+    const { width: screenWidth } = useWindowDimensions();
     const containerStyles = useContainerStyles();
-    const { hide, ...toast } = useToast<ToastInstance>();
+
+    return (
+        <Swipeable onSwipe={onDismiss} disabled={!dismissible}>
+            <PressableScale style={containerStyles.pressable} disabled={!onPress} onPress={() => onPress?.()}>
+                <View style={[containerStyles.container]}>
+                    <Animated.View
+                        layout={LinearTransition.springify().duration(500).dampingRatio(0.5)}
+                        style={[
+                            { maxWidth: screenWidth - 16 },
+                            containerStyles.contentContainer,
+                            contentContainerStyle,
+                        ]}
+                    >
+                        {children}
+                    </Animated.View>
+                </View>
+            </PressableScale>
+        </Swipeable>
+    );
+}
+
+function GenericToast({ toast, onDismiss }: { toast: ToastInstance & { type: "generic" }; onDismiss: () => void }) {
+    const [isMultiline, setIsMultiline] = useState(false);
+
+    const onTextLayout = ({ nativeEvent }: { nativeEvent: TextLayoutEventData }) => {
+        setIsMultiline(nativeEvent.lines.length > 1);
+    };
+
+    return (
+        <ToastContainer
+            onDismiss={onDismiss}
+            dismissible={toast.options?.dismissible !== false}
+            contentContainerStyle={[isMultiline && { paddingLeft: 16 }, toast.options?.contentContainerStyle]}
+            onPress={toast.options?.onPress}
+        >
+            <Text variant="text-sm/semibold" onTextLayout={onTextLayout}>
+                {toast.content.text}
+            </Text>
+        </ToastContainer>
+    );
+}
+
+function CustomToast({
+    toast,
+    onDismiss,
+}: {
+    toast: ToastInstance & { type: "custom" };
+    onDismiss: () => void;
+}) {
+    const { render: CustomComponent } = toast.content;
+    const [_updateToast, _hideToast] = useToastStore(useShallow(state => [state.updateToast, state.hideToast]));
+
+    const hideToast = useCallback(() => {
+        _hideToast(toast.id);
+    }, [toast.id, _hideToast]);
+
+    const updateToast = useCallback(
+        (config: Partial<Omit<ToastInstance, "id">>) => _updateToast(toast.id, config),
+        [toast.id, _updateToast],
+    );
+
+    return (
+        <ToastContainer
+            onDismiss={onDismiss}
+            dismissible={toast.options?.dismissible !== false}
+            contentContainerStyle={toast.options?.contentContainerStyle}
+            onPress={toast.options?.onPress}
+        >
+            <CustomComponent hide={hideToast} update={updateToast} />
+        </ToastContainer>
+    );
+}
+
+export function ToastComponent() {
+    const hideToast = useToastStore(s => s.hideToast);
+    const { toast } = useToast<{ toast: ToastInstance }>();
 
     if (toast.id == null) return null;
-    const { type, content, options = {} } = toast;
 
-    if (type === "generic") {
-        return (
-            <Swipeable onSwipe={() => options.onDismiss?.()} disabled={!options.dismissible}>
-                <PressableScale style={containerStyles.container} onPress={() => content.onPress?.()}>
-                    <View style={[containerStyles.contentContainer, options.contentContainerStyle]}>
-                        <Text variant="text-sm/semibold">{toast.content.text}</Text>
-                    </View>
-                </PressableScale>
-            </Swipeable>
-        );
+    const onDismiss = () => {
+        toast.options?.onDismiss?.();
+        hideToast(toast.id);
+    };
+
+    switch (toast.type) {
+        case "generic":
+            return <GenericToast toast={toast} onDismiss={onDismiss} />;
+        case "custom":
+            return <CustomToast toast={toast} onDismiss={onDismiss} />;
+        default:
+            if (__DEV__) {
+                throw new Error(`Unknown toast type: ${(toast as any)?.type}`);
+            }
+            return null;
     }
-
-    if (type === "custom") {
-        const { render: CustomComponent, wrapPressable = true } = content;
-
-        const toastContent = (
-            <View style={[containerStyles.contentContainer, options.contentContainerStyle]}>
-                <CustomComponent hide={hide} />
-            </View>
-        );
-
-        const wrappedContent = wrapPressable ? (
-            <PressableScale style={containerStyles.container}>{toastContent}</PressableScale>
-        ) : (
-            <View style={containerStyles.container}>{toastContent}</View>
-        );
-
-        return (
-            <Swipeable onSwipe={() => options.onDismiss?.()} disabled={!options.dismissible}>
-                {wrappedContent}
-            </Swipeable>
-        );
-    }
-
-    if (__DEV__) {
-        throw new Error(`Unknown toast type: ${type}`);
-    }
-
-    return null;
 }

@@ -6,7 +6,7 @@ interface ToastStore {
     toasts: ToastInstance[];
     showToast(props: ToastConfig): void;
     hideToast(id: string): void;
-    updateToast(id: string, options: Partial<Omit<ToastInstance, "id">>): void;
+    updateToast(id: string, config: Partial<Omit<ToastInstance, "id">>): void;
 }
 
 export const useToastStore = create<ToastStore>(set => {
@@ -17,6 +17,11 @@ export const useToastStore = create<ToastStore>(set => {
         showToast: ({ id, content, type = "generic", options = {} }: ToastConfig) =>
             set(state => {
                 const toast = { id, type, content, options } as ToastInstance;
+
+                if (timeouts.has(id)) {
+                    clearTimeout(timeouts.get(id)!);
+                    timeouts.delete(id);
+                }
 
                 if (options.duration && options.duration > 0) {
                     const timeout = setTimeout(() => {
@@ -46,11 +51,32 @@ export const useToastStore = create<ToastStore>(set => {
                     toasts: state.toasts.filter(toast => toast.id !== id),
                 };
             }),
-        updateToast: (id, options) =>
+        updateToast: (id, updatedConfig) =>
             set(state => ({
                 toasts: state.toasts.map(toast => {
                     if (toast.id === id) {
-                        const updatedToast = merge(toast, options);
+                        const isDurationDefined = updatedConfig.options && "duration" in updatedConfig.options;
+                        const updatedToast = merge(toast, updatedConfig);
+
+                        if (isDurationDefined && updatedConfig.options!.duration! > 0) {
+                            if (timeouts.has(id)) {
+                                clearTimeout(timeouts.get(id)!);
+                            }
+
+                            const timeout = setTimeout(() => {
+                                set(state => {
+                                    toast.options?.onAutoClose?.();
+                                    timeouts.delete(id);
+
+                                    return {
+                                        toasts: state.toasts.filter(t => t.id !== id),
+                                    };
+                                });
+                            }, updatedConfig.options!.duration);
+
+                            timeouts.set(id, timeout);
+                        }
+
                         return updatedToast as ToastInstance;
                     }
                     return toast;
