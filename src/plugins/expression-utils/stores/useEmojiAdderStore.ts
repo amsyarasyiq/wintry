@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import type { EmojiNode } from "./types";
+import type { EmojiNode } from "../types";
 import { findByProps } from "@metro";
 import { fetchAsDataUrl } from "@utils/network/fetchAsDataUrl";
 import { delay } from "es-toolkit";
