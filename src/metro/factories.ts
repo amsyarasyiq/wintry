@@ -110,7 +110,7 @@ export function withInteropOptions<A extends Arg, O extends Record<string, unkno
             // Read the comment in the `getResolvers` function for more information.
             if (checkEsmDefault !== false && returnEsmDefault === false && arg.m?.__esModule && arg.m.default) {
                 const res = props.filter({ ...arg, m: arg.state.module?.exports?.default }, options);
-                if (res || checkEsmDefault !== true) return res;
+                if (res || checkEsmDefault === true) return res;
             }
 
             return props.filter(arg, options);
@@ -127,15 +127,15 @@ export function withInteropOptions<A extends Arg, O extends Record<string, unkno
         getResolvers: (arg, options) => {
             const { checkEsmDefault, returnEsmDefault = true } = options;
 
-            if (checkEsmDefault === true) {
-                return [exp => exp.__esModule && exp.default];
-            }
-
             // We need the resolver to return the whole module if the caller wants it (hence the returnEsmDefault === false check)
             // But the default export will not be checked, even if the checkEsmDefault !== false.
             // For this case, our filter function will handle the check for default exports while allowing the resolver to return the whole module.
             if (checkEsmDefault === false || returnEsmDefault === false) {
                 return [exp => exp];
+            }
+
+            if (checkEsmDefault === true) {
+                return [exp => exp.__esModule && exp.default];
             }
 
             return props.getResolvers?.(arg, options) ?? defaultResolvers;
