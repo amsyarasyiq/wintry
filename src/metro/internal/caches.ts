@@ -74,6 +74,11 @@ export const MetroCache: MetroCache = {
                 map.fullLookup = v?._[ModulesMapInternal.FULL_LOOKUP] === 1;
                 map.notFound = v?._[ModulesMapInternal.NOT_FOUND] === 1;
 
+                for (const strId in v) {
+                    if (strId === "_") continue;
+                    map.set(Number(strId), v[strId as unknown as number]!);
+                }
+
                 return [k, map];
             }),
         );

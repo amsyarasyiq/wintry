@@ -196,26 +196,26 @@ export function getProxyFactory<T>(obj: T): (() => T) | undefined {
     return factories.get(obj) as (() => T) | undefined;
 }
 
+/**
+ * @internal Internal use only, do not use
+ */
 export function lazyObjectGetter<T extends Record<string, unknown> & ((...args: unknown[]) => unknown)>(
-    factory: () => T,
+    getter: () => T,
 ): T {
-    let cache: T;
-    const getCache = () => (cache ??= factory());
-
     const proxy: T = new Proxy((() => {}) as T, {
         apply: (_, __, args) => {
             // @ts-ignore - check this later
-            return getCache().default?.(...args);
+            return getter().default?.(...args);
         },
         // @ts-ignore - check this later
-        get: (_, p: string) => getCache()?.default?.[p] ?? cache?.[p],
+        get: (_, p: string) => getter()?.default?.[p] ?? getter()?.[p],
         getPrototypeOf: () =>
             new Proxy(
                 {},
                 {
                     get: (_, p: string) => {
                         // @ts-ignore - check this later
-                        return getCache()?.[p];
+                        return getter()?.[p];
                     },
                 },
             ),
