@@ -1,6 +1,7 @@
+import Button from "@components/Discord/Button/Button";
 import PageWrapper from "@components/WintrySettings/PageWrapper";
 import { t } from "@i18n";
-import { TableRowGroup, TableRow, TableSwitchRow, Button } from "@metro/common";
+import { TableRowGroup, TableRow, TableSwitchRow } from "@metro/common";
 import UpdaterModule from "@native/modules/UpdaterModule";
 import { create } from "zustand";
 

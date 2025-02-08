@@ -1,4 +1,4 @@
-import { IconButton } from "@metro/common";
+import IconButton from "@components/Discord/Button/IconButton";
 import { hideSheet } from "@components/utils/sheets";
 import type { ComponentProps } from "react";
 

@@ -1,7 +1,7 @@
 import Codeblock from "@components/Codeblock";
 import { createStyles } from "@components/utils/styles";
 import { t } from "@i18n";
-import { Button, Card, SafeAreaProvider, SafeAreaView, Text, tokens } from "@metro/common";
+import { Card, SafeAreaProvider, SafeAreaView, Text, tokens } from "@metro/common";
 import { BundleUpdaterModule } from "@native";
 import usePrefsStore, { isSafeModeEnabled } from "@stores/usePrefsStore";
 import { hasStack, isComponentStack } from "@utils/errors/isError";
@@ -9,6 +9,7 @@ import { ScrollView, View } from "react-native";
 import ErrorComponentStackCard from "./ErrorComponentStackCard";
 import ErrorStackCard from "./ErrorStackCard";
 import { getDebugInfo } from "@debug/info";
+import Button from "@components/Discord/Button/Button";
 
 const useStyles = createStyles(() => ({
     container: {

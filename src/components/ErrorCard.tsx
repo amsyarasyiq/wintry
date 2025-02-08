@@ -1,6 +1,7 @@
 import { t } from "@i18n";
-import { Button, Card, Stack, Text, TwinButtons } from "@metro/common";
+import { Card, Stack, Text, TwinButtons } from "@metro/common";
 import { isValidElement, type ReactNode } from "react";
+import Button from "./Discord/Button/Button";
 
 export const INDEX_BUNDLE_FILE: string = window.HermesInternal.getFunctionLocation(window.__r).fileName;
 

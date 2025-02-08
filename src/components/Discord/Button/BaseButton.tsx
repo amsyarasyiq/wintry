@@ -5,7 +5,7 @@ import type { LiteralUnion } from "type-fest";
 export type ButtonVariant = "primary" | "secondary" | "tertiary" | "destructive" | "active";
 export type ButtonSize = "sm" | "md" | "lg";
 
-export interface BaseButtonProps extends Omit<ButtonProps, "children"> {
+export interface BaseButtonProps extends Omit<ButtonProps, "children" | "title"> {
     onPress: () => void;
     label?: string;
     loading?: boolean;

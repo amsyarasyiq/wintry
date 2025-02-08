@@ -14,11 +14,7 @@ export let { SafeAreaView, SafeAreaProvider, useSafeAreaInsets } = lazyDestructu
 // ActionSheet
 export const ActionSheetRow = findProp("ActionSheetRow");
 
-// Buttons
-export const Button = findSingular("Button") as t.Button;
 export const TwinButtons = findProp("TwinButtons") as t.TwinButtons;
-export const IconButton = findSingular("IconButton") as t.IconButton;
-export const RowButton = findProp("RowButton") as t.RowButton;
 
 export const PressableScale = findProp("PressableScale");
 
@@ -31,6 +27,7 @@ export const TableRadioGroup = findProp("TableRadioGroup") as t.TableRadioGroup;
 export const TableRadioRow = findProp("TableRadioRow") as t.TableRadioRow;
 export const TableSwitchRow = findProp("TableSwitchRow") as t.TableSwitchRow;
 export const TableCheckboxRow = findProp("TableCheckboxRow") as t.TableCheckboxRow;
+export const RowButton = findProp("RowButton") as t.RowButton;
 
 export const TableSwitch = findSingular("FormSwitch");
 export const TableRadio = findSingular("FormRadio");

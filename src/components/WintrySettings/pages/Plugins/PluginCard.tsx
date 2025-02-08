@@ -4,10 +4,11 @@ import { type ComponentProps, createContext, memo, useContext } from "react";
 import { View } from "react-native";
 import { useShallow } from "zustand/shallow";
 import { findAssetId } from "@metro";
-import { Card, FormSwitch, IconButton, Stack, Text, chroma, tokens } from "@metro/common";
+import { Card, FormSwitch, Stack, Text, chroma, tokens } from "@metro/common";
 import type { WintryPluginInstance } from "@plugins/types";
 import usePluginStore from "@stores/usePluginStore";
 import { showSheet } from "@components/utils/sheets";
+import IconButton from "@components/Discord/Button/IconButton";
 
 const PluginCardContext = createContext<{
     plugin: WintryPluginInstance;

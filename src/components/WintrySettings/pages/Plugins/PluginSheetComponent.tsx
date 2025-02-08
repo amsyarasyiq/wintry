@@ -1,4 +1,4 @@
-import { ActionSheet, Card, ContextMenu, IconButton, Text } from "@metro/common";
+import { ActionSheet, Card, ContextMenu, Text } from "@metro/common";
 import type { WintryPluginInstance } from "@plugins/types";
 import { View } from "react-native";
 import { findAssetId } from "@metro";
@@ -10,6 +10,7 @@ import { OptionSection } from "./options/OptionSection";
 import { showSheet } from "@components/utils/sheets";
 import { PluginDetailsSheet } from "./PluginDetailsSheet";
 import { SheetAwareIconButton } from "./SheetAwareIconButton";
+import IconButton from "@components/Discord/Button/IconButton";
 
 interface PluginSheetComponentProps {
     plugin: WintryPluginInstance;
