@@ -2,7 +2,7 @@ import { FluxUtils } from "@metro/common";
 import { useMemo } from "react";
 import { useEmojiAdderStore } from "../stores/useEmojiAdderStore";
 import type { PartialGuild, EmojiNode } from "../types";
-import { EmojiStore } from "@metro/new/stores";
+import { EmojiStore } from "@metro/new/common/stores";
 
 export function useSlots(
     guild: PartialGuild,

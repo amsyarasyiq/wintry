@@ -3,7 +3,7 @@ import { Image, ScrollView, View } from "react-native";
 import { useEmojiAdderStore } from "../stores/useEmojiAdderStore";
 import type { PartialGuild, EmojiNode } from "../types";
 import ServerRow from "../components/ServerRow";
-import { GuildStore, PermissionStore } from "@metro/new/stores";
+import { GuildStore, PermissionStore } from "@metro/new/common/stores";
 
 export default function EmoteStealerActionSheet({ emojiNode }: { emojiNode: EmojiNode }) {
     const customAlt = useEmojiAdderStore(s => s.customAlt);

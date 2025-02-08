@@ -13,7 +13,7 @@ import {
     LinearTransition,
 } from "react-native-reanimated";
 import { ToastComponent } from "./ToastComponent";
-import { ToastStore } from "@metro/new/stores";
+import { ToastStore } from "@metro/new/common/stores";
 
 export function ToastsRenderer() {
     const ref = useRef<ToasterMethods<{ toast: ToastInstance }>>(null);

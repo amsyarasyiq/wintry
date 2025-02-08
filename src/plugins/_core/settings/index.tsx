@@ -2,7 +2,7 @@ import { Devs } from "@data/constants";
 import { t } from "@i18n";
 import { findAssetId } from "@metro/assets";
 import { TableRow } from "@metro/common/components";
-import { byName, byProps } from "@metro/filters";
+import { byName, byProps } from "@metro/new/common/filters";
 import { waitFor } from "@metro/internal/modules";
 import { createContextualPatcher } from "@patcher/contextual";
 import { findInReactTree } from "@utils/objects";

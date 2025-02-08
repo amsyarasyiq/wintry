@@ -1,6 +1,7 @@
-import { byFilePath, byProps } from "@metro/filters";
+import { byFilePath } from "@metro/new/common/filters";
 import { lookup } from "@metro/new/api";
 import type React from "react";
+import { lookupByProps } from "@metro/new/common/wrappers";
 
 export const CustomEmojiContent = lookup(
     byFilePath("modules/messages/native/emoji/CustomEmojiContent.tsx", { returnEsmDefault: false }),
@@ -19,6 +20,6 @@ export let MessageEmojiActionSheet = lookup(
 ).asLazy(r => (MessageEmojiActionSheet = r));
 
 // Utilities
-export const MediaViewer = lookup(byProps(["openMediaModal"])).asLazy();
-export const Surrogates = lookup(byProps(["convertSurrogateToName"])).asLazy();
-export const EmojiActionCreators = lookup(byProps(["uploadEmoji"])).asLazy();
+export const MediaViewer = lookupByProps("openMediaModal").asLazy();
+export const Surrogates = lookupByProps("convertSurrogateToName").asLazy();
+export const EmojiActionCreators = lookupByProps("uploadEmoji").asLazy();

@@ -1,6 +1,6 @@
 import { definePlugin } from "#plugin-context";
 import { Devs } from "@data/constants";
-import { byName } from "@metro/filters";
+import { byName } from "@metro/new/common/filters";
 import { createContextualPatcher } from "@patcher/contextual";
 import { ErrorBoundaryScreen } from "./ErrorBoundaryScreen";
 import { lookup } from "@metro/new/api";

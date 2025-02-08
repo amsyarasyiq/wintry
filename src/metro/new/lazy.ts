@@ -1,5 +1,5 @@
 import { waitFor } from "../internal/modules";
-import type { ModuleFilter } from "../factories";
+import type { ModuleFilter } from "./filters";
 import type { SingleMetroModule } from "./module";
 import { lazyValue } from "@utils/lazy";
 import { _patcherDelaySymbol } from "@patcher/patcher";

@@ -1,8 +1,7 @@
-import { byProps } from "@metro/filters";
-import { lookup } from "@metro/new/api";
 import { uniqueId } from "es-toolkit/compat";
 import React from "react";
 import type { Text } from "react-native";
+import { lookupByProps } from "@metro/new/common/wrappers";
 
 interface SectionConfig {
     name: string;
@@ -20,7 +19,7 @@ interface SettingRowConfig {
     rawTabsConfig?: Record<string, any>;
 }
 
-const tabsNavigationRef = lookup(byProps(["getRootNavigationRef"])).asLazy();
+const tabsNavigationRef = lookupByProps("getRootNavigationRef").asLazy();
 
 export default class SettingsManager {
     registeredSections = new Map<string, SectionConfig>();

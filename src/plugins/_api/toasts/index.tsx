@@ -4,7 +4,7 @@ import { createContextualPatcher } from "@patcher/contextual";
 import { ToastsRenderer } from "./ToastsRenderer";
 import { useToastStore } from "@stores/useToastStore";
 import { lookup } from "@metro/new/api";
-import { byFilePath } from "@metro/filters";
+import { byFilePath } from "@metro/new/common/filters";
 
 const patcher = createContextualPatcher({ pluginId: meta.id });
 

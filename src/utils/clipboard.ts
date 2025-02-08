@@ -1,8 +1,7 @@
 import { showToast } from "@api/toasts";
-import { byProps } from "@metro/filters";
-import { lookup } from "@metro/new/api";
+import { lookupByProps } from "@metro/new/common/wrappers";
 
-let clipboard = lookup(byProps(["setString", "getString", "hasString"])).asLazy(m => (clipboard = m));
+let clipboard = lookupByProps("setString", "getString", "hasString").asLazy(m => (clipboard = m));
 
 export async function copyToClipboard(text: string, { toast = true } = {}) {
     try {

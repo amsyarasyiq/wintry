@@ -5,9 +5,9 @@ import {
     type InteropOption,
     createModuleFilter,
     withInteropOptions,
-} from "./factories";
+} from "../filters";
 
-type Filter<F> = F extends (...args: any[]) => ModuleFilter<infer A, infer R, infer O>
+export type Filter<F> = F extends (...args: any[]) => ModuleFilter<infer A, infer R, infer O>
     ? F & ModuleFilterFactory<A, R, O>
     : never;
 
@@ -35,42 +35,6 @@ export const byName = createModuleFilter(
     }),
 ) as Filter<ByName>;
 
-type ByDisplayName = <T extends string>(
-    displayName: T,
-    options?: InteropOption,
-) => ModuleFilter<T, AnyRecord & { displayName: T }, InteropOption>;
-
-export const byDisplayName = createModuleFilter(
-    withInteropOptions<string>({
-        filter: ({ a: displayName, m }) => m.displayName === displayName,
-        stringify: arg => `byDisplayName(${arg})`,
-    }),
-) as Filter<ByDisplayName>;
-
-type ByTypeName = <T extends string>(
-    typeName: T,
-    options?: InteropOption,
-) => ModuleFilter<T, AnyRecord & { type: { name: T } }, InteropOption>;
-
-export const byTypeName = createModuleFilter(
-    withInteropOptions<string>({
-        filter: ({ a: typeName, m }) => m.type?.name === typeName,
-        stringify: arg => `byTypeName(${arg})`,
-    }),
-) as Filter<ByTypeName>;
-
-type ByStoreName = <T extends string>(
-    name: T,
-    options?: InteropOption,
-) => ModuleFilter<T, AnyRecord & { getName: () => T }, InteropOption>;
-
-export const byStoreName = createModuleFilter(
-    withInteropOptions<string>({
-        filter: ({ a: name, m }) => m.constructor?.displayName === name && m.getName() === name,
-        stringify: arg => `byStoreName(${arg})`,
-    }),
-) as Filter<ByStoreName>;
-
 type ByFilePath = <T extends string>(path: T, options?: InteropOption) => ModuleFilter<T, AnyRecord, InteropOption>;
 
 export const byFilePath = createModuleFilter(
@@ -88,3 +52,27 @@ export const bySingularProp = createModuleFilter(
         stringify: arg => `bySingularProp(${arg})`,
     }),
 ) as Filter<BySingularProp>;
+
+// type ByDisplayName = <T extends string>(
+//     displayName: T,
+//     options?: InteropOption,
+// ) => ModuleFilter<T, AnyRecord & { displayName: T }, InteropOption>;
+
+// export const byDisplayName = createModuleFilter(
+//     withInteropOptions<string>({
+//         filter: ({ a: displayName, m }) => m.displayName === displayName,
+//         stringify: arg => `byDisplayName(${arg})`,
+//     }),
+// ) as Filter<ByDisplayName>;
+
+// type ByTypeName = <T extends string>(
+//     typeName: T,
+//     options?: InteropOption,
+// ) => ModuleFilter<T, AnyRecord & { type: { name: T } }, InteropOption>;
+
+// export const byTypeName = createModuleFilter(
+//     withInteropOptions<string>({
+//         filter: ({ a: typeName, m }) => m.type?.name === typeName,
+//         stringify: arg => `byTypeName(${arg})`,
+//     }),
+// ) as Filter<ByTypeName>;

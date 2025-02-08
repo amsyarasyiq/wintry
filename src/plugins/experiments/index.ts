@@ -1,7 +1,7 @@
 import { Devs } from "@data/constants";
-import { byStoreName } from "@metro/filters";
 import { waitFor } from "@metro/internal/modules";
 import { definePlugin } from "#plugin-context";
+import { byStoreName } from "@metro/new/common/stores";
 
 let patched: boolean;
 

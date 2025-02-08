@@ -3,15 +3,15 @@ import { lazyDestructure, lazyValue } from "@utils/lazy";
 
 import type { ReactElement } from "react";
 import type * as t from "./types/components";
-import { byProps, bySingularProp } from "@metro/filters";
+import { byProps, bySingularProp } from "@metro/new/common/filters";
 import { lookup } from "@metro/new/api";
-
+import { lookupByProps } from "@metro/new/common/wrappers";
 const findSingular = (prop: string) => lazyValue(() => lookup(bySingularProp(prop)).load()[prop]);
 export const findProp = (...prop: string[]) => lazyValue(() => lookup(byProps(prop)).load()[prop[0]]);
 
 // React Native's included SafeAreaView only adds padding on iOS.
 export let { SafeAreaView, SafeAreaProvider, useSafeAreaInsets } = lazyDestructure(() =>
-    lookup(byProps(["useSafeAreaInsets"])).asLazy(m => ({ SafeAreaView, SafeAreaProvider, useSafeAreaInsets } = m)),
+    lookupByProps("useSafeAreaInsets").asLazy(m => ({ SafeAreaView, SafeAreaProvider, useSafeAreaInsets } = m)),
 ) as any;
 
 // ActionSheet

@@ -3,7 +3,7 @@ import { Card, Slider, Stack, Text } from "@metro/common";
 import {} from "react";
 import { Pressable, View } from "react-native";
 import { usePluginSettings } from "../common/usePluginSettings";
-import { CircleMinusIcon, CirclePlusIcon } from "@metro/new/icons";
+import { CircleMinusIcon, CirclePlusIcon } from "@metro/new/common/icons";
 
 function SliderRow({ opt, plugin, settingKey }: BaseOptionRowProps<"slider">) {
     const [current, setCurrent] = usePluginSettings<typeof opt>(plugin.id, settingKey);

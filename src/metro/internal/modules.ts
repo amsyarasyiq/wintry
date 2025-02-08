@@ -3,7 +3,7 @@ import { onUntil } from "@utils/events";
 import type { Metro, ModuleState } from "../types";
 import { createCacheHandler, getAllCachedModuleIds, markExportsFlags, onceCacheReady } from "./caches";
 import { metroEvents, modulesInitializationEvents } from "./events";
-import type { ModuleFilter } from "@metro/factories";
+import type { ModuleFilter } from "@metro/filters";
 import { testExports } from "@metro/new/api";
 
 export const moduleRegistry = new Map<number, ModuleState>();

@@ -1,7 +1,6 @@
-import { byProps } from "@metro/filters";
-import { lookup } from "@metro/new/api";
+import { lookupByProps } from "@metro/new/common/wrappers";
 
-let SheetActionCreators = lookup(byProps(["openLazy", "hideActionSheet"])).asLazy(m => (SheetActionCreators = m));
+let SheetActionCreators = lookupByProps("openLazy", "hideActionSheet").asLazy(m => (SheetActionCreators = m));
 
 export function showSheet<T extends React.ComponentType<any>>(
     key: string,

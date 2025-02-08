@@ -2,15 +2,14 @@ import { View } from "react-native";
 import { Avatar, AvatarPile, FluxUtils, Text } from "@metro/common";
 import { lazyDestructure } from "@utils/lazy";
 import type { WintryPluginInstance } from "@plugins/types";
-import { lookup } from "@metro/new/api";
-import { byProps } from "@metro/filters";
-import { UserStore } from "@metro/new/stores";
+import { UserStore } from "@metro/new/common/stores";
+import { lookupByProps } from "@metro/new/common/wrappers";
 
-const showUserProfileActionSheet = lookup(byProps(["showUserProfileActionSheet"])) as unknown as (props: {
+const showUserProfileActionSheet = lookupByProps("showUserProfileActionSheet") as unknown as (props: {
     userId: string | bigint;
 }) => void;
 
-const { getUser: maybeFetchUser } = lazyDestructure(() => lookup(byProps(["getUser", "fetchProfile"])).load());
+const { getUser: maybeFetchUser } = lazyDestructure(() => lookupByProps("getUser", "fetchProfile").load());
 
 interface TitleComponentProps {
     plugin: WintryPluginInstance;

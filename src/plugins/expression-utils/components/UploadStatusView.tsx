@@ -9,8 +9,8 @@ import { useEmojiAdderStore } from "../stores/useEmojiAdderStore";
 import type { EmojiUploadFailure, PartialGuild } from "../types";
 import { isError } from "@utils/errors/isError";
 import { findAssetId } from "@metro/assets";
-import { ArrowSmallLeftIcon } from "@metro/new/icons";
-import { GuildStore } from "@metro/new/stores";
+import { ArrowSmallLeftIcon } from "@metro/new/common/icons";
+import { GuildStore } from "@metro/new/common/stores";
 
 const useStyles = createStyles(() => ({
     checkmarkIcon: {

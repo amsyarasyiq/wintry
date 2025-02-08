@@ -1,8 +1,7 @@
-import { byProps } from "@metro/filters";
-import { lookup } from "@metro/new/api";
 import { lazyValue } from "@utils/lazy";
+import { lookupByProps } from "@metro/new/common/wrappers";
 
-const RNGestureHandlerModule = lookup(byProps(["NativeViewGestureHandler"])).asLazy();
+const RNGestureHandlerModule = lookupByProps("NativeViewGestureHandler").asLazy();
 
 export const RNGHScrollView = lazyValue(() => RNGestureHandlerModule.ScrollView);
 export const NativeViewGestureHandler = lazyValue(() => RNGestureHandlerModule.NativeViewGestureHandler);

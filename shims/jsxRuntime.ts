@@ -1,4 +1,4 @@
-import { byProps } from "../src/metro/filters";
+import { byProps } from "../src/metro/new/common/filters";
 import { lookup } from "../src/metro/new/api";
 import { getProxyFactory } from "../src/utils/lazy";
 

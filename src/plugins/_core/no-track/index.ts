@@ -1,8 +1,9 @@
 import { Devs } from "@data/constants";
-import { byProps } from "@metro/filters";
+import { byProps } from "@metro/new/common/filters";
 import { waitFor } from "@metro/internal/modules";
 import { definePlugin } from "#plugin-context";
 
+// This plugin is unfinished... maybe?
 export default definePlugin({
     name: "NoTrack",
     description: "Prevents Discord's tracking analytics and Sentry crash reporting",

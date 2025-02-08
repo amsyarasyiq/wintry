@@ -1,5 +1,5 @@
 import { NavigationNative } from "@metro/common";
-import { useEffect } from "react";
+import { useLayoutEffect } from "react";
 
 export const CustomPageRenderer = () => {
     const navigation = NavigationNative.useNavigation();
@@ -8,7 +8,7 @@ export const CustomPageRenderer = () => {
     const { render: PageComponent, ...args } = route.params;
 
     // biome-ignore lint/correctness/useExhaustiveDependencies: This is fine
-    useEffect(() => void navigation.setOptions({ ...args }), [navigation]);
+    useLayoutEffect(() => void navigation.setOptions({ ...args }), [navigation]);
 
     // TODO: Wrap with ErrorBoundary
     return <PageComponent />;

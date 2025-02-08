@@ -1,9 +1,8 @@
-import { byProps } from "@metro/filters";
-import { lookup } from "./api";
 import { lazyValue } from "@utils/lazy";
+import { lookupByProps } from "@metro/new/common/wrappers";
 
-function getIcon(name: string) {
-    return lazyValue(() => lookup(byProps([name])).load()[name]);
+function getIcon(name: string): React.Component<Record<string, unknown>> {
+    return lazyValue(() => lookupByProps(name).load()[name]);
 }
 
 export const CirclePlusIcon = getIcon("CirclePlusIcon");

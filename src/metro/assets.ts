@@ -1,8 +1,6 @@
 import { requireModule } from ".";
-import { byProps } from "./filters";
 import { moduleRegistry } from "./internal/modules";
-import { lookup } from "./new/api";
-
+import { lookupByProps } from "@metro/new/common/wrappers";
 export type Asset = { id: number } & {
     fileSystemLocation?: string;
     httpServerLocation?: string;
@@ -16,7 +14,7 @@ export type Asset = { id: number } & {
     resolver?: "android" | "generic";
 };
 
-const AssetRegistry = lookup(byProps(["getAssetByID"]));
+const AssetRegistry = lookupByProps("getAssetByID");
 
 const _nameToAssetCache = {} as Record<string, Asset>;
 let arrayCache: Asset[] | undefined;
