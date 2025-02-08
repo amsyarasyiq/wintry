@@ -7,9 +7,14 @@ import {
     withInteropOptions,
 } from "./factories";
 
-type Filter<F> = F extends (...args: any[]) => ModuleFilter<infer A, infer R> ? F & ModuleFilterFactory<A, R> : never;
+type Filter<F> = F extends (...args: any[]) => ModuleFilter<infer A, infer R, infer O>
+    ? F & ModuleFilterFactory<A, R, O>
+    : never;
 
-type ByProps = <T extends string>(props: T[], options?: InteropOption) => ModuleFilter<T[], AnyRecord & Record<T, any>>;
+type ByProps = <T extends string>(
+    props: T[],
+    options?: InteropOption,
+) => ModuleFilter<T[], AnyRecord & Record<T, any>, InteropOption>;
 
 export const byProps = createModuleFilter(
     withInteropOptions<string[]>({
@@ -21,9 +26,8 @@ export const byProps = createModuleFilter(
 type ByName = <T extends string>(
     name: T,
     options?: InteropOption,
-) => ModuleFilter<T, AnyRecord & ((...args: unknown[]) => any) & { name: T }>;
+) => ModuleFilter<T, AnyRecord & ((...args: unknown[]) => any) & { name: T }, InteropOption>;
 
-// TODO: consider adding a check for the function type
 export const byName = createModuleFilter(
     withInteropOptions<string>({
         filter: ({ a: name, m }) => typeof m === "function" && m.name === name,
@@ -34,7 +38,7 @@ export const byName = createModuleFilter(
 type ByDisplayName = <T extends string>(
     displayName: T,
     options?: InteropOption,
-) => ModuleFilter<T, AnyRecord & { displayName: T }>;
+) => ModuleFilter<T, AnyRecord & { displayName: T }, InteropOption>;
 
 export const byDisplayName = createModuleFilter(
     withInteropOptions<string>({
@@ -46,7 +50,7 @@ export const byDisplayName = createModuleFilter(
 type ByTypeName = <T extends string>(
     typeName: T,
     options?: InteropOption,
-) => ModuleFilter<T, AnyRecord & { type: { name: T } }>;
+) => ModuleFilter<T, AnyRecord & { type: { name: T } }, InteropOption>;
 
 export const byTypeName = createModuleFilter(
     withInteropOptions<string>({
@@ -58,7 +62,7 @@ export const byTypeName = createModuleFilter(
 type ByStoreName = <T extends string>(
     name: T,
     options?: InteropOption,
-) => ModuleFilter<T, AnyRecord & { getName: () => T }>;
+) => ModuleFilter<T, AnyRecord & { getName: () => T }, InteropOption>;
 
 export const byStoreName = createModuleFilter(
     withInteropOptions<string>({
@@ -67,7 +71,7 @@ export const byStoreName = createModuleFilter(
     }),
 ) as Filter<ByStoreName>;
 
-type ByFilePath = <T extends string>(path: T, options?: InteropOption) => ModuleFilter<T, AnyRecord>;
+type ByFilePath = <T extends string>(path: T, options?: InteropOption) => ModuleFilter<T, AnyRecord, InteropOption>;
 
 export const byFilePath = createModuleFilter(
     withInteropOptions<string>({
@@ -76,7 +80,7 @@ export const byFilePath = createModuleFilter(
     }),
 ) as Filter<ByFilePath>;
 
-type BySingularProp = <T extends string>(prop: T) => ModuleFilter<T, AnyRecord & Record<T, any>>;
+type BySingularProp = <T extends string>(prop: T) => ModuleFilter<T, AnyRecord & Record<T, any>, InteropOption>;
 
 export const bySingularProp = createModuleFilter(
     withInteropOptions<string>({

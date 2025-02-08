@@ -2,7 +2,6 @@ import type { AnyRecord } from "@utils/types";
 import { moduleRegistry } from "./internal/modules";
 import type { ModuleState } from "./types";
 
-type Arg = unknown;
 type Resolver = (exp: any) => any;
 export type Resolvers = Array<Resolver>;
 
@@ -28,57 +27,63 @@ export interface FilterPredicateArg<A> {
 
 export const defaultResolvers: Resolvers = [exp => exp?.__esModule && exp.default, exp => exp];
 
-export interface ModuleFilter<A, R> {
+export interface ModuleFilter<A, R, O> {
     key: string;
     resolvers: Resolvers;
     check: (id: number, exp: any) => boolean;
+    factory: ModuleFilterFactory<A, R, O>;
 
-    __type__?: [A, R];
+    __type__?: [A, R, O];
 }
 
-export interface ModuleFilterFactory<A extends Arg, R, O extends Record<string, unknown> = AnyRecord> {
-    (args: A, options?: O): ModuleFilter<A, R>;
+export interface ModuleFilterFactory<A, R, O = AnyRecord> {
+    (args: A, options?: O): ModuleFilter<A, R, O>;
 
     stringify: (args: A, options: O) => string;
     getResolvers: (a: A, options: O) => Resolvers;
 }
 
-export type ModuleFilterFactoryProps<A extends Arg, O extends Record<string, unknown> = AnyRecord> = {
+export type ModuleFilterFactoryProps<A, O = AnyRecord> = {
     filter: (arg: FilterPredicateArg<A>, options: O) => boolean;
     stringify: (arg: A, options: O) => string;
     getResolvers?: (arg: A, options: O) => Resolvers;
 };
 
-export function createModuleFilter<A extends Arg, R, O extends Record<string, unknown> = AnyRecord>({
+export function createModuleFilter<A, R, O = AnyRecord>({
     filter,
     stringify,
     getResolvers = () => defaultResolvers,
 }: ModuleFilterFactoryProps<A, O>): ModuleFilterFactory<A, R, O> {
-    const moduleFilter = (arg: A, options: O = {} as O): ModuleFilter<A, R> => {
-        const resolvers = getResolvers(arg, options);
+    const factory = Object.assign(
+        (arg: A, options: O = {} as O): ModuleFilter<A, R, O> => {
+            const resolvers = getResolvers(arg, options);
 
-        return {
-            key: stringify(arg, options),
-            resolvers,
+            return {
+                key: stringify(arg, options),
+                resolvers,
+                factory: moduleFilter,
 
-            check: (id: number, exports: any) => {
-                return !!filter(
-                    {
-                        id,
-                        a: arg,
-                        m: exports,
-                        state: moduleRegistry.get(id)!,
-                    },
-                    options,
-                );
-            },
-        };
-    };
+                check: (id: number, exports: any) => {
+                    return !!filter(
+                        {
+                            id,
+                            a: arg,
+                            m: exports,
+                            state: moduleRegistry.get(id)!,
+                        },
+                        options,
+                    );
+                },
+            };
+        },
+        {
+            stringify,
+            getResolvers,
+        },
+    );
 
-    return Object.assign(moduleFilter, {
-        stringify,
-        getResolvers,
-    });
+    const moduleFilter = factory as ModuleFilterFactory<A, R, O>;
+    return moduleFilter;
 }
 
 export type InteropOption = {
@@ -108,7 +113,7 @@ export type InteropOption = {
 /**
  * Handles filtering for the ES module default export interop.
  */
-export function withInteropOptions<A extends Arg, O extends Record<string, unknown> = InteropOption>(
+export function withInteropOptions<A, O = InteropOption>(
     props: ModuleFilterFactoryProps<A, O & InteropOption>,
 ): ModuleFilterFactoryProps<A, O & InteropOption> {
     return {

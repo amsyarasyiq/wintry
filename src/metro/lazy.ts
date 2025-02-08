@@ -2,59 +2,58 @@ import { _patcherDelaySymbol } from "../patcher/patcher";
 import { lazyValue } from "@utils/lazy";
 import { findImmediate } from "./legacy_api";
 import { waitFor } from "./internal/modules";
-import type { LazyModuleContext } from "./types";
 import type { ModuleFilter } from "./factories";
 
 /** @internal */
 const _lazyContextSymbol = Symbol.for("wintry.metro.lazyContext");
-
 const _lazyContexts = new WeakMap<any, LazyModuleContext>();
 
-export function getLazyContext<A extends unknown[]>(proxy: any): LazyModuleContext<A> | void {
-    return _lazyContexts.get(proxy) as unknown as LazyModuleContext<A>;
+export class LazyModuleContext<A = unknown, R = unknown> {
+    cache: R | undefined = undefined;
+
+    constructor(public filter: ModuleFilter<A, R>) {}
+
+    wait(callback: (exports: any) => void): () => void {
+        return waitFor(this.filter, exp => callback(exp));
+    }
+
+    eagerLoad(): R {
+        if (!this.cache) {
+            this.cache = findImmediate(this.filter);
+
+            if (!this.cache) {
+                throw new Error(`Module ${this.filter.key} returned unexpected ${typeof this.cache}`);
+            }
+
+            if (typeof this.cache === "function" || typeof this.cache === "object") {
+                _lazyContexts.set(this.cache, this);
+            }
+        }
+
+        return this.cache;
+    }
+
+    get [Symbol.toStringTag]() {
+        return "LazyModuleContext";
+    }
 }
 
 export function createLazyModule<A, R>(filter: ModuleFilter<A, R>): R {
-    let cache: R | undefined = undefined;
+    const context: LazyModuleContext<A, R> = new LazyModuleContext(filter);
 
-    const context: LazyModuleContext<A, R> = {
-        filter,
-        getExports(callback: (exports: any) => void) {
-            if (cache) {
-                callback(cache);
-                return () => void 0;
-            }
-
-            return this.subscribe(callback);
-        },
-        subscribe(callback: (exports: any) => void) {
-            return waitFor(filter, exp => callback(exp));
-        },
-        get cache() {
-            return cache;
-        },
-        forceLoad() {
-            if (!cache) {
-                cache = findImmediate(filter);
-                if (!cache) throw new Error(`Result of ${filter.key} is ${typeof cache}!`);
-                if (typeof cache === "function" || typeof cache === "object")
-                    _lazyContexts.set(cache, context as LazyModuleContext<unknown[]>);
-            }
-
-            return cache;
-        },
-    };
-
-    const proxy = lazyValue(() => context.forceLoad(), {
+    const proxy = lazyValue(() => context.eagerLoad(), {
         exemptedEntries: {
             [_lazyContextSymbol]: context,
-            [_patcherDelaySymbol]: (cb: (exports: any) => void) => context.getExports(cb),
+            [_patcherDelaySymbol]: (cb: (exports: any) => void) => context.wait(cb),
         },
     });
 
-    _lazyContexts.set(proxy, context as LazyModuleContext<unknown[]>);
-
-    context.subscribe(exp => (cache = exp));
+    _lazyContexts.set(proxy, context);
+    context.wait(exp => (context.cache = exp));
 
     return proxy;
+}
+
+export function getLazyContext<A, R>(proxy: any): LazyModuleContext<A, R> | void {
+    return _lazyContexts.get(proxy) as LazyModuleContext<A, R>;
 }

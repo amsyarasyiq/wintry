@@ -1,5 +1,3 @@
-import type { ModuleFilter } from "./factories";
-
 type Nullish = null | undefined;
 
 /** @see {@link https://github.com/facebook/metro/blob/c2d7539dfc10aacb2f99fcc2f268a3b53e867a90/packages/metro-runtime/src/polyfills/require.js} */
@@ -127,22 +125,6 @@ export namespace Metro {
             segmentId: number;
         }) => ModuleID;
     }
-}
-
-export interface LazyModuleContext<A = unknown, R = unknown> {
-    filter: ModuleFilter<A, R>;
-    /**
-     * Get the exports of the module:
-     *  - If the module is indexed and initialized, it will callback the exports of the module immediately.
-     *  - If the module is indexed but not initialized, it will callback the exports of the module when it is loaded.
-     *  - If the module is not indexed, it will callback the exports of the module immediately *if needed*.
-     *
-     * @param cb Callback to be called when the module is loaded
-     */
-    getExports(cb: (exports: any) => void): () => void;
-    subscribe(cb: (exports: any) => void): () => void;
-    forceLoad(): R;
-    get cache(): R | undefined;
 }
 
 export interface ModuleState {
