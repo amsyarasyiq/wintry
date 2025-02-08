@@ -115,6 +115,7 @@ const config: BuildOptions = {
                         return {
                             path: args.path,
                             namespace: "resolve-lazy",
+                            pluginData: { importer: args.importer },
                         };
                     }
 
@@ -122,11 +123,10 @@ const config: BuildOptions = {
                 });
 
                 build.onLoad({ filter: /.*/, namespace: "resolve-lazy" }, async args => {
-                    const pathFromRoot = path.relative(".", args.path).replaceAll(path.sep, "/");
                     return {
-                        contents: `module.exports = require("@utils/lazy").lazyObjectGetter(() => require("${pathFromRoot}"))`,
+                        contents: `module.exports = require("@utils/lazy").lazyObjectGetter(() => require("${args.path}"))`,
                         loader: "js",
-                        resolveDir: path.resolve("."),
+                        resolveDir: path.dirname(args.pluginData.importer),
                     };
                 });
             },
