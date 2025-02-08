@@ -3,9 +3,9 @@ import { Avatar, AvatarPile, FluxUtils, Text } from "@metro/common";
 import { lazyDestructure } from "@utils/lazy";
 import type { WintryPluginInstance } from "@plugins/types";
 import { UserStore } from "@metro/new/common/stores";
-import { lookupByProps } from "@metro/new/common/wrappers";
+import { lookupByName, lookupByProps } from "@metro/new/common/wrappers";
 
-const showUserProfileActionSheet = lookupByProps("showUserProfileActionSheet") as unknown as (props: {
+const showUserProfileActionSheet = lookupByName("showUserProfileActionSheet").asLazy() as (props: {
     userId: string | bigint;
 }) => void;
 
