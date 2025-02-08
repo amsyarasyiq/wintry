@@ -92,7 +92,7 @@ export async function makeAssetModule(absolutePath: string): Promise<string> {
     };
 
     return `
-        import { assetsRegistry } from "@metro/common";
-        module.exports = assetsRegistry.registerAsset(${JSON.stringify(asset)});
+        import { AssetsRegistry } from "@metro/common";
+        module.exports = AssetsRegistry.registerAsset(${JSON.stringify(asset)});
     `;
 }
