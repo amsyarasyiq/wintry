@@ -2,16 +2,18 @@ import { requireModule } from ".";
 import { findByProps } from "./legacy_api";
 import { moduleRegistry } from "./internal/modules";
 
-export type Asset = { id: number } & ({ fileSystemLocation: string } | { httpServerLocation: string }) & {
-        width?: number;
-        height?: number;
-        scales: Array<number>;
-        hash: string;
-        name: string;
-        type: string;
+export type Asset = { id: number } & {
+    fileSystemLocation?: string;
+    httpServerLocation?: string;
+    width?: number;
+    height?: number;
+    scales: Array<number>;
+    hash: string;
+    name: string;
+    type: string;
 
-        resolver?: "android" | "generic";
-    };
+    resolver?: "android" | "generic";
+};
 
 const assetsRegistry = findByProps("getAssetByID");
 

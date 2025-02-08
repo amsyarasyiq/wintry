@@ -3,7 +3,7 @@ import { onUntil } from "@utils/events";
 import { filterExports } from "../legacy_api";
 import type { Metro, ModuleState } from "../types";
 import { createCacheHandler, getAllCachedModuleIds, markExportsFlags, onceCacheReady } from "./caches";
-import { metroEventEmitter } from "./events";
+import { metroEvents, modulesInitializationEvents } from "./events";
 import type { ModuleFilter } from "@metro/factories";
 
 export const moduleRegistry = new Map<number, ModuleState>();
@@ -61,13 +61,14 @@ export function internal_getDefiner(
             markExportsFlags(id, publicModule);
 
             if (!isBadModuleExports(publicModule)) {
-                metroEventEmitter.emit("moduleLoaded", state);
+                metroEvents.emit("moduleLoaded", state);
+                modulesInitializationEvents.emit(id);
             }
         };
 
         const state: ModuleState = { id, factory, dependencies, initialized: false, meta: {} };
         moduleRegistry.set(id, state);
-        metroEventEmitter.emit("moduleDefined", state);
+        metroEvents.emit("moduleDefined", state);
 
         originalDefiner(wrappedFactory, id, dependencies);
     };
@@ -89,7 +90,7 @@ export function patchModule(
 ) {
     let _count = 0;
 
-    onUntil(metroEventEmitter, "moduleLoaded", state => {
+    onUntil(metroEvents, "moduleLoaded", state => {
         const exports = state.module.exports;
         if (exports && predicate(exports, state)) {
             patch(state);
@@ -107,66 +108,47 @@ export function waitFor<A, R>(
     { count = 1 } = {},
 ) {
     let currentCount = 0;
-    let fulfilled = false; // Also acts as a cancellation flag
+    let fulfilled = false;
 
     onceCacheReady(() => {
         if (fulfilled) return;
-        const moduleIds = getAllCachedModuleIds(filter.key);
+        const cachedModuleIds = getAllCachedModuleIds(filter.key);
+        const cacheHandler = createCacheHandler(filter.key, false);
 
         function checkState(state: ModuleState) {
             if (fulfilled) return true;
 
-            const { resolve } = (state.module?.exports && filterExports(state.module?.exports, state.id, filter)) || {};
-            if (resolve) {
-                createCacheHandler(filter.key, false).cacheId(state.id, resolve());
+            const exports = state.module?.exports;
+            if (!exports) return false;
 
-                callback(resolve(), state);
-                if (++currentCount === count) return (fulfilled = true);
-            }
+            const result = filterExports(exports, state.id, filter);
+            if (!result?.resolve) return false;
 
-            return false;
+            const resolved = result.resolve();
+            cacheHandler.cacheId(state.id, resolved);
+            callback(resolved, state);
+
+            return (fulfilled = ++currentCount === count);
         }
 
-        // Only check the already loaded modules if the index has been initialized
-        if (hasIndexInitialized) {
-            for (const state of moduleRegistry.values()) {
-                if (state.module?.exports) {
-                    if (checkState(state)) return () => void 0; // Can't cancel this anymore
-                }
-            }
-        }
-
-        onUntil(metroEventEmitter, "lookupFound", (key, state) => {
-            if (fulfilled) return true;
-            if (filter.key === key) {
-                return checkState(state);
-            }
-
-            return false;
-        });
-
-        if (moduleIds && moduleIds.length >= count) {
-            for (const id of moduleIds) {
-                const state = moduleRegistry.get(id)!; // We have other problems if this is undefined
+        // Fast path: check already loaded modules
+        if (hasIndexInitialized && cachedModuleIds && cachedModuleIds.length >= count) {
+            for (const id of cachedModuleIds) {
+                const state = moduleRegistry.get(id);
+                if (!state) continue;
 
                 if (state.module?.exports) {
-                    if (checkState(state)) break;
+                    if (checkState(state)) return;
                 } else {
-                    onUntil(metroEventEmitter, "moduleLoaded", state => {
-                        if (fulfilled) return true;
-
-                        if (state.id === id) {
-                            return checkState(state);
-                        }
-
-                        return false;
-                    });
+                    modulesInitializationEvents.once(state.id, () => checkState(state));
                 }
             }
-        } else {
-            onUntil(metroEventEmitter, "moduleLoaded", state => {
-                return checkState(state);
-            });
+        }
+
+        if (!fulfilled) {
+            // Fallback: watch for new modules
+            onUntil(metroEvents, "moduleLoaded", checkState);
+            onUntil(metroEvents, "lookupFound", (key, state) => (filter.key === key ? checkState(state) : false));
         }
     });
 

@@ -2,7 +2,7 @@ import { connectToDebugger, patchLogHook } from "./debug";
 import reportErrorOnInitialization from "./error-reporter";
 import { wintryGlobalObject } from "./globals";
 import { initializeMetro } from "./metro/internal";
-import { metroEventEmitter } from "./metro/internal/events";
+import { metroEvents } from "./metro/internal/events";
 import { internal_getDefiner } from "./metro/internal/modules";
 import { initializePlugins } from "./stores/usePluginStore";
 import { isSafeModeEnabled } from "./stores/usePrefsStore";
@@ -34,7 +34,7 @@ function initialize() {
             //     resolveRNStyle: require("react-native").flatten,
             // })
 
-            metroEventEmitter.emit("metroReady");
+            metroEvents.emit("metroReady");
 
             window.wintry = wintryGlobalObject();
         };

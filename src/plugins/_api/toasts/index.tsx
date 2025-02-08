@@ -3,6 +3,7 @@ import { Devs } from "@data/constants";
 import { findByFilePath } from "@metro";
 import { createContextualPatcher } from "@patcher/contextual";
 import { ToastsRenderer } from "./ToastsRenderer";
+import { useToastStore } from "@stores/useToastStore";
 
 const patcher = createContextualPatcher({ pluginId: meta.id });
 
@@ -16,6 +17,9 @@ export default definePlugin({
 
     start() {
         patcher.after(ToastContainer, "type", (_, res) => {
+            const toasts = useToastStore(s => s.toasts);
+            if (!toasts.length) return res;
+
             return (
                 <>
                     {res}

@@ -84,14 +84,22 @@ export function createModuleFilter<A extends Arg, R, O extends Record<string, un
 export type InteropOption = {
     /**
      * Whether to return for ES module default exports or the whole module.
+     * - If `true`, returns ES module default exports (if available, otherwise the whole module)
+     * - If `false`, returns the entire module
+     *
      * @default true
      */
     returnEsmDefault?: boolean;
+
     /**
-     * Whether to check for ES module default exports. This could potentially help making the filter more efficient when set.
-     * - If `false`, the check will be completely skipped.
-     * - If `true`, **only** the default export is checked.
-     * - If `undefined`, the default behavior is used (check with the default export if it's an ES module first, if false then check with the actual module).
+     * Whether to check for ES module default exports.
+     * Controls filtering behavior for potential performance optimization.
+     *
+     * - If `false`: Skip default export checks completely
+     * - If `true`: Check only the default export
+     * - If `undefined`: Use default behavior (check default export first for ES modules,
+     *                   fall back to module check if needed)
+     *
      * @default undefined
      */
     checkEsmDefault?: boolean;
@@ -117,7 +125,7 @@ export function withInteropOptions<A extends Arg, O extends Record<string, unkno
         },
         stringify: (arg, options) => {
             const VERSION = 1;
-            const boolToNum = (bool: boolean | undefined) => (bool === true ? 2 : bool === false ? 1 : 0);
+            const boolToNum = (bool?: boolean) => (bool === true ? 2 : bool === false ? 1 : 0);
 
             let str = props.stringify(arg, options);
             str += `::interop:${VERSION}:${boolToNum(options.checkEsmDefault)}:${boolToNum(options.returnEsmDefault)}`;

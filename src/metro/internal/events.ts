@@ -10,5 +10,7 @@ type MetroEvents = {
     cacheLoaded: [MetroCache];
 };
 
-export const metroEventEmitter = new Emitter<MetroEvents>();
-metroEventEmitter.setMaxListeners(Number.POSITIVE_INFINITY);
+export const metroEvents = new Emitter<MetroEvents>();
+export const modulesInitializationEvents = new Emitter<Record<number, []>>();
+
+metroEvents.setMaxListeners(Number.POSITIVE_INFINITY);

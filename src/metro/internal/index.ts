@@ -1,9 +1,9 @@
 import { before, instead } from "@patcher";
-import { markExportsFlags, setupMetroCache } from "./caches";
+import { MetroCache, markExportsFlags } from "./caches";
 import { _importingModuleId, moduleRegistry, patchModule } from "./modules";
 
 export function initializeMetro() {
-    setupMetroCache();
+    MetroCache.initialize();
 
     // Patches required for extra metadata of the modules
     patchModule(
@@ -24,11 +24,11 @@ export function initializeMetro() {
         exports => exports.name === "resolveAssetSource",
         ({ module: { exports: resolveAssetSource } }) => {
             type WintryAsset = {
-                __wintry: boolean
-                width: number
-                height: number
-                dataurl: string
-            }
+                __wintry: boolean;
+                width: number;
+                height: number;
+                dataurl: string;
+            };
 
             // Transform the asset from a data URL
             resolveAssetSource.addCustomSourceTransformer(({ asset }: { asset: WintryAsset }) => {
@@ -38,12 +38,12 @@ export function initializeMetro() {
                         width: asset.width,
                         height: asset.height,
                         uri: asset.dataurl,
-                        scale: 1
+                        scale: 1,
                     };
                 }
             });
         },
-    )
+    );
 
     patchModule(
         exports => exports.fileFinishedImporting,

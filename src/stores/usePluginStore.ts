@@ -3,7 +3,7 @@ import { createJSONStorage, persist, subscribeWithSelector } from "zustand/middl
 import { immer } from "zustand/middleware/immer";
 import { hasIndexInitialized } from "..";
 import { kvStorage } from "@utils/kvStorage";
-import { metroEventEmitter } from "@metro/internal/events";
+import { metroEvents } from "@metro/internal/events";
 import type { PluginSettings, PluginState } from "@plugins/types";
 import { getProxyFactory } from "@utils/lazy";
 import { PLUGINS } from "@plugins" with { lazy: "on" };
@@ -52,7 +52,7 @@ function startPlugin(draft: PluginStore, id: string) {
         if (hasIndexInitialized) {
             start();
         } else {
-            metroEventEmitter.once("metroReady", () => start());
+            metroEvents.once("metroReady", () => start());
             console.log(`Queued plugin ${plugin.name} for start`);
         }
     }

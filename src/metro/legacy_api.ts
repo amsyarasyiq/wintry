@@ -1,7 +1,7 @@
 import { TimeoutError, isNotNil } from "es-toolkit";
 import { byDisplayName, byFilePath, byName, byProps, byStoreName, byTypeName } from "./filters";
 import { createCacheHandler, iterateModulesForCache } from "./internal/caches";
-import { metroEventEmitter } from "./internal/events";
+import { metroEvents } from "./internal/events";
 import { moduleRegistry, waitFor } from "./internal/modules";
 import { createLazyModule } from "./lazy";
 import type { InteropOption, ModuleFilter } from "./factories";
@@ -31,7 +31,7 @@ function* _iterateModule<A, R>(filter: ModuleFilter<A, R>, fullLookup: boolean) 
         const { exports: testedExports, resolve } = filterExports(moduleExports, id, filter) ?? {};
         if (testedExports !== undefined) {
             cacheId(id, testedExports);
-            metroEventEmitter.emit("lookupFound", filter.key, moduleRegistry.get(id)!);
+            metroEvents.emit("lookupFound", filter.key, moduleRegistry.get(id)!);
             yield { id, resolve };
         }
     }

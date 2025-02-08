@@ -3,19 +3,18 @@ import { Devs } from "@data/constants";
 import BubbleModule from "@native/modules/BubbleModule";
 import { shallow } from "zustand/shallow";
 
-
 const settings = definePluginSettings({
     avatarRadius: {
         type: "slider",
         label: "Avatar Radius",
         points: [0, 3, 6, 9, 12, 15, 18],
-        default: 12
+        default: 12,
     },
     bubbleRadius: {
         type: "slider",
         label: "Bubble Radius",
         points: [0, 3, 6, 9, 12, 15, 18],
-        default: 12
+        default: 12,
     },
 });
 
@@ -32,8 +31,8 @@ export default definePlugin({
             },
             {
                 equalityFn: shallow,
-                fireImmediately: true
-            }
-        )
+                fireImmediately: true,
+            },
+        );
     },
 });
