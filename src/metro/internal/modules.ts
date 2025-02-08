@@ -1,10 +1,10 @@
 import { hasIndexInitialized } from "../..";
 import { onUntil } from "@utils/events";
-import { filterExports } from "../legacy_api";
 import type { Metro, ModuleState } from "../types";
 import { createCacheHandler, getAllCachedModuleIds, markExportsFlags, onceCacheReady } from "./caches";
 import { metroEvents, modulesInitializationEvents } from "./events";
 import type { ModuleFilter } from "@metro/factories";
+import { testExports } from "@metro/new/api";
 
 export const moduleRegistry = new Map<number, ModuleState>();
 export let _importingModuleId = -1;
@@ -102,8 +102,8 @@ export function patchModule(
     });
 }
 
-export function waitFor<A, R>(
-    filter: ModuleFilter<A, R>,
+export function waitFor<A, R, O>(
+    filter: ModuleFilter<A, R, O>,
     callback: (exports: any, state: ModuleState) => void,
     { count = 1 } = {},
 ) {
@@ -121,12 +121,11 @@ export function waitFor<A, R>(
             const exports = state.module?.exports;
             if (!exports) return false;
 
-            const result = filterExports(exports, state.id, filter);
-            if (!result?.resolve) return false;
+            const result = testExports(state.id, exports, filter);
+            if (!result) return false;
 
-            const resolved = result.resolve();
-            cacheHandler.cacheId(state.id, resolved);
-            callback(resolved, state);
+            cacheHandler.cacheId(state.id, result);
+            callback(result, state);
 
             return (fulfilled = ++currentCount === count);
         }

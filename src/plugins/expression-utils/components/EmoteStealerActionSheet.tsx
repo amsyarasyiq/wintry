@@ -2,8 +2,8 @@ import { ActionSheet, FlashList, Text, TextInput, constants } from "@metro/commo
 import { Image, ScrollView, View } from "react-native";
 import { useEmojiAdderStore } from "../stores/useEmojiAdderStore";
 import type { PartialGuild, EmojiNode } from "../types";
-import { GuildStore, PermissionStore } from "../common";
 import ServerRow from "../components/ServerRow";
+import { GuildStore, PermissionStore } from "@metro/new/stores";
 
 export default function EmoteStealerActionSheet({ emojiNode }: { emojiNode: EmojiNode }) {
     const customAlt = useEmojiAdderStore(s => s.customAlt);

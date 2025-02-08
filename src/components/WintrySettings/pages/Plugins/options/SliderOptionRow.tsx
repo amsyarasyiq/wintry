@@ -3,11 +3,7 @@ import { Card, Slider, Stack, Text } from "@metro/common";
 import {} from "react";
 import { Pressable, View } from "react-native";
 import { usePluginSettings } from "../common/usePluginSettings";
-import { lazyValue } from "@utils/lazy";
-import { findByProps } from "@metro";
-
-const { CirclePlusIcon } = lazyValue(() => findByProps("CirclePlusIcon"));
-const { CircleMinusIcon } = lazyValue(() => findByProps("CircleMinusIcon"));
+import { CircleMinusIcon, CirclePlusIcon } from "@metro/new/icons";
 
 function SliderRow({ opt, plugin, settingKey }: BaseOptionRowProps<"slider">) {
     const [current, setCurrent] = usePluginSettings<typeof opt>(plugin.id, settingKey);

@@ -1,13 +1,14 @@
 import { definePlugin, meta } from "#plugin-context";
 import { Devs } from "@data/constants";
-import { findByFilePath } from "@metro";
 import { createContextualPatcher } from "@patcher/contextual";
 import { ToastsRenderer } from "./ToastsRenderer";
 import { useToastStore } from "@stores/useToastStore";
+import { lookup } from "@metro/new/api";
+import { byFilePath } from "@metro/filters";
 
 const patcher = createContextualPatcher({ pluginId: meta.id });
 
-const ToastContainer = findByFilePath("modules/toast/native/ToastContainer.tsx", true);
+const ToastContainer = lookup(byFilePath("modules/toast/native/ToastContainer.tsx")).asLazy();
 
 export default definePlugin({
     name: "Toasts",

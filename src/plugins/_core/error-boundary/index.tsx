@@ -1,9 +1,9 @@
 import { definePlugin } from "#plugin-context";
 import { Devs } from "@data/constants";
-import { findAsync } from "@metro";
 import { byName } from "@metro/filters";
 import { createContextualPatcher } from "@patcher/contextual";
 import { ErrorBoundaryScreen } from "./ErrorBoundaryScreen";
+import { lookup } from "@metro/new/api";
 
 const patcher = createContextualPatcher({ pluginId: "error-boundary" });
 
@@ -14,7 +14,9 @@ export default definePlugin({
     required: true,
 
     preinit() {
-        const ErrorBoundaryPrototype = findAsync(byName("ErrorBoundary")).then((m: any) => m.prototype);
+        const ErrorBoundaryPrototype = lookup(byName("ErrorBoundary"))
+            .await()
+            .then((m: any) => m.prototype);
 
         patcher.after.async(ErrorBoundaryPrototype, "render", function (this: any) {
             const {

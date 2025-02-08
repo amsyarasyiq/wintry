@@ -1,18 +1,25 @@
-import { findByFilePath, findByProps, findByStoreName } from "@metro";
+import { byFilePath, byProps } from "@metro/filters";
+import { findByProps } from "@metro/legacy_api";
+import { lookup } from "@metro/new/api";
+import type React from "react";
 
-export const CustomEmojiContent = findByFilePath("modules/messages/native/emoji/CustomEmojiContent.tsx");
-export const MessageReactionsContent = findByFilePath("modules/reactions/native/MessageReactionsContent.tsx");
-export const GuildIcon = findByFilePath("uikit-native/GuildIcon.tsx", true);
-export const MessageEmojiActionSheet = findByFilePath(
-    "modules/messages/native/emoji/MessageEmojiActionSheet.tsx",
-    true,
-);
+export const CustomEmojiContent = lookup(
+    byFilePath("modules/messages/native/emoji/CustomEmojiContent.tsx", { returnEsmDefault: false }),
+).asLazy();
 
-// Stores
-export const GuildStore = findByStoreName("GuildStore");
-export const PermissionStore = findByStoreName("PermissionStore");
-export const EmojiStore = findByStoreName("EmojiStore");
+export const MessageReactionsContent = lookup(
+    byFilePath("modules/reactions/native/MessageReactionsContent.tsx", { returnEsmDefault: false }),
+).asLazy();
+
+export let GuildIcon = lookup(byFilePath("uikit-native/GuildIcon.tsx")).asLazy(r => (GuildIcon = r)) as React.FC<
+    Record<string, unknown>
+>;
+
+export let MessageEmojiActionSheet = lookup(
+    byFilePath("modules/messages/native/emoji/MessageEmojiActionSheet.tsx"),
+).asLazy(r => (MessageEmojiActionSheet = r));
 
 // Utilities
-export const MediaViewer = findByProps("openMediaModal");
-export const Surrogates = findByProps("convertSurrogateToName");
+export const MediaViewer = lookup(byProps(["openMediaModal"])).asLazy();
+export const Surrogates = lookup(byProps(["convertSurrogateToName"])).asLazy();
+export const EmojiActionCreators = findByProps("uploadEmoji");

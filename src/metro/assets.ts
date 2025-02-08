@@ -1,6 +1,7 @@
 import { requireModule } from ".";
-import { findByProps } from "./legacy_api";
+import { byProps } from "./filters";
 import { moduleRegistry } from "./internal/modules";
+import { lookup } from "./new/api";
 
 export type Asset = { id: number } & {
     fileSystemLocation?: string;
@@ -15,7 +16,7 @@ export type Asset = { id: number } & {
     resolver?: "android" | "generic";
 };
 
-const assetsRegistry = findByProps("getAssetByID");
+const AssetRegistry = lookup(byProps(["getAssetByID"]));
 
 const _nameToAssetCache = {} as Record<string, Asset>;
 let arrayCache: Asset[] | undefined;
@@ -42,7 +43,7 @@ export function* iterateAssets() {
 
 // Apply additional properties for convenience
 function getAssetById(id: number): Asset {
-    const asset = assetsRegistry.getAssetByID(id);
+    const asset = AssetRegistry.load().getAssetByID(id);
     if (!asset) return asset;
     return Object.assign(asset, { id });
 }

@@ -1,9 +1,7 @@
 import { create } from "zustand";
 import type { EmojiNode } from "../types";
-import { findByProps } from "@metro";
 import { fetchAsDataUrl } from "@utils/network/fetchAsDataUrl";
-
-export const Emojis = findByProps("uploadEmoji");
+import { EmojiActionCreators } from "../common";
 
 interface UploadInfo {
     guildId: string;
@@ -36,7 +34,7 @@ export const useEmojiAdderStore = create<EmojiAdderStore>((set, get) => ({
 
         try {
             const dataUrl = await fetchAsDataUrl(emojiNode.src);
-            await Emojis.uploadEmoji({
+            await EmojiActionCreators.uploadEmoji({
                 guildId,
                 image: dataUrl,
                 name: get().customAlt ?? emojiNode.alt,

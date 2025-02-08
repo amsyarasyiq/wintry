@@ -1,7 +1,8 @@
-import { findByProps } from "../src/metro/legacy_api";
+import { byProps } from "../src/metro/filters";
+import { lookup } from "../src/metro/new/api";
 import { getProxyFactory } from "../src/utils/lazy";
 
-const jsxRuntime = findByProps("jsx", "jsxs", "Fragment");
+let jsxRuntime = lookup(byProps(["jsx", "jsxs"])).asLazy(r => (jsxRuntime = r));
 
 function unproxyFirstArg<T>(args: T[]) {
     if (!args[0]) {

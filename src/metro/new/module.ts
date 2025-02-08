@@ -9,7 +9,7 @@ export class SingleMetroModule<A, R, O> {
     _module?: R;
 
     _lazy?: LazyModuleContext<A, R, O>;
-    _lazyCallback?: (exports: R) => void;
+    _lazyCallback?: (exports: any) => void;
 
     filter: ModuleFilter<A, R, O>;
 
@@ -21,7 +21,7 @@ export class SingleMetroModule<A, R, O> {
         return waitFor(this.filter, exp => callback(exp));
     }
 
-    load(): R {
+    load<T = R>(): T {
         if (!this._module) {
             const ret = findIdAndResolved(this.filter);
 
@@ -33,7 +33,7 @@ export class SingleMetroModule<A, R, O> {
             this._module = ret.resolved;
         }
 
-        return this._module;
+        return this._module as unknown as T;
     }
 
     await(): SynchronousPromise<R> {

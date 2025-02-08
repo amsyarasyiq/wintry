@@ -1,18 +1,18 @@
 import type { FlashListProps, Masonry } from "@shopify/flash-list";
 import { lazyDestructure, lazyValue } from "@utils/lazy";
-import { find, findByProps } from "../legacy_api";
 
 import type { ReactElement } from "react";
 import type * as t from "./types/components";
-import { bySingularProp } from "@metro/filters";
+import { byProps, bySingularProp } from "@metro/filters";
+import { lookup } from "@metro/new/api";
 
-const findSingular = (prop: string) => lazyValue(() => find(bySingularProp(prop))?.[prop]);
-const findProp = (...prop: string[]) => lazyValue(() => findByProps(...prop)[prop[0]]);
+const findSingular = (prop: string) => lazyValue(() => lookup(bySingularProp(prop)).load()[prop]);
+export const findProp = (...prop: string[]) => lazyValue(() => lookup(byProps(prop)).load()[prop[0]]);
 
 // React Native's included SafeAreaView only adds padding on iOS.
-export const { SafeAreaView, SafeAreaProvider, useSafeAreaInsets } = lazyDestructure(() =>
-    findByProps("useSafeAreaInsets"),
-);
+export let { SafeAreaView, SafeAreaProvider, useSafeAreaInsets } = lazyDestructure(() =>
+    lookup(byProps(["useSafeAreaInsets"])).asLazy(m => ({ SafeAreaView, SafeAreaProvider, useSafeAreaInsets } = m)),
+) as any;
 
 // ActionSheet
 export const ActionSheetRow = findProp("ActionSheetRow");

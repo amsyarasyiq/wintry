@@ -1,19 +1,19 @@
 import { Devs } from "@data/constants";
 import { t } from "@i18n";
-import { findByName } from "@metro/legacy_api";
 import { findAssetId } from "@metro/assets";
 import { TableRow } from "@metro/common/components";
-import { byProps } from "@metro/filters";
+import { byName, byProps } from "@metro/filters";
 import { waitFor } from "@metro/internal/modules";
 import { createContextualPatcher } from "@patcher/contextual";
 import { findInReactTree } from "@utils/objects";
 import { CustomPageRenderer } from "./CustomPageRenderer";
 import { definePlugin, definePluginSettings, meta } from "#plugin-context";
 import SettingsManager from "./SettingsManager";
+import { lookup } from "@metro/new/api";
 
 const patcher = createContextualPatcher({ pluginId: meta.id });
 
-const SettingsOverviewScreen = findByName("SettingsOverviewScreen", false);
+const SettingsOverviewScreen = lookup(byName("SettingsOverviewScreen", { returnEsmDefault: false })).asLazy();
 
 const manager = new SettingsManager();
 

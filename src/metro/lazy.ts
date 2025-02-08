@@ -6,12 +6,12 @@ import type { ModuleFilter } from "./factories";
 
 /** @internal */
 const _lazyContextSymbol = Symbol.for("wintry.metro.lazyContext");
-const _lazyContexts = new WeakMap<any, LazyModuleContext>();
+const _lazyContexts = new WeakMap<any, LazyModuleContext<any, any, any>>();
 
-export class LazyModuleContext<A = unknown, R = unknown> {
+export class LazyModuleContext<A = unknown, R = unknown, O = unknown> {
     cache: R | undefined = undefined;
 
-    constructor(public filter: ModuleFilter<A, R>) {}
+    constructor(public filter: ModuleFilter<A, R, O>) {}
 
     wait(callback: (exports: any) => void): () => void {
         return waitFor(this.filter, exp => callback(exp));
@@ -38,8 +38,8 @@ export class LazyModuleContext<A = unknown, R = unknown> {
     }
 }
 
-export function createLazyModule<A, R>(filter: ModuleFilter<A, R>): R {
-    const context: LazyModuleContext<A, R> = new LazyModuleContext(filter);
+export function createLazyModule<A, R, O>(filter: ModuleFilter<A, R, O>): R {
+    const context: LazyModuleContext<A, R, O> = new LazyModuleContext(filter);
 
     const proxy = lazyValue(() => context.eagerLoad(), {
         exemptedEntries: {

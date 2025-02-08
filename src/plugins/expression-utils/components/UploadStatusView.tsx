@@ -1,17 +1,16 @@
 import Codeblock from "@components/Codeblock";
 import { createStyles } from "@components/utils/styles";
-import { findAssetId, findByProps } from "@metro";
 import { Text, tokens } from "@metro/common";
 import { View, ActivityIndicator, Image } from "react-native";
 import Animated, { CurvedTransition } from "react-native-reanimated";
-import { GuildIcon, GuildStore } from "../common";
+import { GuildIcon } from "../common";
 import { useShallow } from "zustand/shallow";
 import { useEmojiAdderStore } from "../stores/useEmojiAdderStore";
 import type { EmojiUploadFailure, PartialGuild } from "../types";
-import { lazyDestructure } from "@utils/lazy";
 import { isError } from "@utils/errors/isError";
-
-const { ArrowSmallLeftIcon } = lazyDestructure(() => findByProps("ArrowSmallLeftIcon"));
+import { findAssetId } from "@metro/assets";
+import { ArrowSmallLeftIcon } from "@metro/new/icons";
+import { GuildStore } from "@metro/new/stores";
 
 const useStyles = createStyles(() => ({
     checkmarkIcon: {

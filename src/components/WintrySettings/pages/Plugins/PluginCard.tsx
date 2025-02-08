@@ -3,8 +3,8 @@ import type {} from "fuzzysort";
 import { type ComponentProps, createContext, memo, useContext } from "react";
 import { View } from "react-native";
 import { useShallow } from "zustand/shallow";
-import { findAssetId, findByProps } from "@metro";
-import { Card, FormSwitch, IconButton, Stack, Text, tokens } from "@metro/common";
+import { findAssetId } from "@metro";
+import { Card, FormSwitch, IconButton, Stack, Text, chroma, tokens } from "@metro/common";
 import type { WintryPluginInstance } from "@plugins/types";
 import usePluginStore from "@stores/usePluginStore";
 import { showSheet } from "@components/utils/sheets";
@@ -22,7 +22,7 @@ export interface PluginCardProps<T> {
 const useCardContext = () => useContext(PluginCardContext);
 
 function getHighlightColor(): import("react-native").ColorValue {
-    return findByProps("brewer")(tokens.unsafe_rawColors.YELLOW_300).alpha(0.3).hex();
+    return chroma(tokens.unsafe_rawColors.YELLOW_300).alpha(0.3).hex();
 }
 
 function usePluginSettings() {

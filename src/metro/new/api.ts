@@ -10,7 +10,11 @@ import { SingleMetroModule } from "./module";
  * @param filter find calls filter once for each enumerable module's exports.
  * @returns An iterator that yields the export.
  */
-function testExports<A, R, O>(moduleId: number, moduleExports: any, filter: ModuleFilter<A, R, O>): R | undefined {
+export function testExports<A, R, O>(
+    moduleId: number,
+    moduleExports: any,
+    filter: ModuleFilter<A, R, O>,
+): R | undefined {
     for (const resolve of filter.resolvers) {
         const resolved = resolve(moduleExports);
         if (!resolved) continue;

@@ -1,13 +1,14 @@
 import type { ImageStyle, TextStyle, ViewStyle } from "react-native";
-import { findByProps } from "@metro";
 import { lazyDestructure, lazyValue } from "@utils/lazy";
+import { lookup } from "@metro/new/api";
+import { byProps } from "@metro/filters";
 
 type NamedStyles<T> = { [P in keyof T]: ViewStyle | TextStyle | ImageStyle };
 
-const Styles = findByProps("createStyles");
+let Styles = lookup(byProps(["createStyles"])).asLazy(m => (Styles = m));
 
-export const { ThemeContext } = lazyDestructure(() => findByProps("ThemeContext"), { hint: "object" });
-export const { TextStyleSheet } = lazyDestructure(() => findByProps("TextStyleSheet")) as unknown as {
+export const { ThemeContext } = lazyDestructure(() => lookup(byProps(["ThemeContext"])).load(), { hint: "object" });
+export const { TextStyleSheet } = lazyDestructure(() => lookup(byProps(["TextStyleSheet"])).load()) as unknown as {
     TextStyleSheet: Record<string, TextStyle>;
 };
 
