@@ -1,5 +1,4 @@
 import { byFilePath, byProps } from "@metro/filters";
-import { findByProps } from "@metro/legacy_api";
 import { lookup } from "@metro/new/api";
 import type React from "react";
 
@@ -22,4 +21,4 @@ export let MessageEmojiActionSheet = lookup(
 // Utilities
 export const MediaViewer = lookup(byProps(["openMediaModal"])).asLazy();
 export const Surrogates = lookup(byProps(["convertSurrogateToName"])).asLazy();
-export const EmojiActionCreators = findByProps("uploadEmoji");
+export const EmojiActionCreators = lookup(byProps(["uploadEmoji"])).asLazy();
