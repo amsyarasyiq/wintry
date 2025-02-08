@@ -1,9 +1,10 @@
-import { ActionSheet, FlashList, Text, TextInput, constants } from "@metro/common";
+import { ActionSheet, Text, TextInput, constants } from "@metro/common";
 import { Image, ScrollView, View } from "react-native";
 import { useEmojiAdderStore } from "../stores/useEmojiAdderStore";
 import type { PartialGuild, EmojiNode } from "../types";
 import ServerRow from "../components/ServerRow";
 import { GuildStore, PermissionStore } from "@metro/new/common/stores";
+import { FlashList } from "@shopify/flash-list";
 
 export default function EmoteStealerActionSheet({ emojiNode }: { emojiNode: EmojiNode }) {
     const customAlt = useEmojiAdderStore(s => s.customAlt);
@@ -24,6 +25,7 @@ export default function EmoteStealerActionSheet({ emojiNode }: { emojiNode: Emoj
                 </View>
                 <FlashList
                     style={{ flex: 1 }}
+                    estimatedItemSize={63}
                     ListHeaderComponent={
                         <View style={{ gap: 12, paddingVertical: 12 }}>
                             <TextInput

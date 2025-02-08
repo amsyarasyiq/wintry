@@ -1,7 +1,4 @@
-import type { FlashListProps, Masonry } from "@shopify/flash-list";
 import { lazyDestructure, lazyValue } from "@utils/lazy";
-
-import type { ReactElement } from "react";
 import type * as t from "./types/components";
 import { byProps, bySingularProp } from "@metro/new/common/filters";
 import { lookup } from "@metro/new/api";
@@ -63,6 +60,7 @@ export const AvatarPile = findSingular("AvatarPile");
 // Misc.
 export const ContextMenu = findProp("ContextMenu") as t.ContextMenu;
 export const Stack = findProp("Stack") as t.Stack;
+
 export const Avatar = findProp("default", "AvatarSizes", "getStatusSize");
 
 // Inputs
@@ -82,8 +80,3 @@ export const ActionSheet = findProp("ActionSheet") as t.ActionSheet;
 export const BottomSheetTitleHeader = findProp("BottomSheetTitleHeader");
 
 export const Text = findProp("Text", "LegacyText") as t.Text;
-
-export const FlashList = findProp("FlashList") as <T>(props: FlashListProps<T>) => ReactElement;
-export const MasonryFlashList = findProp("MasonryFlashList") as <T>(
-    props: Masonry.MasonryFlashListProps<T>,
-) => ReactElement;

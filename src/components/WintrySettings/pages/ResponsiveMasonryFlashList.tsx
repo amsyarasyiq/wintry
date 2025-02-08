@@ -1,12 +1,11 @@
 import { useMemo, useCallback } from "react";
 import { View, useWindowDimensions } from "react-native";
-import type { Masonry } from "@shopify/flash-list";
 import type { SetRequired } from "type-fest";
-import { MasonryFlashList } from "@metro/common";
 import { omit } from "es-toolkit";
+import { MasonryFlashList, type MasonryFlashListProps, type MasonryListRenderItemInfo } from "@shopify/flash-list";
 
 export function ResponsiveMasonryFlashList<T>(
-    props: Omit<SetRequired<Masonry.MasonryFlashListProps<T>, "data" | "renderItem">, "numColumns"> & {
+    props: Omit<SetRequired<MasonryFlashListProps<T>, "data" | "renderItem">, "numColumns"> & {
         itemMinWidth: number;
     },
 ) {
@@ -20,7 +19,7 @@ export function ResponsiveMasonryFlashList<T>(
     );
 
     const renderItem = useCallback(
-        (info: Masonry.MasonryListRenderItemInfo<T>) => {
+        (info: MasonryListRenderItemInfo<T>) => {
             const { columnIndex } = info;
             const Item = props.renderItem!;
 

@@ -1,10 +1,11 @@
 import { useMemo } from "react";
 import { type Asset, getAssets } from "@metro/assets";
-import { ActionSheet, FlashList, Stack, TableRow, TableRowGroup } from "@metro/common/components";
+import { ActionSheet, Stack, TableRow, TableRowGroup } from "@metro/common/components";
 import { Image, View, useWindowDimensions } from "react-native";
 import { showSheet } from "@components/utils/sheets";
 import Search, { useSearchQuery } from "@components/Search";
 import PageWrapper from "@components/WintrySettings/PageWrapper";
+import { FlashList } from "@shopify/flash-list";
 
 // Constants
 const REDESIGN_ICON_PATH = "/assets/design/components/Icon/native/redesign/generated/images";
@@ -98,6 +99,7 @@ export default function AssetBrowser() {
             <Search queryRef={ref} />
             <FlashList
                 data={assets}
+                estimatedItemSize={73}
                 keyExtractor={item => String(item.id)}
                 renderItem={({ item, index }) => (
                     <AssetDisplay asset={item} start={index === 0} end={index === assets.length - 1} />
