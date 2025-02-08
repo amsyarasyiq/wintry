@@ -1,4 +1,4 @@
-import { findByPropsImmediate as findByProps } from "../src/metro/api";
+import { findByPropsImmediate as findByProps } from "../src/metro/legacy_api";
 import { lazyObjectGetter as wrap } from "../src/utils/lazy";
 
 // biome-ignore format: To appear more consistent

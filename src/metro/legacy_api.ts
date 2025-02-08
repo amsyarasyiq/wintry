@@ -4,7 +4,8 @@ import { createCacheHandler, iterateModulesForCache } from "./internal/caches";
 import { metroEventEmitter } from "./internal/events";
 import { moduleRegistry, waitFor } from "./internal/modules";
 import { createLazyModule } from "./lazy";
-import type { FilterFn } from "./types";
+import type { InteropOption, ModuleFilter } from "./factories";
+import { SynchronousPromise } from "synchronous-promise";
 
 /**
  * @internal
@@ -12,27 +13,25 @@ import type { FilterFn } from "./types";
  * @param filter find calls filter once for each enumerable module's exports.
  * @returns An iterator that yields the export.
  */
-export function filterExports<A extends unknown[]>(moduleExports: any, moduleId: number, filter: FilterFn<A>) {
-    if (moduleExports.default && moduleExports.__esModule && filter(moduleExports.default, moduleId, true)) {
-        return {
-            exports: filter.raw ? moduleExports : moduleExports.default,
-            resolve: () => (filter.raw ? moduleExports : moduleExports.default),
-        };
-    }
+export function filterExports<A, R>(moduleExports: any, moduleId: number, filter: ModuleFilter<A, R>) {
+    for (const resolve of filter.resolvers) {
+        const resolved = resolve(moduleExports);
+        if (!resolved) continue;
 
-    if (!filter.raw && filter(moduleExports, moduleId, false)) {
-        return { exports: moduleExports, resolve: () => moduleExports };
+        if (filter.check(moduleId, resolved)) {
+            return { exports: resolved, resolve: () => resolved };
+        }
     }
 }
 
-function* _iterateModule<A extends unknown[]>(filter: FilterFn<A>, fullLookup: boolean) {
-    const { cacheId, finish } = createCacheHandler(filter.uniq, false);
+function* _iterateModule<A, R>(filter: ModuleFilter<A, R>, fullLookup: boolean) {
+    const { cacheId, finish } = createCacheHandler(filter.key, false);
 
-    for (const [id, moduleExports] of iterateModulesForCache(filter.uniq, fullLookup)) {
+    for (const [id, moduleExports] of iterateModulesForCache(filter.key, fullLookup)) {
         const { exports: testedExports, resolve } = filterExports(moduleExports, id, filter) ?? {};
         if (testedExports !== undefined) {
             cacheId(id, testedExports);
-            metroEventEmitter.emit("lookupFound", filter.uniq, moduleRegistry.get(id)!);
+            metroEventEmitter.emit("lookupFound", filter.key, moduleRegistry.get(id)!);
             yield { id, resolve };
         }
     }
@@ -40,7 +39,7 @@ function* _iterateModule<A extends unknown[]>(filter: FilterFn<A>, fullLookup: b
     finish(true);
 }
 
-function _findModule<A extends unknown[]>(filter: FilterFn<A>) {
+function _findModule<A, R>(filter: ModuleFilter<A, R>) {
     return _iterateModule(filter, false).next().value;
 }
 
@@ -48,12 +47,12 @@ function _findModule<A extends unknown[]>(filter: FilterFn<A>) {
  * Returns the exports of the first module where filter returns non-undefined, and undefined otherwise.
  * @param filter find calls filter once for each enumerable module's exports until it finds one where filter returns a thruthy value.
  */
-export function find<A extends unknown[]>(filter: FilterFn<A>) {
+export function find<A, R>(filter: ModuleFilter<A, R>) {
     return createLazyModule(filter);
 }
 
-export function findAsync<A extends unknown[]>(filter: FilterFn<A>, timeout?: number) {
-    return new Promise((resolve, reject) => {
+export function findAsync<A, R>(filter: ModuleFilter<A, R>, timeout?: number) {
+    return new SynchronousPromise<R>((resolve, reject) => {
         let timer: Timer | undefined;
         if (timeout !== undefined) timer = setTimeout(() => reject(new TimeoutError("Timed out")), timeout);
 
@@ -68,17 +67,17 @@ export function findAsync<A extends unknown[]>(filter: FilterFn<A>, timeout?: nu
  * Finds and returns the module ID that matches the given filter function.
  *
  * @template A - The type of the arguments that the filter function accepts.
- * @param {FilterFn<A>} filter - The filter function used to find the module.
+ * @param {ModuleFilter<A>} filter - The filter function used to find the module.
  * @returns The ID of the module that matches the filter criteria.
  */
-export function findId<A extends unknown[]>(filter: FilterFn<A>) {
+export function findId<A, R>(filter: ModuleFilter<A, R>) {
     return _findModule(filter)?.id;
 }
 
 /**
  * Finds and returns the module ID that matches the given filter function.
  */
-export function findAllIds<A extends unknown[]>(filter: FilterFn<A>) {
+export function findAllIds<A, R>(filter: ModuleFilter<A, R>) {
     return [..._iterateModule(filter, true)].map(({ id }) => id);
 }
 
@@ -87,7 +86,7 @@ export function findAllIds<A extends unknown[]>(filter: FilterFn<A>) {
  * @param filter find calls filter once for each enumerable module's exports.
  * @returns An iterator that yields the export.
  */
-export function* iterate<A extends unknown[]>(filter: FilterFn<A>) {
+export function* iterate<A, R>(filter: ModuleFilter<A, R>) {
     for (const { resolve } of _iterateModule(filter, true)) {
         const exports = resolve?.();
         if (exports) yield exports;
@@ -99,7 +98,7 @@ export function* iterate<A extends unknown[]>(filter: FilterFn<A>) {
  * @param filter find calls filter once for each enumerable module's exports.
  * @returns
  */
-export function findAll<A extends unknown[]>(filter: FilterFn<A>) {
+export function findAll<A, R>(filter: ModuleFilter<A, R>) {
     return [..._iterateModule(filter, true)].map(({ resolve }) => resolve?.()).filter(isNotNil);
 }
 
@@ -110,79 +109,83 @@ export function findAll<A extends unknown[]>(filter: FilterFn<A>) {
  * @param filter The filter function used to find the module.
  * @returns The resolved module if found, otherwise undefined.
  */
-export function findImmediate<A extends unknown[]>(filter: FilterFn<A>) {
+export function findImmediate<A, R>(filter: ModuleFilter<A, R>) {
     const module = _findModule(filter);
     if (module == null) return;
 
     return module.resolve?.();
 }
 
-export function findByProps(...props: string[]) {
-    return find(byProps(...props));
+export function findByProps<T extends string>(...props: T[]) {
+    return find(byProps(props));
 }
 
 /**
  * Searches for a module that contains the specified props.
  * @param args String props to search for.
  */
-export function findByPropsAsync(...args: string[]) {
-    return findAsync(byProps(...args));
+export function findByPropsAsync<T extends string>(...args: T[]) {
+    return findAsync(byProps(args));
 }
 
-export function findByPropsImmediate(...props: string[]) {
-    return findImmediate(byProps(...props));
+export function findByPropsImmediate<T extends string>(...props: T[]) {
+    return findImmediate(byProps(props));
 }
 
 export function findByPropsAll(...props: string[]) {
-    return findAll(byProps(...props));
+    return findAll(byProps(props));
+}
+
+function createInteropOption(expDefault: boolean): InteropOption | undefined {
+    return { returnEsmDefault: expDefault };
 }
 
 export function findByName(name: string, expDefault = true) {
-    return find(expDefault ? byName(name) : byName.raw(name));
+    return find(byName(name, createInteropOption(expDefault)));
 }
 
 export function findByNameAsync(name: string, expDefault = true) {
-    return findAsync(expDefault ? byName(name) : byName.raw(name));
+    return findAsync(byName(name, createInteropOption(expDefault)));
 }
 
 export function findByNameImmediate(name: string, expDefault = true) {
-    return findImmediate(expDefault ? byName(name) : byName.raw(name));
+    return findImmediate(byName(name, createInteropOption(expDefault)));
 }
 
 export function findByNameAll(name: string, expDefault = true) {
-    return findAll(expDefault ? byName(name) : byName.raw(name));
+    return findAll(byName(name, createInteropOption(expDefault)));
 }
 
 export function findByDisplayName(name: string, expDefault = true) {
-    return find(expDefault ? byDisplayName(name) : byDisplayName.raw(name));
+    return find(byDisplayName(name, createInteropOption(expDefault)));
 }
 
 export function findByDisplayNameAsync(name: string, expDefault = true) {
-    return findAsync(expDefault ? byDisplayName(name) : byDisplayName.raw(name));
+    return findAsync(byDisplayName(name, createInteropOption(expDefault)));
 }
 
 export function findByDisplayNameImmediate(name: string, expDefault = true) {
-    return findImmediate(expDefault ? byDisplayName(name) : byDisplayName.raw(name));
+    return findImmediate(byDisplayName(name, createInteropOption(expDefault)));
 }
 
 export function findByDisplayNameAll(name: string, expDefault = true) {
-    return findAll(expDefault ? byDisplayName(name) : byDisplayName.raw(name));
+    return findAll(byDisplayName(name, createInteropOption(expDefault)));
 }
 
 export function findByTypeName(name: string, expDefault = true) {
-    return find(expDefault ? byTypeName(name) : byTypeName.raw(name));
+    return find(byTypeName(name, createInteropOption(expDefault)));
 }
 
 export function findByTypeNameAsync(name: string, expDefault = true) {
-    return findAsync(expDefault ? byTypeName(name) : byTypeName.raw(name));
+    return findAsync(byTypeName(name, createInteropOption(expDefault)));
 }
 
 export function findByTypeNameLazy(name: string, expDefault = true) {
-    return findImmediate(expDefault ? byTypeName(name) : byTypeName.raw(name));
+    return findImmediate(byTypeName(name, createInteropOption(expDefault)));
 }
 
 export function findByTypeNameAll(name: string, expDefault = true) {
-    return findAll(expDefault ? byTypeName(name) : byTypeName.raw(name));
+    return findAll(byTypeName(name, createInteropOption(expDefault)));
 }
 
 export function findByStoreName(name: string) {
@@ -194,9 +197,9 @@ export function findByStoreNameImmediate(name: string) {
 }
 
 export function findByFilePath(path: string, resolveToDefault = false) {
-    return find(byFilePath(path, resolveToDefault));
+    return find(byFilePath(path, { checkEsmDefault: resolveToDefault }));
 }
 
-export function findByFilePathImmediate(path: string, expDefault = false) {
-    return findImmediate(byFilePath(path, expDefault));
+export function findByFilePathImmediate(path: string, resolveToDefault = false) {
+    return findImmediate(byFilePath(path, { checkEsmDefault: resolveToDefault }));
 }

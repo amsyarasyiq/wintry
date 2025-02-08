@@ -8,19 +8,22 @@ async function gatherExportedModules() {
     const files = [...glob.scanSync()];
 
     const transpiler = new Bun.Transpiler({
-        loader: 'tsx',
+        loader: "tsx",
     });
 
     const exports = {} as Record<string, string[]>;
 
     for (const file of files) {
         const parentDir = path.dirname(file);
-        const result = transpiler.scan((await readFile(file)).toString());
+        const content = (await readFile(file)).toString();
+        const result = transpiler.scan(content);
 
-        if (result.exports.length > 0
-            && !result.imports.some(i => i.kind === "import-statement" && i.path === "no-expose")
+        if (
+            result.exports.length > 0 &&
+            !result.imports.some(i => i.kind === "import-statement" && i.path === "no-expose") &&
             // TODO: Make this works recursively
-            && !await exists(path.join(parentDir, ".no-expose"))) {
+            !(await exists(path.join(parentDir, ".no-expose")))
+        ) {
             const relativeName = path
                 .relative("src", file)
                 .replace(/\.tsx?$/, "")

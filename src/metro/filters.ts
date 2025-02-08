@@ -1,38 +1,86 @@
-import { createFilterDefinition } from "./factories";
-import { moduleRegistry } from "./internal/modules";
+import type { AnyRecord } from "@utils/types";
+import {
+    type ModuleFilter,
+    type ModuleFilterFactory,
+    type InteropOption,
+    createModuleFilter,
+    withInteropOptions,
+} from "./factories";
 
-export const byProps = createFilterDefinition<string[]>(
-    (props, m) => (props.length === 0 ? m[props[0]] : props.every(p => m[p])),
-    props => `wintry.metro.byProps(${props.join(",")})`,
-);
+type Filter<F> = F extends (...args: any[]) => ModuleFilter<infer A, infer R> ? F & ModuleFilterFactory<A, R> : never;
 
-export const byName = createFilterDefinition<[string]>(
-    ([name], m) => m.name === name,
-    name => `wintry.metro.byName(${name})`,
-);
+type ByProps = <T extends string>(props: T[], options?: InteropOption) => ModuleFilter<T[], AnyRecord & Record<T, any>>;
 
-export const byDisplayName = createFilterDefinition<[string]>(
-    ([displayName], m) => m.displayName === displayName,
-    name => `wintry.metro.byDisplayName(${name})`,
-);
+export const byProps = createModuleFilter(
+    withInteropOptions<string[]>({
+        filter: ({ a: props, m }) => (props.length === 1 ? m[props[0]] : props.every(p => m[p])),
+        stringify: arg => `byProps([${arg.join(",")}])`,
+    }),
+) as Filter<ByProps>;
 
-export const byTypeName = createFilterDefinition<[string]>(
-    ([typeName], m) => m.type?.name === typeName,
-    name => `wintry.metro.byTypeName(${name})`,
-);
+type ByName = <T extends string>(
+    name: T,
+    options?: InteropOption,
+) => ModuleFilter<T, AnyRecord & ((...args: unknown[]) => any) & { name: T }>;
 
-export const byStoreName = createFilterDefinition<[string]>(
-    ([name], m) => m.getName?.length === 0 && m.getName() === name,
-    name => `wintry.metro.byStoreName(${name})`,
-);
+// TODO: consider adding a check for the function type
+export const byName = createModuleFilter(
+    withInteropOptions<string>({
+        filter: ({ a: name, m }) => typeof m === "function" && m.name === name,
+        stringify: arg => `byName(${arg})`,
+    }),
+) as Filter<ByName>;
 
-export const byFilePath = createFilterDefinition<[string, boolean]>(
-    ([path, resolveToDefault], _, id, isDefaultCheck) =>
-        resolveToDefault === isDefaultCheck && moduleRegistry.get(id)?.meta.filePath === path,
-    ([path, resolveToDefault]) => `wintry.metro.byFilePath(${path},${resolveToDefault})`,
-);
+type ByDisplayName = <T extends string>(
+    displayName: T,
+    options?: InteropOption,
+) => ModuleFilter<T, AnyRecord & { displayName: T }>;
 
-export const byMutableProp = createFilterDefinition<[string]>(
-    ([prop], m) => m?.[prop] && !Object.getOwnPropertyDescriptor(m, prop)?.get,
-    prop => `wintry.metro.byMutableProp(${prop})`,
-);
+export const byDisplayName = createModuleFilter(
+    withInteropOptions<string>({
+        filter: ({ a: displayName, m }) => m.displayName === displayName,
+        stringify: arg => `byDisplayName(${arg})`,
+    }),
+) as Filter<ByDisplayName>;
+
+type ByTypeName = <T extends string>(
+    typeName: T,
+    options?: InteropOption,
+) => ModuleFilter<T, AnyRecord & { type: { name: T } }>;
+
+export const byTypeName = createModuleFilter(
+    withInteropOptions<string>({
+        filter: ({ a: typeName, m }) => m.type?.name === typeName,
+        stringify: arg => `byTypeName(${arg})`,
+    }),
+) as Filter<ByTypeName>;
+
+type ByStoreName = <T extends string>(
+    name: T,
+    options?: InteropOption,
+) => ModuleFilter<T, AnyRecord & { getName: () => T }>;
+
+export const byStoreName = createModuleFilter(
+    withInteropOptions<string>({
+        filter: ({ a: name, m }) => m.constructor?.displayName === name && m.getName() === name,
+        stringify: arg => `byStoreName(${arg})`,
+    }),
+) as Filter<ByStoreName>;
+
+type ByFilePath = <T extends string>(path: T, options?: InteropOption) => ModuleFilter<T, AnyRecord>;
+
+export const byFilePath = createModuleFilter(
+    withInteropOptions<string>({
+        filter: ({ a: path, state }) => state.meta.filePath === path,
+        stringify: arg => `byFilePath(${arg})`,
+    }),
+) as Filter<ByFilePath>;
+
+type BySingularProp = <T extends string>(prop: T) => ModuleFilter<T, AnyRecord & Record<T, any>>;
+
+export const bySingularProp = createModuleFilter(
+    withInteropOptions<string>({
+        filter: ({ a: prop, m }) => m[prop] && Object.keys(m).length === 1,
+        stringify: arg => `bySingularProp(${arg})`,
+    }),
+) as Filter<BySingularProp>;

@@ -1,5 +1,5 @@
 import { lazyDestructure } from "@utils/lazy";
-import { findByFilePath, findByProps } from "../api";
+import { findByFilePath, findByProps } from "../legacy_api";
 
 export * from "./components";
 

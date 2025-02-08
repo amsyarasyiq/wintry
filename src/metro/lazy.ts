@@ -1,8 +1,9 @@
 import { _patcherDelaySymbol } from "../patcher/patcher";
 import { lazyValue } from "@utils/lazy";
-import { findImmediate } from "./api";
+import { findImmediate } from "./legacy_api";
 import { waitFor } from "./internal/modules";
-import type { FilterFn, LazyModuleContext } from "./types";
+import type { LazyModuleContext } from "./types";
+import type { ModuleFilter } from "./factories";
 
 /** @internal */
 const _lazyContextSymbol = Symbol.for("wintry.metro.lazyContext");
@@ -13,10 +14,10 @@ export function getLazyContext<A extends unknown[]>(proxy: any): LazyModuleConte
     return _lazyContexts.get(proxy) as unknown as LazyModuleContext<A>;
 }
 
-export function createLazyModule<A extends unknown[]>(filter: FilterFn<A>) {
-    let cache: any = undefined;
+export function createLazyModule<A, R>(filter: ModuleFilter<A, R>): R {
+    let cache: R | undefined = undefined;
 
-    const context: LazyModuleContext<A> = {
+    const context: LazyModuleContext<A, R> = {
         filter,
         getExports(callback: (exports: any) => void) {
             if (cache) {
@@ -35,7 +36,7 @@ export function createLazyModule<A extends unknown[]>(filter: FilterFn<A>) {
         forceLoad() {
             if (!cache) {
                 cache = findImmediate(filter);
-                if (!cache) throw new Error(`Result of ${filter.uniq} is ${typeof cache}!`);
+                if (!cache) throw new Error(`Result of ${filter.key} is ${typeof cache}!`);
                 if (typeof cache === "function" || typeof cache === "object")
                     _lazyContexts.set(cache, context as LazyModuleContext<unknown[]>);
             }

@@ -13,19 +13,22 @@ export default definePlugin({
     requiresRestart: (start, { ranPreinit }) => start && (!ranPreinit || !patched),
 
     preinit() {
-        waitFor(byStoreName.raw("DeveloperExperimentStore"), exports => {
-            exports.default = new Proxy(exports.default, {
-                get: (target, property, receiver) => {
-                    if (property === "isDeveloper") {
-                        // If this plugin is running, return true
-                        return this.state.running ?? false;
-                    }
+        waitFor(
+            byStoreName("DeveloperExperimentStore", { returnEsmDefault: false, checkEsmDefault: true }),
+            exports => {
+                exports.default = new Proxy(exports.default, {
+                    get: (target, property, receiver) => {
+                        if (property === "isDeveloper") {
+                            // If this plugin is running, return true
+                            return this.state.running ?? false;
+                        }
 
-                    return Reflect.get(target, property, receiver);
-                },
-            });
+                        return Reflect.get(target, property, receiver);
+                    },
+                });
 
-            patched = true;
-        });
+                patched = true;
+            },
+        );
     },
 });

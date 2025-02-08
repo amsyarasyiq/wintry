@@ -1,12 +1,12 @@
 import { hasIndexInitialized } from "../..";
 import { onUntil } from "@utils/events";
-import { filterExports } from "../api";
-import type { FilterFn, Metro, ModuleExports, ModuleState } from "../types";
+import { filterExports } from "../legacy_api";
+import type { Metro, ModuleState } from "../types";
 import { createCacheHandler, getAllCachedModuleIds, markExportsFlags, onceCacheReady } from "./caches";
 import { metroEventEmitter } from "./events";
+import type { ModuleFilter } from "@metro/factories";
 
-// TODO: Remove the global exposure
-export const moduleRegistry = (window.modules = new Map<number, ModuleState>());
+export const moduleRegistry = new Map<number, ModuleState>();
 export let _importingModuleId = -1;
 
 /** @internal */
@@ -101,9 +101,9 @@ export function patchModule(
     });
 }
 
-export function waitFor<A extends unknown[]>(
-    filter: FilterFn<A>,
-    callback: (exports: ModuleExports, state: ModuleState) => void,
+export function waitFor<A, R>(
+    filter: ModuleFilter<A, R>,
+    callback: (exports: any, state: ModuleState) => void,
     { count = 1 } = {},
 ) {
     let currentCount = 0;
@@ -111,14 +111,14 @@ export function waitFor<A extends unknown[]>(
 
     onceCacheReady(() => {
         if (fulfilled) return;
-        const moduleIds = getAllCachedModuleIds(filter.uniq);
+        const moduleIds = getAllCachedModuleIds(filter.key);
 
         function checkState(state: ModuleState) {
             if (fulfilled) return true;
 
             const { resolve } = (state.module?.exports && filterExports(state.module?.exports, state.id, filter)) || {};
             if (resolve) {
-                createCacheHandler(filter.uniq, false).cacheId(state.id, resolve());
+                createCacheHandler(filter.key, false).cacheId(state.id, resolve());
 
                 callback(resolve(), state);
                 if (++currentCount === count) return (fulfilled = true);
@@ -130,15 +130,15 @@ export function waitFor<A extends unknown[]>(
         // Only check the already loaded modules if the index has been initialized
         if (hasIndexInitialized) {
             for (const state of moduleRegistry.values()) {
-                if (state.module?.exports && filter(state.module?.exports, state.id, true)) {
+                if (state.module?.exports) {
                     if (checkState(state)) return () => void 0; // Can't cancel this anymore
                 }
             }
         }
 
-        onUntil(metroEventEmitter, "lookupFound", (uniq, state) => {
+        onUntil(metroEventEmitter, "lookupFound", (key, state) => {
             if (fulfilled) return true;
-            if (filter.uniq === uniq && filter(state.module?.exports, state.id, true)) {
+            if (filter.key === key) {
                 return checkState(state);
             }
 

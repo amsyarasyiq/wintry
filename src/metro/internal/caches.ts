@@ -6,7 +6,7 @@ import { ModuleFlags, ModulesMapInternal } from "./enums";
 import { metroEventEmitter } from "./events";
 import { isBadModuleExports, moduleRegistry } from "./modules";
 
-const CACHE_VERSION = 9;
+const CACHE_VERSION = 1;
 const WINTRY_METRO_CACHE_KEY = "__wintry_metro_cache_key__";
 
 type ModulesMap = {
@@ -17,7 +17,7 @@ export type MetroCache = ReturnType<typeof initializeCache>;
 let _metroCache = null! as MetroCache;
 
 // TODO: Remove global getter
-export const getMetroCache = () => _metroCache;
+export const getMetroCache = (window.getMetroCache = () => _metroCache);
 
 function initializeCache() {
     const cache = {

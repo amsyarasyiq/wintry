@@ -13,6 +13,7 @@
 		"react-native-customizable-toast": "^0.2.1",
 		"react-native-reanimated": "^3.16.7",
 		"strict-event-emitter": "^0.5.1",
+		"synchronous-promise": "^2.0.17",
 		"typesafe-i18n": "^5.26.2",
 		"typescript": "5.4.5",
 		"zustand": "^5.0.2"

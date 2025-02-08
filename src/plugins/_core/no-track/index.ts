@@ -10,11 +10,11 @@ export default definePlugin({
     required: true,
 
     preinit() {
-        waitFor(byProps("initSentry"), exports => {
+        waitFor(byProps(["initSentry"]), exports => {
             exports.initSentry = () => undefined;
         });
 
-        waitFor(byProps("track", "trackMaker"), exports => {
+        waitFor(byProps(["track", "trackMaker"]), exports => {
             exports.track = () => Promise.resolve();
         });
     },

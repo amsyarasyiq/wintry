@@ -13,8 +13,9 @@ export default definePlugin({
     authors: [Devs.Pylix],
     required: true,
 
-    start() {
+    preinit() {
         const ErrorBoundaryPrototype = findAsync(byName("ErrorBoundary")).then((m: any) => m.prototype);
+
         patcher.after.async(ErrorBoundaryPrototype, "render", function (this: any) {
             const {
                 state: { error },
@@ -22,6 +23,7 @@ export default definePlugin({
 
             if (!error) return null;
 
+            console.error(error.stack);
             const reset = this.setState.bind(this, { error: null });
             return <ErrorBoundaryScreen error={error} reset={reset} />;
         });

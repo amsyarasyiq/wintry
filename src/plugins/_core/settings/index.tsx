@@ -1,6 +1,6 @@
 import { Devs } from "@data/constants";
 import { t } from "@i18n";
-import { findByName } from "@metro/api";
+import { findByName } from "@metro/legacy_api";
 import { findAssetId } from "@metro/assets";
 import { TableRow } from "@metro/common/components";
 import { byProps } from "@metro/filters";
@@ -8,10 +8,10 @@ import { waitFor } from "@metro/internal/modules";
 import { createContextualPatcher } from "@patcher/contextual";
 import { findInReactTree } from "@utils/objects";
 import { CustomPageRenderer } from "./CustomPageRenderer";
-import { definePlugin, definePluginSettings } from "#plugin-context";
+import { definePlugin, definePluginSettings, meta } from "#plugin-context";
 import SettingsManager from "./SettingsManager";
 
-const patcher = createContextualPatcher({ pluginName: "Settings" });
+const patcher = createContextualPatcher({ pluginId: meta.id });
 
 const SettingsOverviewScreen = findByName("SettingsOverviewScreen", false);
 
@@ -64,7 +64,7 @@ export default definePlugin({
                 ],
             }),
 
-            waitFor(byProps("SETTING_RENDERER_CONFIG"), settingConstants => {
+            waitFor(byProps(["SETTING_RENDERER_CONFIG"]), settingConstants => {
                 const origRendererConfig = settingConstants.SETTING_RENDERER_CONFIG;
                 let rendererConfigValue = settingConstants.SETTING_RENDERER_CONFIG;
 

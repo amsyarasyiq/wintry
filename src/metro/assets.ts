@@ -1,5 +1,5 @@
 import { requireModule } from ".";
-import { findByProps } from "./api";
+import { findByProps } from "./legacy_api";
 import { moduleRegistry } from "./internal/modules";
 
 export type Asset = { id: number } & ({ fileSystemLocation: string } | { httpServerLocation: string }) & {

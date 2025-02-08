@@ -1,4 +1,4 @@
-import { findByProps } from "../src/metro/api";
+import { findByProps } from "../src/metro/legacy_api";
 import { getProxyFactory } from "../src/utils/lazy";
 
 const jsxRuntime = findByProps("jsx", "jsxs", "Fragment");

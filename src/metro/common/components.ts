@@ -1,15 +1,10 @@
 import type { FlashListProps, Masonry } from "@shopify/flash-list";
 import { lazyDestructure, lazyValue } from "@utils/lazy";
-import { find, findByProps } from "../api";
-import { createFilterDefinition } from "../factories";
+import { find, findByProps } from "../legacy_api";
 
 import type { ReactElement } from "react";
 import type * as t from "./types/components";
-
-const bySingularProp = createFilterDefinition<[string]>(
-    ([prop], m) => m[prop] && Object.keys(m).length === 1,
-    prop => `bunny.metro.common.components.bySingularProp(${prop})`,
-);
+import { bySingularProp } from "@metro/filters";
 
 const findSingular = (prop: string) => lazyValue(() => find(bySingularProp(prop))?.[prop]);
 const findProp = (...prop: string[]) => lazyValue(() => findByProps(...prop)[prop[0]]);
@@ -56,7 +51,6 @@ export const FormCheckbox = findSingular("FormCheckbox");
 
 // Card
 export const Card = findProp("Card");
-
 
 // Alert
 export const AlertModal = findProp("AlertModal");

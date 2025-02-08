@@ -1,3 +1,5 @@
+import type { ModuleFilter } from "./factories";
+
 type Nullish = null | undefined;
 
 /** @see {@link https://github.com/facebook/metro/blob/c2d7539dfc10aacb2f99fcc2f268a3b53e867a90/packages/metro-runtime/src/polyfills/require.js} */
@@ -127,39 +129,8 @@ export namespace Metro {
     }
 }
 
-export type ModuleExports = any;
-export type FilterCheckDef<A extends unknown[]> = (
-    args: A,
-    module: any,
-    moduleId: number,
-    isDefaultCheck: boolean,
-) => boolean;
-
-export interface FilterFn<A extends unknown[]> {
-    (exports: any, id: number, isDefaultCheck: boolean): boolean;
-    filter: FilterCheckDef<A>;
-    raw: boolean;
-    uniq: string;
-}
-
-export interface FilterDefinition<A extends unknown[]> {
-    /**
-     * Returns a filter that checks for all and default (ESM) exports.
-     * Use {@link FilterDefinition.raw} to get a filter that does not check for default exports.
-     */
-    (...args: A): FilterFn<A>;
-    /**
-     * Returns a raw filter that does not check for default exports.
-     */
-    raw(...args: A): FilterFn<A>;
-    /**
-     * Returns the unique identifier of the filter.
-     */
-    buildUniq(args: A): string;
-}
-
-export interface LazyModuleContext<A extends unknown[] = unknown[]> {
-    filter: FilterFn<A>;
+export interface LazyModuleContext<A = unknown, R = unknown> {
+    filter: ModuleFilter<A, R>;
     /**
      * Get the exports of the module:
      *  - If the module is indexed and initialized, it will callback the exports of the module immediately.
@@ -170,8 +141,8 @@ export interface LazyModuleContext<A extends unknown[] = unknown[]> {
      */
     getExports(cb: (exports: any) => void): () => void;
     subscribe(cb: (exports: any) => void): () => void;
-    forceLoad(): any;
-    get cache(): any;
+    forceLoad(): R;
+    get cache(): R | undefined;
 }
 
 export interface ModuleState {

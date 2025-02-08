@@ -1,10 +1,10 @@
 import { t } from "@i18n";
-import { clipboard } from "@metro/common";
 import { Card, Text } from "@metro/common/components";
 import { parseComponentStack } from "@utils/errors/parseComponentStack";
 import { useState } from "react";
 import { View } from "react-native";
 import { CollapsibleHandler } from "./CollapsibleHandler";
+import { copyToClipboard } from "@utils/clipboard";
 
 interface ErrorComponentStackCardProps {
     componentStack: string;
@@ -43,7 +43,7 @@ export default function ErrorComponentStackCard(props: ErrorComponentStackCardPr
                 <CollapsibleHandler
                     collapsed={collapsed}
                     setCollapsed={setCollapsed}
-                    onCopy={() => clipboard.setString(props.componentStack)}
+                    onCopy={() => copyToClipboard(props.componentStack, { toast: false })}
                 />
             </View>
         </Card>
