@@ -1,5 +1,6 @@
 import { createModuleFilter, withInteropOptions } from "@metro/new/filters";
 import { lookup } from "../api";
+import type * as S from "discord-types/stores";
 
 interface FluxStore {
     getName(): string;
@@ -18,13 +19,11 @@ export function getStore(name: string, resolver?: (store: any) => any): FluxStor
     return lookup(byStoreName(name)).asLazy(resolver) as FluxStore;
 }
 
+export let UserStore = getStore("UserStore", m => (UserStore = m)) as S.UserStore;
+export let ChannelStore = getStore("ChannelStore", m => (ChannelStore = m)) as S.ChannelStore;
+export let GuildStore = getStore("GuildStore", m => (GuildStore = m)) as S.GuildStore;
+
 export let ToastStore = getStore("ToastStore", m => (ToastStore = m));
-
-export let UserStore = getStore("UserStore", m => (UserStore = m));
-
-export let ChannelStore = getStore("ChannelStore", m => (ChannelStore = m));
-
-export let GuildStore = getStore("GuildStore", m => (GuildStore = m));
 
 export let PermissionStore = getStore("PermissionStore", m => (PermissionStore = m));
 

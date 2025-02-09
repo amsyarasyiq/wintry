@@ -24,7 +24,7 @@ export default function TitleComponent({ plugin }: TitleComponentProps) {
             maybeFetchUser(author.id); // Fetch the user if they're not already cached
         }
 
-        return plugin.authors?.map(a => UserStore.getUser(a.id));
+        return plugin.authors?.map(a => UserStore.getUser(a.id.toString()));
     });
 
     const { authors } = plugin;
