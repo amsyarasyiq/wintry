@@ -9,6 +9,3 @@ export const findProp = (...prop: string[]) => lazyValue(() => lookup(byProps(pr
 export let { SafeAreaView, SafeAreaProvider, useSafeAreaInsets } = lazyDestructure(() =>
     lookupByProps("useSafeAreaInsets").asLazy(m => ({ SafeAreaView, SafeAreaProvider, useSafeAreaInsets } = m)),
 ) as any;
-
-// Misc.
-export const Avatar = findProp("default", "AvatarSizes", "getStatusSize");

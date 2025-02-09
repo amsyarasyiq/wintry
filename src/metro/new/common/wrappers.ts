@@ -1,6 +1,6 @@
 import { byFilePath, byName, byProps } from "@metro/new/common/filters";
 import { lookup } from "../api";
-import type { InteropOption } from "@metro/filters";
+import type { InteropOption } from "../filters";
 
 export function lookupByProps<T extends string>(...props: T[]) {
     return lookup(byProps<T>(props));
