@@ -1,12 +1,13 @@
 import { useMemo } from "react";
 import { type Asset, getAssets } from "@metro/assets";
-import { ActionSheet, Stack } from "@metro/common/components";
+import { Stack } from "@metro/common/components";
 import { Image, View, useWindowDimensions } from "react-native";
 import { showSheet } from "@components/utils/sheets";
 import Search, { useSearchQuery } from "@components/Search";
 import PageWrapper from "@components/WintrySettings/PageWrapper";
 import { FlashList } from "@shopify/flash-list";
 import { TableRow, TableRowGroup } from "@components/Discord";
+import BottomSheet from "@components/Discord/Sheet/BottomSheet";
 
 // Constants
 const REDESIGN_ICON_PATH = "/assets/design/components/Icon/native/redesign/generated/images";
@@ -58,7 +59,7 @@ const ImageAssetPreviewer = ({ asset }: { asset: Asset }) => {
     };
 
     return (
-        <ActionSheet>
+        <BottomSheet contentStyles={{ paddingHorizontal: 16 }}>
             <Stack>
                 <View style={{ alignItems: "center", paddingVertical: 24 }}>
                     <Image source={asset.id} style={imageSize} resizeMode="contain" />
@@ -76,7 +77,7 @@ const ImageAssetPreviewer = ({ asset }: { asset: Asset }) => {
                     />
                 </TableRowGroup>
             </Stack>
-        </ActionSheet>
+        </BottomSheet>
     );
 };
 

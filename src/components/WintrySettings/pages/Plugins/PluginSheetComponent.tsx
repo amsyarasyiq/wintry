@@ -1,4 +1,4 @@
-import { ActionSheet, Card, ContextMenu, Text } from "@metro/common";
+import { Card, ContextMenu, Text } from "@metro/common";
 import type { WintryPluginInstance } from "@plugins/types";
 import { View } from "react-native";
 import { findAssetId } from "@metro";
@@ -11,6 +11,7 @@ import { showSheet } from "@components/utils/sheets";
 import { PluginDetailsSheet } from "./PluginDetailsSheet";
 import { SheetAwareIconButton } from "./SheetAwareIconButton";
 import IconButton from "@components/Discord/Button/IconButton";
+import BottomSheet from "@components/Discord/Sheet/BottomSheet";
 
 interface PluginSheetComponentProps {
     plugin: WintryPluginInstance;
@@ -18,7 +19,7 @@ interface PluginSheetComponentProps {
 
 export default function PluginSheetComponent({ plugin }: PluginSheetComponentProps) {
     return (
-        <ActionSheet>
+        <BottomSheet contentStyles={{ paddingHorizontal: 16 }}>
             <RNGHScrollView contentContainerStyle={{ marginBottom: 12 }}>
                 <View
                     style={{
@@ -80,7 +81,7 @@ export default function PluginSheetComponent({ plugin }: PluginSheetComponentPro
                     <OptionSection plugin={plugin} />
                 </View>
             </RNGHScrollView>
-        </ActionSheet>
+        </BottomSheet>
     );
 }
 

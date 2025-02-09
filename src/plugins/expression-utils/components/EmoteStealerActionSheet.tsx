@@ -1,10 +1,11 @@
-import { ActionSheet, Text, TextInput, constants } from "@metro/common";
+import { Text, TextInput, constants } from "@metro/common";
 import { Image, ScrollView, View } from "react-native";
 import { useEmojiAdderStore } from "../stores/useEmojiAdderStore";
 import type { PartialGuild, EmojiNode } from "../types";
 import ServerRow from "../components/ServerRow";
 import { GuildStore, PermissionStore } from "@metro/new/common/stores";
 import { FlashList } from "@shopify/flash-list";
+import BottomSheet from "@components/Discord/Sheet/BottomSheet";
 
 export default function EmoteStealerActionSheet({ emojiNode }: { emojiNode: EmojiNode }) {
     const customAlt = useEmojiAdderStore(s => s.customAlt);
@@ -15,7 +16,7 @@ export default function EmoteStealerActionSheet({ emojiNode }: { emojiNode: Emoj
     ) as PartialGuild[];
 
     return (
-        <ActionSheet>
+        <BottomSheet contentStyles={{ paddingHorizontal: 16 }}>
             <ScrollView style={{ gap: 12 }}>
                 <View style={{ alignItems: "center" }}>
                     <Text variant="heading-lg/bold">
@@ -51,6 +52,6 @@ export default function EmoteStealerActionSheet({ emojiNode }: { emojiNode: Emoj
                     )}
                 />
             </ScrollView>
-        </ActionSheet>
+        </BottomSheet>
     );
 }

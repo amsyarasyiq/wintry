@@ -11,9 +11,6 @@ export let { SafeAreaView, SafeAreaProvider, useSafeAreaInsets } = lazyDestructu
     lookupByProps("useSafeAreaInsets").asLazy(m => ({ SafeAreaView, SafeAreaProvider, useSafeAreaInsets } = m)),
 ) as any;
 
-// ActionSheet
-export const ActionSheetRow = findProp("ActionSheetRow");
-
 export const TwinButtons = findProp("TwinButtons") as t.TwinButtons;
 
 export const PressableScale = findProp("PressableScale");
@@ -62,7 +59,6 @@ export const useSegmentedControlState = findSingular("useSegmentedControlState")
 export const CompatSegmentedControl = findProp("CompatSegmentedControl") as t.CompatSegmentedControl;
 
 export const FloatingActionButton = findProp("FloatingActionButton") as t.FloatingActionButton;
-export const ActionSheet = findProp("ActionSheet") as t.ActionSheet;
 export const BottomSheetTitleHeader = findProp("BottomSheetTitleHeader");
 
 export const Text = findProp("Text", "LegacyText") as t.Text;

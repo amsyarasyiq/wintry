@@ -1,8 +1,9 @@
-import { ActionSheet, Stack, Text } from "@metro/common";
+import { Stack, Text } from "@metro/common";
 import type { WintryPluginInstance } from "@plugins/types";
 import { t } from "@i18n";
 import { RNGHScrollView } from "./common";
 import { TableRow, TableRowGroup } from "@components/Discord";
+import BottomSheet from "@components/Discord/Sheet/BottomSheet";
 
 interface PluginDetailsSheetProps {
     plugin: WintryPluginInstance;
@@ -10,7 +11,7 @@ interface PluginDetailsSheetProps {
 
 export function PluginDetailsSheet({ plugin }: PluginDetailsSheetProps) {
     return (
-        <ActionSheet>
+        <BottomSheet contentStyles={{ paddingHorizontal: 16 }}>
             <Stack style={{ marginTop: 8 }} spacing={4} direction="horizontal">
                 <Text variant="heading-lg/semibold">{plugin.name}</Text>
                 <Text variant="heading-lg/semibold" color="text-muted">
@@ -28,6 +29,6 @@ export function PluginDetailsSheet({ plugin }: PluginDetailsSheetProps) {
                     />
                 </TableRowGroup>
             </RNGHScrollView>
-        </ActionSheet>
+        </BottomSheet>
     );
 }
