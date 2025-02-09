@@ -1,6 +1,6 @@
 import Codeblock from "@components/Codeblock";
 import { createStyles } from "@components/utils/styles";
-import { Text, tokens } from "@metro/common";
+import { tokens } from "@metro/common";
 import { View, ActivityIndicator, Image } from "react-native";
 import Animated, { CurvedTransition } from "react-native-reanimated";
 import { GuildIcon } from "../common";
@@ -11,6 +11,7 @@ import { isError } from "@utils/errors/isError";
 import { findAssetId } from "@metro/assets";
 import { ArrowSmallLeftIcon } from "@metro/new/common/icons";
 import { GuildStore } from "@metro/new/common/stores";
+import { Text } from "@components/Discord";
 
 const useStyles = createStyles(() => ({
     checkmarkIcon: {

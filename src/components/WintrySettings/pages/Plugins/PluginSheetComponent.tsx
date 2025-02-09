@@ -1,4 +1,3 @@
-import { Card, ContextMenu, Text } from "@metro/common";
 import type { WintryPluginInstance } from "@plugins/types";
 import { View } from "react-native";
 import { findAssetId } from "@metro";
@@ -12,6 +11,8 @@ import { PluginDetailsSheet } from "./PluginDetailsSheet";
 import { SheetAwareIconButton } from "./SheetAwareIconButton";
 import IconButton from "@components/Discord/Button/IconButton";
 import BottomSheet from "@components/Discord/Sheet/BottomSheet";
+import { Card, Text } from "@components/Discord";
+import ContextMenu from "@components/Discord/ContextMenu/ContextMenu";
 
 interface PluginSheetComponentProps {
     plugin: WintryPluginInstance;
@@ -93,7 +94,7 @@ export function InfoCard({
     children?: React.ReactNode | string;
 }) {
     return (
-        <Card spacing={{ padding: 0 }}>
+        <Card>
             <Text variant="heading-sm/semibold" color="text-secondary" style={{ marginBottom: 8 }}>
                 {label}
             </Text>

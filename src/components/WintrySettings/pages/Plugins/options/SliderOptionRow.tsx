@@ -1,9 +1,9 @@
 import type { BaseOptionRowProps } from "./BaseOptionRowProps";
-import { Card, Slider, Stack, Text } from "@metro/common";
-import {} from "react";
 import { Pressable, View } from "react-native";
 import { usePluginSettings } from "../common/usePluginSettings";
 import { CircleMinusIcon, CirclePlusIcon } from "@metro/new/common/icons";
+import Slider from "@components/Discord/Slider/Slider";
+import { Card, Stack, Text } from "@components/Discord";
 
 function SliderRow({ opt, plugin, settingKey }: BaseOptionRowProps<"slider">) {
     const [current, setCurrent] = usePluginSettings<typeof opt>(plugin.id, settingKey);

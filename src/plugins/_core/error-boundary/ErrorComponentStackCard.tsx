@@ -1,10 +1,10 @@
 import { t } from "@i18n";
-import { Card, Text } from "@metro/common/components";
 import { parseComponentStack } from "@utils/errors/parseComponentStack";
 import { useState } from "react";
 import { View } from "react-native";
 import { CollapsibleHandler } from "./CollapsibleHandler";
 import { copyToClipboard } from "@utils/clipboard";
+import { Card, Text } from "@components/Discord";
 
 interface ErrorComponentStackCardProps {
     componentStack: string;

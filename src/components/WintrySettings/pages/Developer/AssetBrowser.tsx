@@ -1,12 +1,11 @@
 import { useMemo } from "react";
 import { type Asset, getAssets } from "@metro/assets";
-import { Stack } from "@metro/common/components";
 import { Image, View, useWindowDimensions } from "react-native";
 import { showSheet } from "@components/utils/sheets";
 import Search, { useSearchQuery } from "@components/Search";
 import PageWrapper from "@components/WintrySettings/PageWrapper";
 import { FlashList } from "@shopify/flash-list";
-import { TableRow, TableRowGroup } from "@components/Discord";
+import { Stack, TableRow, TableRowGroup } from "@components/Discord";
 import BottomSheet from "@components/Discord/Sheet/BottomSheet";
 
 // Constants

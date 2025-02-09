@@ -1,6 +1,5 @@
 import { definePlugin, meta } from "#plugin-context";
 import { Devs } from "@data/constants";
-import { PressableScale } from "@metro/common";
 import { createContextualPatcher } from "@patcher/contextual";
 import { findInReactTree } from "@utils/objects";
 import { useEffect } from "react";
@@ -13,6 +12,7 @@ import StealButtons from "./components/StealButtons";
 import { openMediaModal } from "./utils/openMediaModal";
 import { openEmojiActionSheet } from "./utils/openEmojiActionSheet";
 import { CustomEmojiContent, MessageReactionsContent } from "./common";
+import PressableScale from "@components/Discord/experimental/PressableScale";
 
 const patcher = createContextualPatcher({ pluginId: meta.id });
 

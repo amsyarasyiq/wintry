@@ -1,9 +1,11 @@
 import { View } from "react-native";
-import { Avatar, AvatarPile, FluxUtils, Text } from "@metro/common";
+import { Avatar, FluxUtils } from "@metro/common";
 import { lazyDestructure } from "@utils/lazy";
 import type { WintryPluginInstance } from "@plugins/types";
 import { UserStore } from "@metro/new/common/stores";
 import { lookupByName, lookupByProps } from "@metro/new/common/wrappers";
+import AvatarPile from "@components/Discord/Pile/AvatarPile";
+import { Text } from "@components/Discord";
 
 const showUserProfileActionSheet = lookupByName("showUserProfileActionSheet").asLazy() as (props: {
     userId: string | bigint;

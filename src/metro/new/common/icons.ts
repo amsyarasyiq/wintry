@@ -1,7 +1,7 @@
 import { lazyValue } from "@utils/lazy";
 import { lookupByProps } from "@metro/new/common/wrappers";
 
-function getIcon(name: string): React.Component<Record<string, unknown>> {
+function getIcon(name: string): React.ComponentType<Record<string, unknown>> {
     return lazyValue(() => lookupByProps(name).load()[name]);
 }
 

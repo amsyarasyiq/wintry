@@ -1,8 +1,7 @@
-import { Stack, Text } from "@metro/common";
 import type { WintryPluginInstance } from "@plugins/types";
 import { t } from "@i18n";
 import { RNGHScrollView } from "./common";
-import { TableRow, TableRowGroup } from "@components/Discord";
+import { Stack, TableRow, TableRowGroup, Text } from "@components/Discord";
 import BottomSheet from "@components/Discord/Sheet/BottomSheet";
 
 interface PluginDetailsSheetProps {

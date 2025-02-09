@@ -1,8 +1,9 @@
-import { TextArea, TextInput } from "@metro/common";
 import { usePluginSettings } from "../common/usePluginSettings";
 import type { BaseOptionRowProps } from "./BaseOptionRowProps";
 import { getIcon } from "../common/getIcon";
 import { TableRow } from "@components/Discord";
+import TextArea from "@components/Discord/TextInput/TextArea";
+import TextInput from "@components/Discord/TextInput/TextInput";
 
 export function StringOptionRow({ opt, plugin, settingKey }: BaseOptionRowProps<"string">) {
     const [current, setter] = usePluginSettings<typeof opt>(plugin.id, settingKey);

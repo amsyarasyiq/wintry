@@ -87,8 +87,7 @@ interface CompatSegmentedControlProps {
 
 export type CompatSegmentedControl = React.FC<CompatSegmentedControlProps>;
 
-// TODO: Confirm if this is real
-interface TextInputProps extends Omit<RN.TextInputProps, "onChange" | "onChangeText" | "value"> {
+interface TextInputProps extends Omit<RN.TextInputProps, "onChange" | "onChangeText"> {
     defaultValue?: string;
     description?: string;
     editable?: boolean;
@@ -110,7 +109,6 @@ interface TextInputProps extends Omit<RN.TextInputProps, "onChange" | "onChangeT
     trailingIcon?: React.FC<any>;
     trailingPressableProps?: RN.PressableProps;
     trailingText?: string;
-    value?: string | null;
 }
 
 export type TextInput = React.FC<TextInputProps>;

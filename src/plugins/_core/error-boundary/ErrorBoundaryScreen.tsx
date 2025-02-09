@@ -1,7 +1,7 @@
 import Codeblock from "@components/Codeblock";
 import { createStyles } from "@components/utils/styles";
 import { t } from "@i18n";
-import { Card, SafeAreaProvider, SafeAreaView, Text, tokens } from "@metro/common";
+import { SafeAreaProvider, SafeAreaView, tokens } from "@metro/common";
 import { BundleUpdaterModule } from "@native";
 import usePrefsStore, { isSafeModeEnabled } from "@stores/usePrefsStore";
 import { hasStack, isComponentStack } from "@utils/errors/isError";
@@ -10,6 +10,7 @@ import ErrorComponentStackCard from "./ErrorComponentStackCard";
 import ErrorStackCard from "./ErrorStackCard";
 import { getDebugInfo } from "@debug/info";
 import Button from "@components/Discord/Button/Button";
+import { Card, Text } from "@components/Discord";
 
 const useStyles = createStyles(() => ({
     container: {

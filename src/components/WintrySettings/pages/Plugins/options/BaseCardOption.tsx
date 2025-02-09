@@ -1,4 +1,4 @@
-import { Card, Text } from "@metro/common";
+import { Card, Text } from "@components/Discord";
 import type { OptionDefinition } from "@plugins/types";
 import type React from "react";
 

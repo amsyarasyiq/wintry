@@ -1,7 +1,8 @@
 import { t } from "@i18n";
-import { Card, Stack, Text, TwinButtons } from "@metro/common";
 import { isValidElement, type ReactNode } from "react";
 import Button from "./Discord/Button/Button";
+import { Card, Stack, Text } from "./Discord";
+import TwinButtons from "./Discord/experimental/TwinButtons";
 
 export const INDEX_BUNDLE_FILE: string = window.HermesInternal.getFunctionLocation(window.__r).fileName;
 
@@ -34,7 +35,7 @@ export default function ErrorCard(props: ErrorCardProps) {
                             onPress={props.onRetryRender}
                         />
                     )}
-                    {props.error instanceof Error ? <Button text={"Details"} onPress={() => {}} /> : null}
+                    {props.error instanceof Error ? <Button text={"Details"} onPress={() => {}} /> : undefined}
                 </TwinButtons>
             </Stack>
         </Card>
