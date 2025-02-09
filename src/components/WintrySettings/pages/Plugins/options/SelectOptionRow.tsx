@@ -1,4 +1,4 @@
-import { TableCheckboxRow, TableRowGroup } from "@metro/common";
+import { TableCheckboxRow, TableRowGroup } from "@components/Discord";
 import { BaseCardOption } from "./BaseCardOption";
 import type { BaseOptionRowProps } from "./BaseOptionRowProps";
 import { getIcon } from "../common/getIcon";

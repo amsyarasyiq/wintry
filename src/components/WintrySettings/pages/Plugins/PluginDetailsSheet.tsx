@@ -1,7 +1,8 @@
-import { ActionSheet, Stack, TableRow, TableRowGroup, Text } from "@metro/common";
+import { ActionSheet, Stack, Text } from "@metro/common";
 import type { WintryPluginInstance } from "@plugins/types";
 import { t } from "@i18n";
 import { RNGHScrollView } from "./common";
+import { TableRow, TableRowGroup } from "@components/Discord";
 
 interface PluginDetailsSheetProps {
     plugin: WintryPluginInstance;

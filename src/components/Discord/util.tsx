@@ -10,15 +10,11 @@ const findProp = (...prop: string[]) => lazyValue(() => lookup(byProps(prop)).lo
 export function getComponentFromProps<P extends AnyRecord>(prop: string, { singular = false } = {}): ComponentType<P> {
     const ActualComponent = singular ? findSingular(prop) : findProp(prop);
 
-    return (props: P) => {
-        return <ActualComponent {...props} />;
-    };
+    return ActualComponent as ComponentType<P>;
 }
 
 export function getComponentFromFilePath<P extends AnyRecord>(path: string): ComponentType<P> {
     const ActualComponent = lookup(byFilePath(path)).asLazy() as ComponentType<P>;
 
-    return (props: P) => {
-        return <ActualComponent {...props} />;
-    };
+    return ActualComponent;
 }

@@ -1,10 +1,10 @@
-import { TableRow } from "@metro/common";
 import { Keyboard } from "react-native";
 import { useEmojiAdderStore } from "../stores/useEmojiAdderStore";
 import type { PartialGuild, EmojiNode } from "../types";
 import { useShallow } from "zustand/shallow";
 import { GuildIcon } from "../common";
 import { useSlots } from "../utils/useSlots";
+import { TableRow } from "@components/Discord";
 
 export default function ServerRow({
     start,

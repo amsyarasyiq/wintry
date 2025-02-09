@@ -1,8 +1,9 @@
-import { RedesignCompat, TableRadioGroup, TableRadioRow } from "@metro/common";
+import { RedesignCompat } from "@metro/common";
 import { usePluginSettings } from "../common/usePluginSettings";
 import { BaseCardOption } from "./BaseCardOption";
 import type { BaseOptionRowProps } from "./BaseOptionRowProps";
 import { getIcon } from "../common/getIcon";
+import { TableRadioGroup, TableRadioRow } from "@components/Discord";
 
 export function RadioOptionRow({ opt, plugin, settingKey }: BaseOptionRowProps<"radio">) {
     const [current, setCurrent] = usePluginSettings<typeof opt>(plugin.id, settingKey);

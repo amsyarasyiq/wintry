@@ -1,10 +1,11 @@
+import { TableRow, TableRowGroup, TableSwitchRow } from "@components/Discord";
 import Button from "@components/Discord/Button/Button";
 import PageWrapper from "@components/WintrySettings/PageWrapper";
 import { t } from "@i18n";
-import { TableRowGroup, TableRow, TableSwitchRow } from "@metro/common";
 import UpdaterModule from "@native/modules/UpdaterModule";
 import { create } from "zustand";
 
+TableRow;
 interface UpdaterStore {
     autoUpdate: boolean;
     notify: boolean;

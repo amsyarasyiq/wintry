@@ -1,10 +1,10 @@
 import { branch, commitHash } from "#build-info";
 import { t } from "@i18n";
 import { findAssetId } from "@metro";
-import { TableRow, TableRowGroup } from "@metro/common/components";
 import PageWrapper from "../../PageWrapper";
 import { getVersions } from "@debug/info";
 import { BundleUpdaterModule } from "@native";
+import { TableRow, TableRowGroup } from "@components/Discord";
 
 export default function WintryPage() {
     const versions = getVersions();

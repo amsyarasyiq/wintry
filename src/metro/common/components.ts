@@ -18,17 +18,6 @@ export const TwinButtons = findProp("TwinButtons") as t.TwinButtons;
 
 export const PressableScale = findProp("PressableScale");
 
-// Tables
-export const TableRow = findProp("TableRow") as t.TableRow;
-export const TableRowIcon = findProp("TableRowIcon") as t.TableRowIcon;
-export const TableRowTrailingText = findProp("TableRowTrailingText") as t.TableRowTrailingText;
-export const TableRowGroup = findProp("TableRowGroup") as t.TableRowGroup;
-export const TableRadioGroup = findProp("TableRadioGroup") as t.TableRadioGroup;
-export const TableRadioRow = findProp("TableRadioRow") as t.TableRadioRow;
-export const TableSwitchRow = findProp("TableSwitchRow") as t.TableSwitchRow;
-export const TableCheckboxRow = findProp("TableCheckboxRow") as t.TableCheckboxRow;
-export const RowButton = findProp("RowButton") as t.RowButton;
-
 export const TableSwitch = findSingular("FormSwitch");
 export const TableRadio = findSingular("FormRadio");
 export const TableCheckbox = findSingular("FormCheckbox");
