@@ -3,8 +3,8 @@ import { Devs } from "@data/constants";
 import { createContextualPatcher } from "@patcher/contextual";
 import { ToastsRenderer } from "./ToastsRenderer";
 import { useToastStore } from "@stores/useToastStore";
-import { lookup } from "@metro/new/api";
-import { byFilePath } from "@metro/new/common/filters";
+import { lookup } from "@metro/api";
+import { byFilePath } from "@metro/common/filters";
 
 const patcher = createContextualPatcher({ pluginId: meta.id });
 

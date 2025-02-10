@@ -1,5 +1,5 @@
-import { lookup } from "@metro/new/api";
-import { bySingularProp, byProps, byFilePath } from "@metro/new/common/filters";
+import { lookup } from "@metro/api";
+import { bySingularProp, byProps, byFilePath } from "@metro/common/filters";
 import { lazyValue } from "@utils/lazy";
 import type { AnyRecord } from "@utils/types";
 import type { ComponentType } from "react";

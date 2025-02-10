@@ -1,7 +1,7 @@
 import type { BaseOptionRowProps } from "./BaseOptionRowProps";
 import { Pressable, View } from "react-native";
 import { usePluginSettings } from "../common/usePluginSettings";
-import { CircleMinusIcon, CirclePlusIcon } from "@metro/new/common/icons";
+import { CircleMinusIcon, CirclePlusIcon } from "@metro/common/icons";
 import Slider from "@components/Discord/Slider/Slider";
 import { Card, Stack, Text } from "@components/Discord";
 

@@ -1,5 +1,5 @@
 import { showToast } from "@api/toasts";
-import { lookupByProps } from "@metro/new/common/wrappers";
+import { lookupByProps } from "@metro/common/wrappers";
 
 let clipboard = lookupByProps("setString", "getString", "hasString").asLazy(m => (clipboard = m));
 

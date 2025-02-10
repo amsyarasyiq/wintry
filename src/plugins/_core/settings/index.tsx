@@ -1,14 +1,14 @@
 import { Devs } from "@data/constants";
 import { t } from "@i18n";
 import { findAssetId } from "@metro/assets";
-import { byName, byProps } from "@metro/new/common/filters";
+import { byName, byProps } from "@metro/common/filters";
 import { waitFor } from "@metro/internal/modules";
 import { createContextualPatcher } from "@patcher/contextual";
 import { findInReactTree } from "@utils/objects";
 import { CustomPageRenderer } from "./CustomPageRenderer";
 import { definePlugin, definePluginSettings, meta } from "#plugin-context";
 import SettingsManager from "./SettingsManager";
-import { lookup } from "@metro/new/api";
+import { lookup } from "@metro/api";
 import { TableRow } from "@components/Discord";
 
 const patcher = createContextualPatcher({ pluginId: meta.id });

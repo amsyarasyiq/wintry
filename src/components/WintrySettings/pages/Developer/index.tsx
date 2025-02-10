@@ -3,7 +3,7 @@ import { t } from "@i18n";
 import { findAssetId } from "@metro";
 import { TableRow, TableRowGroup } from "@components/Discord";
 import PageWrapper from "../../PageWrapper";
-import { NavigationNative } from "@metro/new/common/libraries";
+import { NavigationNative } from "@metro/common/libraries";
 
 export default function DeveloperPage() {
     const navigation = NavigationNative.useNavigation();

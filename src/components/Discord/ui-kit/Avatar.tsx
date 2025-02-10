@@ -1,4 +1,4 @@
-import { lookupByFilePath } from "@metro/new/common/wrappers";
+import { lookupByFilePath } from "@metro/common/wrappers";
 import type { User } from "discord-types/general";
 import type { LiteralUnion } from "type-fest";
 

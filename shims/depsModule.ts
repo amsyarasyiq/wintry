@@ -1,5 +1,5 @@
-import { byProps } from "../src/metro/new/common/filters";
-import { lookup } from "../src/metro/new/api";
+import { byProps } from "../src/metro/common/filters";
+import { lookup } from "../src/metro/api";
 import { lazyObjectGetter as wrap } from "../src/utils/lazy";
 
 let React = lookup(byProps(["createElement"])).asLazy(r => (React = r));

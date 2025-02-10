@@ -1,6 +1,7 @@
 import { requireModule } from ".";
+import { AssetsRegistry } from "./common/libraries";
 import { moduleRegistry } from "./internal/modules";
-import { lookupByProps } from "@metro/new/common/wrappers";
+
 export type Asset = { id: number } & {
     fileSystemLocation?: string;
     httpServerLocation?: string;
@@ -13,8 +14,6 @@ export type Asset = { id: number } & {
 
     resolver?: "android" | "generic";
 };
-
-const AssetRegistry = lookupByProps("getAssetByID");
 
 const _nameToAssetCache = {} as Record<string, Asset>;
 let arrayCache: Asset[] | undefined;
@@ -41,7 +40,7 @@ export function* iterateAssets() {
 
 // Apply additional properties for convenience
 function getAssetById(id: number): Asset {
-    const asset = AssetRegistry.load().getAssetByID(id);
+    const asset = AssetsRegistry.getAssetByID(id);
     if (!asset) return asset;
     return Object.assign(asset, { id });
 }

@@ -1,6 +1,6 @@
 import { SynchronousPromise } from "synchronous-promise";
 import type { ModuleFilter } from "./filters";
-import { waitFor } from "../internal/modules";
+import { waitFor } from "./internal/modules";
 import { LazyModuleContext } from "./lazy";
 import { findIdAndResolved } from "./api";
 

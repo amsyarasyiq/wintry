@@ -1,4 +1,4 @@
-import { NavigationNative } from "@metro/new/common/libraries";
+import { NavigationNative } from "@metro/common/libraries";
 import { useLayoutEffect } from "react";
 
 export const CustomPageRenderer = () => {

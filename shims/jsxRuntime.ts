@@ -1,5 +1,5 @@
-import { byProps } from "../src/metro/new/common/filters";
-import { lookup } from "../src/metro/new/api";
+import { byProps } from "../src/metro/common/filters";
+import { lookup } from "../src/metro/api";
 import { getProxyFactory } from "../src/utils/lazy";
 
 let jsxRuntime = lookup(byProps(["jsx", "jsxs"])).asLazy(r => (jsxRuntime = r));

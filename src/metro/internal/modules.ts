@@ -4,7 +4,7 @@ import type { Metro, ModuleState } from "../types";
 import { createCacheHandler, getAllCachedModuleIds, markExportsFlags, onceCacheReady } from "./caches";
 import { metroEvents, modulesInitializationEvents } from "./events";
 import type { ModuleFilter } from "@metro/filters";
-import { testExports } from "@metro/new/api";
+import { testExports } from "@metro/api";
 
 export const moduleRegistry = new Map<number, ModuleState>();
 export let _importingModuleId = -1;

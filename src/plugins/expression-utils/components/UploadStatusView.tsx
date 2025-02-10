@@ -8,10 +8,10 @@ import { useEmojiAdderStore } from "../stores/useEmojiAdderStore";
 import type { EmojiUploadFailure, PartialGuild } from "../types";
 import { isError } from "@utils/errors/isError";
 import { findAssetId } from "@metro/assets";
-import { ArrowSmallLeftIcon } from "@metro/new/common/icons";
-import { GuildStore } from "@metro/new/common/stores";
+import { ArrowSmallLeftIcon } from "@metro/common/icons";
+import { GuildStore } from "@metro/common/stores";
 import { Text } from "@components/Discord";
-import { tokens } from "@metro/new/common/libraries";
+import { tokens } from "@metro/common/libraries";
 
 const useStyles = createStyles(() => ({
     checkmarkIcon: {

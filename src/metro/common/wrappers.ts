@@ -1,4 +1,4 @@
-import { byFilePath, byName, byProps } from "@metro/new/common/filters";
+import { byFilePath, byName, byProps } from "@metro/common/filters";
 import { lookup } from "../api";
 import type { InteropOption } from "../filters";
 

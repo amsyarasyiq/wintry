@@ -12,8 +12,8 @@ import {
     LinearTransition,
 } from "react-native-reanimated";
 import { ToastComponent } from "./ToastComponent";
-import { ToastStore } from "@metro/new/common/stores";
-import { FluxUtils } from "@metro/new/common/libraries";
+import { ToastStore } from "@metro/common/stores";
+import { FluxUtils } from "@metro/common/libraries";
 
 export function ToastsRenderer() {
     const ref = useRef<ToasterMethods<{ toast: ToastInstance }>>(null);

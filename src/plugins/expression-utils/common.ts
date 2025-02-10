@@ -1,7 +1,7 @@
-import { byFilePath } from "@metro/new/common/filters";
-import { lookup } from "@metro/new/api";
+import { byFilePath } from "@metro/common/filters";
+import { lookup } from "@metro/api";
 import type React from "react";
-import { lookupByProps } from "@metro/new/common/wrappers";
+import { lookupByProps } from "@metro/common/wrappers";
 
 export const CustomEmojiContent = lookup(
     byFilePath("modules/messages/native/emoji/CustomEmojiContent.tsx", { returnEsmDefault: false }),

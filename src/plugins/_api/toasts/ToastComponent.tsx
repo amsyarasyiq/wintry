@@ -2,7 +2,7 @@ import type { ToastInstance } from "@api/toasts";
 import { Text } from "@components/Discord";
 import PressableScale from "@components/Discord/experimental/PressableScale";
 import { createStyles } from "@components/utils/styles";
-import { tokens } from "@metro/new/common/libraries";
+import { tokens } from "@metro/common/libraries";
 import { useToastStore } from "@stores/useToastStore";
 import { useCallback, useState, type PropsWithChildren } from "react";
 import { View, useWindowDimensions, type StyleProp, type TextLayoutEventData, type ViewStyle } from "react-native";

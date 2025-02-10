@@ -1,12 +1,12 @@
 import { View } from "react-native";
 import { lazyDestructure } from "@utils/lazy";
 import type { WintryPluginInstance } from "@plugins/types";
-import { UserStore } from "@metro/new/common/stores";
-import { lookupByName, lookupByProps } from "@metro/new/common/wrappers";
+import { UserStore } from "@metro/common/stores";
+import { lookupByName, lookupByProps } from "@metro/common/wrappers";
 import AvatarPile from "@components/Discord/Pile/AvatarPile";
 import { Text } from "@components/Discord";
 import Avatar from "@components/Discord/ui-kit/Avatar";
-import { FluxUtils } from "@metro/new/common/libraries";
+import { FluxUtils } from "@metro/common/libraries";
 
 const showUserProfileActionSheet = lookupByName("showUserProfileActionSheet").asLazy() as (props: {
     userId: string | bigint;

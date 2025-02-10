@@ -1,4 +1,4 @@
-import { lookupByProps } from "@metro/new/common/wrappers";
+import { lookupByProps } from "@metro/common/wrappers";
 import type { MutableRefObject, RefObject } from "react";
 import type { View } from "react-native";
 import type { SharedValue } from "react-native-reanimated";

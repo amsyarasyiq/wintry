@@ -1,6 +1,6 @@
 import type { AnyRecord } from "@utils/types";
-import { moduleRegistry } from "../internal/modules";
-import type { ModuleState } from "../types";
+import { moduleRegistry } from "./internal/modules";
+import type { ModuleState } from "./types";
 
 type Resolver = (exp: any) => any;
 export type Resolvers = Array<Resolver>;

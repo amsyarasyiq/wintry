@@ -10,7 +10,7 @@ import { showSheet } from "@components/utils/sheets";
 import IconButton from "@components/Discord/Button/IconButton";
 import FormSwitch from "@components/Discord/Forms/FormSwitch";
 import { Card, Stack, Text } from "@components/Discord";
-import { chroma, tokens } from "@metro/new/common/libraries";
+import { chroma, tokens } from "@metro/common/libraries";
 
 const PluginCardContext = createContext<{
     plugin: WintryPluginInstance;

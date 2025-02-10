@@ -1,4 +1,4 @@
-import { lookupByProps } from "@metro/new/common/wrappers";
+import { lookupByProps } from "@metro/common/wrappers";
 
 let SheetActionCreators = lookupByProps("openLazy", "hideActionSheet").asLazy(m => (SheetActionCreators = m));
 

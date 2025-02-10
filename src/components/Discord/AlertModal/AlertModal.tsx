@@ -1,4 +1,4 @@
-import { lookupByProps } from "@metro/new/common/wrappers";
+import { lookupByProps } from "@metro/common/wrappers";
 import { lazyValue } from "@utils/lazy";
 import type { ReactElement } from "react";
 

@@ -1,7 +1,7 @@
 import type { ModuleFilter } from "./filters";
-import { createCacheHandler, iterateModulesForCache } from "../internal/caches";
-import { metroEvents } from "../internal/events";
-import { moduleRegistry } from "../internal/modules";
+import { createCacheHandler, iterateModulesForCache } from "./internal/caches";
+import { metroEvents } from "./internal/events";
+import { moduleRegistry } from "./internal/modules";
 import { SingleMetroModule } from "./module";
 
 /**

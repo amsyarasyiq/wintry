@@ -10,7 +10,7 @@ import ErrorStackCard from "./ErrorStackCard";
 import { getDebugInfo } from "@debug/info";
 import Button from "@components/Discord/Button/Button";
 import { Card, Text } from "@components/Discord";
-import { tokens } from "@metro/new/common/libraries";
+import { tokens } from "@metro/common/libraries";
 import { SafeAreaProvider, SafeAreaView } from "@components/Libraries/react-native-safe-area-context";
 
 const useStyles = createStyles(() => ({

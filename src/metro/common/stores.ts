@@ -1,4 +1,4 @@
-import { createModuleFilter, withInteropOptions } from "@metro/new/filters";
+import { createModuleFilter, withInteropOptions } from "@metro/filters";
 import { lookup } from "../api";
 import type * as S from "discord-types/stores";
 

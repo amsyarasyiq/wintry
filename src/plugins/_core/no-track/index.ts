@@ -1,5 +1,5 @@
 import { Devs } from "@data/constants";
-import { byProps } from "@metro/new/common/filters";
+import { byProps } from "@metro/common/filters";
 import { waitFor } from "@metro/internal/modules";
 import { definePlugin } from "#plugin-context";
 

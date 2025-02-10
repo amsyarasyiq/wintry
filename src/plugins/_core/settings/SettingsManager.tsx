@@ -1,7 +1,7 @@
 import { uniqueId } from "es-toolkit/compat";
 import React from "react";
 import type { Text } from "react-native";
-import { lookupByProps } from "@metro/new/common/wrappers";
+import { lookupByProps } from "@metro/common/wrappers";
 
 interface SectionConfig {
     name: string;
