@@ -1,5 +1,4 @@
 import { INDEX_BUNDLE_FILE } from "@components/ErrorCard";
-import { constants } from "@metro/common";
 import parseErrorStack, { type StackFrame } from "@utils/errors/parseErrorStack";
 import { useState } from "react";
 import { Pressable, View } from "react-native";
@@ -7,6 +6,7 @@ import { CollapsibleHandler } from "./CollapsibleHandler";
 import { t } from "@i18n";
 import { copyToClipboard } from "@utils/clipboard";
 import { Card, Text } from "@components/Discord";
+import { constants } from "@metro/new/common/libraries";
 
 export default function ErrorStackCard(props: {
     error: Error & { stack: string };

@@ -1,7 +1,7 @@
 import Button from "@components/Discord/Button/Button";
 import { t } from "@i18n";
 import { findAssetId } from "@metro";
-import { tokens, useToken } from "@metro/common";
+import { tokens, useToken } from "@metro/new/common/libraries/Discord";
 import { Image, View } from "react-native";
 
 export function CollapsibleHandler({

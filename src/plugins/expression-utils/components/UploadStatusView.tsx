@@ -1,6 +1,5 @@
 import Codeblock from "@components/Codeblock";
 import { createStyles } from "@components/utils/styles";
-import { tokens } from "@metro/common";
 import { View, ActivityIndicator, Image } from "react-native";
 import Animated, { CurvedTransition } from "react-native-reanimated";
 import { GuildIcon } from "../common";
@@ -12,6 +11,7 @@ import { findAssetId } from "@metro/assets";
 import { ArrowSmallLeftIcon } from "@metro/new/common/icons";
 import { GuildStore } from "@metro/new/common/stores";
 import { Text } from "@components/Discord";
+import { tokens } from "@metro/new/common/libraries";
 
 const useStyles = createStyles(() => ({
     checkmarkIcon: {
@@ -82,7 +82,7 @@ export default function UploadStatusView() {
     }
 
     const { guildId, emojiNode, customAlt, error } = recentUploadDetails ?? {};
-    const guild = GuildStore.getGuild(guildId) as PartialGuild;
+    const guild = GuildStore.getGuild(guildId!) as PartialGuild;
 
     return (
         <Animated.View layout={CurvedTransition} style={styles.container}>

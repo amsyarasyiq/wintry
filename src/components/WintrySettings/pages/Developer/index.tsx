@@ -1,9 +1,9 @@
 import { lazy } from "react";
 import { t } from "@i18n";
 import { findAssetId } from "@metro";
-import { NavigationNative } from "@metro/common";
 import { TableRow, TableRowGroup } from "@components/Discord";
 import PageWrapper from "../../PageWrapper";
+import { NavigationNative } from "@metro/new/common/libraries";
 
 export default function DeveloperPage() {
     const navigation = NavigationNative.useNavigation();

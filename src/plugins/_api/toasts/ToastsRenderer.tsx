@@ -1,5 +1,4 @@
 import type { ToastInstance } from "@api/toasts";
-import { FluxUtils } from "@metro/common";
 import { useToastStore } from "@stores/useToastStore";
 import { useEffect, useMemo, useRef } from "react";
 import { ToasterBase } from "react-native-customizable-toast" with { lazy: "on" };
@@ -14,6 +13,7 @@ import {
 } from "react-native-reanimated";
 import { ToastComponent } from "./ToastComponent";
 import { ToastStore } from "@metro/new/common/stores";
+import { FluxUtils } from "@metro/new/common/libraries";
 
 export function ToastsRenderer() {
     const ref = useRef<ToasterMethods<{ toast: ToastInstance }>>(null);
