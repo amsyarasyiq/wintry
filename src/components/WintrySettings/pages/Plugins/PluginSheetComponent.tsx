@@ -1,6 +1,6 @@
 import type { WintryPluginInstance } from "@plugins/types";
 import { View } from "react-native";
-import { findAssetId } from "@metro";
+import { findAssetId } from "@api/assets";
 import type React from "react";
 import TitleComponent from "./TitleComponent";
 import { t } from "@i18n";

@@ -1,6 +1,6 @@
 import Button from "@components/Discord/Button/Button";
 import { t } from "@i18n";
-import { findAssetId } from "@metro";
+import { findAssetId } from "@api/assets";
 import { tokens, useToken } from "@metro/common/libraries/Discord";
 import { Image, View } from "react-native";
 

@@ -1,5 +1,5 @@
 import type { OptionDefinition } from "@plugins/types";
-import { findAssetId } from "@metro";
+import { findAssetId } from "@api/assets";
 import { TableRow } from "@components/Discord";
 
 export function getIcon(icon: OptionDefinition["icon"]): JSX.Element | undefined {

@@ -1,6 +1,6 @@
 import { lazy } from "react";
 import { t } from "@i18n";
-import { findAssetId } from "@metro";
+import { findAssetId } from "@api/assets";
 import { TableRow, TableRowGroup } from "@components/Discord";
 import PageWrapper from "../../PageWrapper";
 import { NavigationNative } from "@metro/common/libraries";

@@ -3,7 +3,7 @@ import type {} from "fuzzysort";
 import { type ComponentProps, createContext, memo, useContext } from "react";
 import { View } from "react-native";
 import { useShallow } from "zustand/shallow";
-import { findAssetId } from "@metro";
+import { findAssetId } from "@api/assets";
 import type { WintryPluginInstance } from "@plugins/types";
 import usePluginStore from "@stores/usePluginStore";
 import { showSheet } from "@components/utils/sheets";

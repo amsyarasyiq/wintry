@@ -197,29 +197,21 @@ export function getProxyFactory<T>(obj: T): (() => T) | undefined {
 }
 
 /**
- * @internal Internal use only, do not use
+ * @internal
+ * For internal use only. This is used for { lazy: "on" } imports
  */
-export function lazyObjectGetter<T extends Record<string, unknown> & ((...args: unknown[]) => unknown)>(
-    getter: () => T,
-): T {
-    const proxy: T = new Proxy((() => {}) as T, {
+export function createLazyImportProxy(getter: any) {
+    return new Proxy(() => {}, {
         apply: (_, __, args) => {
-            // @ts-ignore - check this later
             return getter().default?.(...args);
         },
-        // @ts-ignore - check this later
         get: (_, p: string) => getter()?.default?.[p] ?? getter()?.[p],
         getPrototypeOf: () =>
             new Proxy(
                 {},
                 {
-                    get: (_, p: string) => {
-                        // @ts-ignore - check this later
-                        return getter()?.[p];
-                    },
+                    get: (_, p: string) => getter()?.[p],
                 },
             ),
     });
-
-    return proxy;
 }

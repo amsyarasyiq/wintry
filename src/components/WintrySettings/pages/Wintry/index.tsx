@@ -1,6 +1,6 @@
 import { branch, commitHash } from "#build-info";
 import { t } from "@i18n";
-import { findAssetId } from "@metro";
+import { findAssetId } from "@api/assets";
 import PageWrapper from "../../PageWrapper";
 import { getVersions } from "@debug/info";
 import { BundleUpdaterModule } from "@native";

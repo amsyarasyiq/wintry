@@ -2,7 +2,7 @@ import { lazyValue } from "@utils/lazy";
 import "no-expose";
 
 export const wintryGlobalExports = (window.__wintry_exports = lazyValue(
-    () => require("!wintry_global!").default as Record<string, any>,
+    () => require("#globals#").default as Record<string, any>,
 ));
 
 // This is cursed but hey, how else?
