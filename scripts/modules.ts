@@ -46,6 +46,14 @@ export async function makeRequireModule(): Promise<string> {
         return new Proxy({}, {
             get: (_, p) => (cache ??= factory())[p],
             getPrototypeOf: () => cache ??= factory(),
+            ownKeys: () => Reflect.ownKeys(cache ??= factory()),
+            getOwnPropertyDescriptor: (_, p) => {
+                var descriptor = Reflect.getOwnPropertyDescriptor(cache ??= factory(), p);
+                if (descriptor) {
+                    descriptor.configurable = true;
+                }
+                return descriptor;
+            },
         });
     }
 

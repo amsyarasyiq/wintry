@@ -33,6 +33,7 @@ export function wintryGlobalObject() {
                 });
                 return value;
             },
+            enumerable: true,
             configurable: true,
         });
     }
@@ -85,6 +86,18 @@ export function wintryGlobalObject() {
                         }
 
                         return currentModule[prop] ?? childModules[prop];
+                    },
+                    ownKeys() {
+                        return [...Object.keys(currentModule), ...Object.keys(childModules)];
+                    },
+                    has(_, prop: string) {
+                        return prop in currentModule || prop in childModules;
+                    },
+                    getOwnPropertyDescriptor(_, prop: string) {
+                        return (
+                            Object.getOwnPropertyDescriptor(currentModule, prop) ??
+                            Object.getOwnPropertyDescriptor(childModules, prop)
+                        );
                     },
                 });
             },
