@@ -1,6 +1,6 @@
-import { requireModule } from ".";
-import { AssetsRegistry } from "./common/libraries";
-import { moduleRegistry } from "./internal/modules";
+import { requireModule } from "../metro";
+import { AssetsRegistry } from "../metro/common/libraries";
+import { moduleRegistry } from "../metro/internal/modules";
 
 export type Asset = { id: number } & {
     fileSystemLocation?: string;

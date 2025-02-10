@@ -7,7 +7,7 @@ import { useShallow } from "zustand/shallow";
 import { useEmojiAdderStore } from "../stores/useEmojiAdderStore";
 import type { EmojiUploadFailure, PartialGuild } from "../types";
 import { isError } from "@utils/errors/isError";
-import { findAssetId } from "@metro/assets";
+import { findAssetId } from "@api/assets";
 import { ArrowSmallLeftIcon } from "@metro/common/icons";
 import { GuildStore } from "@metro/common/stores";
 import { Text } from "@components/Discord";

@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { type Asset, getAssets } from "@metro/assets";
+import { type Asset, getAssets } from "@api/assets";
 import { Image, View, useWindowDimensions } from "react-native";
 import { showSheet } from "@components/utils/sheets";
 import Search, { useSearchQuery } from "@components/Search";

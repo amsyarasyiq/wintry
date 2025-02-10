@@ -1,6 +1,6 @@
 import { Devs } from "@data/constants";
 import { t } from "@i18n";
-import { findAssetId } from "@metro/assets";
+import { findAssetId } from "@api/assets";
 import { byName, byProps } from "@metro/common/filters";
 import { waitFor } from "@metro/internal/modules";
 import { createContextualPatcher } from "@patcher/contextual";
