@@ -6,7 +6,7 @@ const namespace = "asset-loader";
 const METRO_COMMON_LIBRARIES = "@metro/common/libraries";
 const ASSETS_REGISTRY = "AssetsRegistry";
 
-function escapeRegex(str) {
+function escapeRegex(str: string) {
     return str.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&");
 }
 

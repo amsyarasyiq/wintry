@@ -33,14 +33,6 @@ class SwcTransformer implements FileTransformer {
                       }
                     : undefined,
                 transform: {
-                    constModules: {
-                        globals: {
-                            "#build-info": {
-                                commitHash: `"<hash here>"`,
-                                branch: `"<release branch here>"`,
-                            },
-                        },
-                    },
                     react: {
                         runtime: "automatic", // utilises 'react/jsx-runtime' that we modified
                     },

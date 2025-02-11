@@ -33,6 +33,13 @@ export async function getConnectedDevices() {
 }
 
 if (import.meta.main) {
+    if (args.deploy) {
+        logger(c.red("Cannot serve in deploy mode."));
+        process.exit(1);
+    }
+
+    console.clear();
+
     const connectedDevices = await getConnectedDevices();
     let serialNumber: string = connectedDevices[0];
 
@@ -97,7 +104,7 @@ if (import.meta.main) {
     const buildContext = await getBuildContext();
     const server = startDevelopmentServer(buildContext);
 
-    console.log(`Press R key to reload Discord ${c.blue.bold(`(${packageName})`)}.`);
+    console.log(`Press R key to rebuild and reload Discord ${c.blue.bold(`(${packageName})`)}.`);
     console.log(`Press S key to force stop Discord ${c.blue.bold(`(${packageName})`)}.`);
 
     readline.emitKeypressEvents(process.stdin);

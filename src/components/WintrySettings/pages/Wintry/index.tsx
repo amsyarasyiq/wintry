@@ -1,4 +1,3 @@
-import { branch, commitHash } from "#build-info";
 import { t } from "@i18n";
 import { findAssetId } from "@api/assets";
 import PageWrapper from "../../PageWrapper";
@@ -7,7 +6,7 @@ import { BundleUpdaterModule } from "@native";
 import { TableRow, TableRowGroup } from "@components/Discord";
 
 export default function WintryPage() {
-    const versions = getVersions();
+    const { bunny, discord } = getVersions();
 
     return (
         <PageWrapper style={{ paddingTop: 16, gap: 12 }}>
@@ -15,14 +14,12 @@ export default function WintryPage() {
                 <TableRow
                     label={t.wintry()}
                     icon={<TableRow.Icon source={require("@assets/wintry.png")} />}
-                    trailing={<TableRow.TrailingText text={`${commitHash} (${branch})`} />}
+                    trailing={<TableRow.TrailingText text={`${bunny.shortRevision} (${bunny.branch})`} />}
                 />
                 <TableRow
                     label={t.discord()}
                     icon={<TableRow.Icon source={findAssetId("Discord")} />}
-                    trailing={
-                        <TableRow.TrailingText text={`${versions.discord.version} (${versions.discord.build})`} />
-                    }
+                    trailing={<TableRow.TrailingText text={`${discord.version} (${discord.build})`} />}
                 />
             </TableRowGroup>
             <TableRowGroup title={t.settings.general.quick_actions()}>

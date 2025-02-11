@@ -7,6 +7,7 @@ import { pluginsContextProviderPlugin } from "./plugins/plugins-context";
 import { syntaxTransformersPlugin } from "./plugins/syntax-transformers";
 import { getDependenciesMap } from "./utils/dependencies";
 import { lazyResolverPlugin } from "./plugins/lazy-resolver";
+import { buildInfoPlugin } from "./plugins/build-info";
 
 export async function getEsbuildConfig({ deploy = false, minify = false }): Promise<BuildOptions> {
     const deps = await getDependenciesMap();
@@ -63,6 +64,7 @@ export async function getEsbuildConfig({ deploy = false, minify = false }): Prom
                     return obj;
                 }, {}),
             ),
+            buildInfoPlugin(),
             moduleExposerPlugin({ excludedFolders: ["i18n", "plugins"] }),
             assetLoaderPlugin({ extensions: ["png", "jpg", "jpeg", "gif"] }),
             lazyResolverPlugin(),

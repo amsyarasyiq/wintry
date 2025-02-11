@@ -39,8 +39,9 @@
 		"build": "bun run scripts/build",
 		"serve": "bun run scripts/serve",
 		"adb": "bun run scripts/adb",
+		"adb:wsa": "bun run scripts/adb --wsa",
 		"typesafe-i18n": "typesafe-i18n",
-		"i18n:export": "bun run scripts/exportI18n.ts"
+		"i18n:export": "bun run scripts/i18n"
 	},
 	"type": "module"
 }

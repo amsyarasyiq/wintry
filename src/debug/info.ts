@@ -1,4 +1,4 @@
-import { branch, commitHash } from "#build-info";
+import { branch, revision } from "#build-info";
 import { NativeClientInfoModule, NativeDeviceModule } from "@native";
 import React from "react";
 import { Platform, type PlatformAndroidStatic, type PlatformIOSStatic } from "react-native";
@@ -9,8 +9,9 @@ export function getVersions() {
 
     return {
         bunny: {
-            commitHash,
-            branch
+            shortRevision: revision.slice(0, 7),
+            revision,
+            branch,
         },
         discord: {
             version: NativeClientInfoModule.Version,
@@ -26,8 +27,8 @@ export function getVersions() {
         },
         reactNative: {
             version: Platform.constants.reactNativeVersion,
-        }
-    }
+        },
+    };
 }
 
 function getAndroidDebugInfo() {
@@ -37,13 +38,13 @@ function getAndroidDebugInfo() {
         os: {
             name: "Android",
             version: PlatformConstants.Release,
-            sdk: PlatformConstants.Version
+            sdk: PlatformConstants.Version,
         },
         device: {
             manufacturer: PlatformConstants.Manufacturer,
             brand: PlatformConstants.Brand,
-            model: PlatformConstants.Model
-        }
+            model: PlatformConstants.Model,
+        },
     };
 }
 
@@ -52,13 +53,13 @@ function getIOSDebugInfo() {
     return {
         os: {
             name: PlatformConstants.systemName,
-            version: PlatformConstants.osVersion
+            version: PlatformConstants.osVersion,
         },
         device: {
             manufacturer: NativeDeviceModule.deviceManufacturer,
             brand: NativeDeviceModule.deviceBrand,
-            model: NativeDeviceModule.deviceModel
-        }
+            model: NativeDeviceModule.deviceModel,
+        },
     };
 }
 
@@ -68,6 +69,6 @@ export function getDebugInfo() {
         ...Platform.select({
             android: getAndroidDebugInfo(),
             ios: getIOSDebugInfo(),
-        })!
+        })!,
     };
 }

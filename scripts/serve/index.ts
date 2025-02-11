@@ -36,12 +36,6 @@ export function startDevelopmentServer(buildContext: WintryBuildContext) {
 
                     buildContext.lastBuildConsumed = true;
                     const file = Bun.file(buildContext.outputPath!);
-                    const revision =
-                        (args.deploy && buildContext.revision) ||
-                        new Bun.CryptoHasher("sha1")
-                            .update(await file.arrayBuffer())
-                            .digest()
-                            .toString("hex");
 
                     logger(
                         c.dim("Serving build:"),
@@ -53,17 +47,23 @@ export function startDevelopmentServer(buildContext: WintryBuildContext) {
                         isFreshBuild ? "fresh-build" : "pre-built",
                         "\n  ",
                         c.bold.green("Revision:"),
-                        revision,
+                        buildContext.revision,
+                        "\n  ",
+                        c.bold.green("Hash:"),
+                        new Bun.CryptoHasher("sha1")
+                            .update(await file.arrayBuffer())
+                            .digest()
+                            .toString("hex"),
                         "\n  ",
                         c.bold.green("Time taken:"),
                         `${buildContext.timeTaken?.toFixed(2)}ms`,
                     );
 
-                    return new Response(file, {
+                    return new Response(file.stream(), {
                         headers: {
                             "Content-Type": "application/javascript",
                             "Cache-Control": "no-cache",
-                            ETag: revision,
+                            ETag: buildContext.revision,
                         },
                     });
                 } catch (error) {

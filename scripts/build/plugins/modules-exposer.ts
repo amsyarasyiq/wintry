@@ -66,7 +66,7 @@ async function generateModuleScript({
     const exports = await gatherExportedModules({ excludedFolders });
     const modules = Object.keys(exports);
 
-    const wrapperFunction = String(function createModuleProxy(factory) {
+    const wrapperFunction = String(function createModuleProxy(factory: () => any) {
         // biome-ignore lint/style/noVar: Hermes doesn't support 'let' or 'const' declarations
         var cache = null;
 
@@ -112,7 +112,7 @@ export function moduleExposerPlugin({
 
             build.onLoad({ filter, namespace }, async () => {
                 const script = await generateModuleScript({ excludedFolders });
-                return { contents: script, loader: "js", resolveDir: path.resolve(".") };
+                return { contents: script, loader: "ts", resolveDir: path.resolve(".") };
             });
         },
     };
