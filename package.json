@@ -36,8 +36,9 @@
 		"yargs-parser": "^21.1.1"
 	},
 	"scripts": {
-		"build": "bun run scripts/build.ts",
-		"serve": "bun run scripts/serve.ts --adb",
+		"build": "bun run scripts/build",
+		"serve": "bun run scripts/serve",
+		"adb": "bun run scripts/adb",
 		"typesafe-i18n": "typesafe-i18n",
 		"i18n:export": "bun run scripts/exportI18n.ts"
 	},
