@@ -27,7 +27,8 @@ export function startDevelopmentServer(buildContext: WintryBuildContext) {
             const { pathname } = new URL(request.url);
             if (pathname === "/bundle.js") {
                 try {
-                    if (buildContext.lastBuildConsumed) {
+                    const isFreshBuild = buildContext.lastBuildConsumed;
+                    if (isFreshBuild) {
                         logger(c.yellow("Rebuilding bundle..."));
                         const response = await buildContext.build({ silent: true });
                         if (response && !response.ok) return response;
@@ -49,7 +50,7 @@ export function startDevelopmentServer(buildContext: WintryBuildContext) {
                         buildContext.outputPath!,
                         "\n  ",
                         c.bold.green("Status:"),
-                        buildContext.lastBuildConsumed ? "fresh-build" : "pre-built",
+                        isFreshBuild ? "fresh-build" : "pre-built",
                         "\n  ",
                         c.bold.green("Revision:"),
                         revision,
@@ -85,7 +86,8 @@ export function startDevelopmentServer(buildContext: WintryBuildContext) {
         logger(`  http://${host}:${c.underline.green(server.port.toString())}/`);
     }
 
-    console.log("\nCtrl+C to exit.");
+    logger(c.dim("\nPress Ctrl+C to stop the server."));
+    return server;
 }
 
 if (import.meta.main) {

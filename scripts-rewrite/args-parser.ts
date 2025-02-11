@@ -1,6 +1,7 @@
 import { parseArgs } from "util";
 
-const isServeMain = Bun.main === Bun.resolveSync("./serve", import.meta.dir);
+const serveScripts = ["./serve", "./adb"];
+const isServeMain = serveScripts.some(s => Bun.main === Bun.resolveSync(s, import.meta.dir));
 
 export const { values: args } = parseArgs({
     args: Bun.argv,
@@ -19,6 +20,10 @@ export const { values: args } = parseArgs({
             short: "p",
             type: "string",
             default: isServeMain ? "4040" : undefined,
+        },
+        wsa: {
+            type: "boolean",
+            default: false,
         },
     },
     strict: true,
