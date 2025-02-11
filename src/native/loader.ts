@@ -4,6 +4,7 @@ interface InitConfig {
 
 interface LoaderConstants {
     DEFAULT_BASE_URL: string;
+    WINTRY_DIR: string;
 }
 
 interface LoaderModule {
@@ -46,7 +47,10 @@ export async function callFunction(module: string, function_: string, args: unkn
     }
 
     const { queryCache } = window.nativeModuleProxy.ImageLoader;
-    const promise: InteropReturn = queryCache(["__wintry_bridge", JSON.stringify({ m: module, f: function_, a: args })]);
+    const promise: InteropReturn = queryCache([
+        "__wintry_bridge",
+        JSON.stringify({ m: module, f: function_, a: args }),
+    ]);
 
     const result = await promise;
 
