@@ -33,6 +33,8 @@ export default definePlugin({
     required: true,
 
     start() {
+        patcher.reset();
+
         patcher.addDisposer(
             manager.registerSection({
                 name: t.wintry(),

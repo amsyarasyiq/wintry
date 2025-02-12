@@ -62,5 +62,10 @@ export function createContextualPatcher({ pluginId }: { pluginId: string }) {
                 unpatch();
             }
         },
+
+        reset() {
+            this.dispose(); // Unpatch everything just in case
+            disposed = false;
+        },
     };
 }

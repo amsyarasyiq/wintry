@@ -69,6 +69,8 @@ export default definePlugin({
     authors: [Devs.Pylix],
 
     start() {
+        patcher.reset();
+
         const toast = new Toast({
             type: "custom",
             content: {
@@ -132,5 +134,9 @@ export default definePlugin({
                 }
             });
         });
+    },
+
+    cleanup() {
+        patcher.dispose();
     },
 });

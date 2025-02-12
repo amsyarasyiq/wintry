@@ -17,6 +17,8 @@ export default definePlugin({
     required: true,
 
     start() {
+        patcher.reset();
+
         patcher.after(ToastContainer, "type", (_, res) => {
             const toasts = useToastStore(s => s.toasts);
             if (!toasts.length) return res;
@@ -29,4 +31,6 @@ export default definePlugin({
             );
         });
     },
+
+    cleanup() {},
 });

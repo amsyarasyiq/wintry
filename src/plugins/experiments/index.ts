@@ -23,6 +23,7 @@ export default definePlugin({
     authors: [Devs.Pylix],
 
     start() {
+        patcher.reset();
         waitFor(byProps(["isStaffEnv"]), UserStoreUtils => {
             patcher.instead(UserStoreUtils, "isStaffEnv", ([user]) => {
                 if (user === UserStore.getCurrentUser()) return true;
