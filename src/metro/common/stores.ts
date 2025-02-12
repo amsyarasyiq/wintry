@@ -16,12 +16,14 @@ export const byStoreName = createModuleFilter(
 );
 
 export function getStore(name: string, resolver?: (store: any) => any): FluxStore {
-    return lookup(byStoreName(name)).asLazy(resolver) as FluxStore;
+    return lookup(byStoreName(name, { checkEsmDefault: true })).asLazy(resolver) as FluxStore;
 }
 
 export let UserStore = getStore("UserStore", m => (UserStore = m)) as S.UserStore;
 export let ChannelStore = getStore("ChannelStore", m => (ChannelStore = m)) as S.ChannelStore;
 export let GuildStore = getStore("GuildStore", m => (GuildStore = m)) as S.GuildStore;
+
+export let DeveloperExperimentStore = getStore("DeveloperExperimentStore", m => (DeveloperExperimentStore = m));
 
 export let ToastStore = getStore("ToastStore", m => (ToastStore = m));
 

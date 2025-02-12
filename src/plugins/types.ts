@@ -83,22 +83,22 @@ export type OptionDefinition =
 export type OptionDefToType<T extends OptionDefinition> = T extends StringOptionDefinition
     ? string
     : T extends BooleanOptionDefinition
-    ? boolean
-    : T extends RadioOptionDefinition
-    ? T["options"][number]["value"]
-    : T extends SelectOptionDefinition
-    ? T["options"][number]["value"][]
-    : T extends SliderOptionDefinition
-    ? T["points"][number]
-    : never;
+      ? boolean
+      : T extends RadioOptionDefinition
+        ? T["options"][number]["value"]
+        : T extends SelectOptionDefinition
+          ? T["options"][number]["value"][]
+          : T extends SliderOptionDefinition
+            ? T["points"][number]
+            : never;
 
 type OptionDefaultType<O extends OptionDefinition> = O extends RadioOptionDefinition | SelectOptionDefinition
     ? O["options"] extends { default?: boolean }[]
-    ? O["options"][number]["value"]
-    : undefined
+        ? O["options"][number]["value"]
+        : undefined
     : O extends { default: infer T }
-    ? T
-    : undefined;
+      ? T
+      : undefined;
 
 export type SettingsStore<D extends OptionDefinitions> = {
     [K in keyof D]: OptionDefToType<D[K]> | OptionDefaultType<D[K]>;
@@ -114,6 +114,7 @@ export interface DefinedOptions<Def extends OptionDefinitions> {
         listener: (state: T, prevState: T) => void,
         options?: Parameters<typeof usePluginStore.subscribe>[2],
     ) => () => void;
+    unsubscribeAll: () => void;
 }
 
 type OptionType = "string" | "boolean" | "select" | "radio" | "slider";

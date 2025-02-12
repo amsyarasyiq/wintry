@@ -58,8 +58,7 @@ function setDefaultPluginSettings(def: OptionDefinitions, pluginSettings: Plugin
     for (const [key, setting] of Object.entries(def)) {
         if (key in pluginSettings) continue;
 
-        if ("default" in setting)
-            pluginSettings[key] = setting.default;
+        if ("default" in setting) pluginSettings[key] = setting.default;
         else {
             switch (setting.type) {
                 case "string":
@@ -75,22 +74,15 @@ function setDefaultPluginSettings(def: OptionDefinitions, pluginSettings: Plugin
             switch (setting.type) {
                 case "radio": {
                     const defaultOption = setting.options.find(opt => opt.default);
-                    if (defaultOption != null)
-                        pluginSettings[key] = defaultOption?.value ?? null;
-                    else
-                        pluginSettings[key] = null;
+                    if (defaultOption != null) pluginSettings[key] = defaultOption?.value ?? null;
+                    else pluginSettings[key] = null;
                     break;
                 }
                 case "select": {
-                    const defaults = setting.options
-                        .filter(opt => opt.default)
-                        .map(opt => opt.value);
+                    const defaults = setting.options.filter(opt => opt.default).map(opt => opt.value);
 
-                    if (defaults.length > 0)
-                        pluginSettings[key] = defaults;
-
-                    else
-                        pluginSettings[key] = [];
+                    if (defaults.length > 0) pluginSettings[key] = defaults;
+                    else pluginSettings[key] = [];
                     break;
                 }
             }
@@ -99,6 +91,7 @@ function setDefaultPluginSettings(def: OptionDefinitions, pluginSettings: Plugin
 }
 
 export function registerPluginSettings<Def extends OptionDefinitions>(id: string, def: Def) {
+    const unsubscribers = new Set<() => void>();
     const definition: DefinedOptions<Def> = {
         pluginId: id,
         definition: def,
@@ -107,12 +100,19 @@ export function registerPluginSettings<Def extends OptionDefinitions>(id: string
             return usePluginStore(state => selector(state.settings[this.pluginId] as SettingsStore<Def>));
         },
         subscribe(selector, listener, options) {
-            return usePluginStore.subscribe(
+            const unsub = usePluginStore.subscribe(
                 state => selector(state.settings[this.pluginId] as SettingsStore<Def>),
                 (state, prevState) => listener(state, prevState),
                 options,
             );
+
+            unsubscribers.add(unsub);
+            return unsub;
         },
+        unsubscribeAll() {
+            for (const unsub of unsubscribers) unsub();
+        },
+
         // TODO: Implement this
         // withPrivateSettings<T>() {
         //     return ret;
