@@ -130,9 +130,10 @@ export function lazyValue<T, I extends ExemptedEntries>(factory: () => T, opts: 
         if (!cache) {
             cache = factory();
 
-            if (cache != null && isPrimitive(cache)) {
+            if (cache != null) {
+                factories.set(cache, proxyFactory);
                 // @ts-expect-error - TypeScript doesn't know this is a constructor
-                cache = new cache!.constructor(cache);
+                if (isPrimitive(cache)) cache = new cache!.constructor(cache);
             }
         }
 
