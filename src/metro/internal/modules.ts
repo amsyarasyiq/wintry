@@ -79,7 +79,8 @@ export function isBadModuleExports(exports: any) {
         exports == null ||
         exports === globalThis ||
         exports["<insert the funny here>"] === null || // A proxy which always returns null
-        (exports.__proto__ === Object.prototype && Reflect.ownKeys(exports).length === 0)
+        (exports.__proto__ === Object.prototype && Reflect.ownKeys(exports).length === 0) ||
+        exports.default?.[Symbol.toStringTag] === "IntlMessagesProxy"
     );
 }
 
@@ -119,7 +120,9 @@ export function waitFor<A, R, O>(
             if (fulfilled) return true;
 
             const exports = state.module?.exports;
-            if (!exports) return false;
+            if (isBadModuleExports(exports)) {
+                return false;
+            }
 
             const result = testExports(state.id, exports, filter);
             if (!result) return false;
