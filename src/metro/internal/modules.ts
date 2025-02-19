@@ -58,11 +58,13 @@ export function internal_getDefiner(
             state.module = publicModule;
             state.initialized = true;
 
-            markExportsFlags(id, publicModule);
+            if (publicModule) {
+                markExportsFlags(id, publicModule.exports);
 
-            if (!isBadModuleExports(publicModule)) {
-                metroEvents.emit("moduleLoaded", state);
-                modulesInitializationEvents.emit(id);
+                if (!isBadModuleExports(publicModule.exports)) {
+                    metroEvents.emit("moduleLoaded", state);
+                    modulesInitializationEvents.emit(id);
+                }
             }
         };
 
