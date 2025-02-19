@@ -13,14 +13,16 @@ type TextVariant = LiteralUnion<
     | `redesign/${"channel-title" | "message-preview"}/${Exclude<TextWeight, "extrabold">}`
     | `redesign/heading-18/bold`
     | `display-${BasicTextSize}`
-    | "eyebrow"
-    | "code",
+    | "eyebrow",
     string
 >;
 
 export type TextProps = RN.TextProps & {
     variant?: TextVariant;
     color?: string;
+    tabularNumbers?: boolean;
+    animated?: boolean;
+    experimental_useNativeText?: boolean;
 };
 
 export default getComponentFromProps(["Text", "LegacyText"]) as React.FC<TextProps>;
