@@ -22,3 +22,8 @@ declare module "#plugin-context" {
     import * as _default from "#plugin-context";
     export default _default;
 }
+
+declare module "#wt-plugins" {
+    const plugins: Record<string, import("./plugins/types").WintryPluginInstance>;
+    export default plugins;
+}

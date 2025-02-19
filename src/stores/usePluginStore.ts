@@ -5,8 +5,9 @@ import { hasIndexInitialized } from "..";
 import { kvStorage } from "@utils/kvStorage";
 import { metroEvents } from "@metro/internal/events";
 import type { PluginSettings, PluginState } from "@plugins/types";
-import { getProxyFactory } from "@utils/lazy";
-import { PLUGINS } from "@plugins" with { lazy: "on" };
+import { getProxyFactory, lazyValue } from "@utils/lazy";
+
+const PLUGINS = lazyValue(() => require("#wt-plugins").default, { hint: "object" });
 
 export interface PluginStore {
     settings: Record<string, PluginSettings>;

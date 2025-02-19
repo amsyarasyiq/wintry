@@ -8,6 +8,7 @@ import { syntaxTransformersPlugin } from "./plugins/syntax-transformers";
 import { getDependenciesMap } from "./utils/dependencies";
 import { lazyResolverPlugin } from "./plugins/lazy-resolver";
 import { buildInfoPlugin } from "./plugins/build-info";
+import { pluginsImporterPlugin } from "./plugins/plugins-importer";
 
 export async function getEsbuildConfig({ deploy = false, minify = false }): Promise<BuildOptions> {
     const deps = await getDependenciesMap();
@@ -71,6 +72,7 @@ export async function getEsbuildConfig({ deploy = false, minify = false }): Prom
             pluginsContextProviderPlugin({
                 contextModule: "#plugin-context",
             }),
+            pluginsImporterPlugin(),
             syntaxTransformersPlugin(),
         ],
     };

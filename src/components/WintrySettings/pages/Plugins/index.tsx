@@ -1,7 +1,7 @@
 import fuzzysort from "fuzzysort";
 import { useMemo } from "react";
 import { View } from "react-native";
-import { PLUGINS } from "@plugins";
+import PLUGINS from "#wt-plugins";
 import Search, { useSearchQuery } from "../../../Search";
 import PageWrapper from "../../PageWrapper";
 import PluginCard from "./PluginCard";
