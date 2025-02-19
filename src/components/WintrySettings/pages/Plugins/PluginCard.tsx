@@ -123,7 +123,7 @@ function CardSwitch() {
     const togglePlugin = usePluginStore(state => state.togglePlugin);
 
     return (
-        <View style={{ opacity: plugin.required ? 0.7 : 1 }}>
+        <View>
             <FormSwitch
                 value={settings.enabled}
                 disabled={plugin.required}
@@ -153,7 +153,15 @@ function CardSwitch() {
 export default memo(function PluginCard({ result, item: plugin }: PluginCardProps<WintryPluginInstance>) {
     return (
         <PluginCardContext.Provider value={{ plugin, result }}>
-            <Card onPress={() => showSheet("PluginSheetComponent", import("./PluginSheetComponent"), { plugin })}>
+            <Card
+                /* Make required plugin appears a bit harder to manage  */
+                style={{ opacity: plugin.required ? 0.7 : 1 }}
+                onPress={
+                    plugin.required
+                        ? undefined
+                        : () => showSheet("PluginSheetComponent", import("./PluginSheetComponent"), { plugin })
+                }
+            >
                 <Stack spacing={16}>
                     <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
                         <View style={{ flexShrink: 1 }}>

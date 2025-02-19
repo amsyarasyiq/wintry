@@ -137,3 +137,7 @@ export function registerPluginSettings<Def extends OptionDefinitions>(id: string
 export function getPluginSettings(id: string): OptionDefinitions {
     return settingsDefRegistry.get(id)?.definition as OptionDefinitions;
 }
+
+export function isPluginInternal(plugin: WintryPluginInstance) {
+    return plugin.$path.startsWith("/_");
+}
