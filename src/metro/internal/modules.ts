@@ -112,15 +112,23 @@ export function waitFor<A, R, O>(
     { count = 1 } = {},
 ) {
     let currentCount = 0;
-    let fulfilled = false;
+    let aborted = false;
+
+    function cleanup(eventHandlers: Array<() => void>) {
+        if (aborted) return;
+        aborted = true;
+        for (const handler of eventHandlers) handler();
+    }
+
+    const onAbort: Array<() => void> = [];
 
     onceCacheReady(() => {
-        if (fulfilled) return;
+        if (aborted) return;
         const cachedModuleIds = getAllCachedModuleIds(filter.key);
         const cacheHandler = createCacheHandler(filter.key, false);
 
         function checkState(state: ModuleState) {
-            if (fulfilled) return true;
+            if (aborted) return true;
 
             const exports = state.module?.exports;
             if (isBadModuleExports(exports)) {
@@ -133,10 +141,15 @@ export function waitFor<A, R, O>(
             cacheHandler.cacheId(state.id, result);
             callback(result, state);
 
-            return (fulfilled = ++currentCount === count);
+            if (++currentCount === count) {
+                cleanup(onAbort);
+                return true;
+            }
+
+            return false;
         }
 
-        // Fast path: check already loaded modules
+        // Check already loaded modules
         if (hasIndexInitialized && cachedModuleIds && cachedModuleIds.length >= count) {
             for (const id of cachedModuleIds) {
                 const state = moduleRegistry.get(id);
@@ -145,17 +158,25 @@ export function waitFor<A, R, O>(
                 if (state.module?.exports) {
                     if (checkState(state)) return;
                 } else {
-                    modulesInitializationEvents.once(state.id, () => checkState(state));
+                    const cb = () => checkState(state);
+                    modulesInitializationEvents.once(state.id, cb);
+                    onAbort.push(() => modulesInitializationEvents.off(state.id, cb));
                 }
             }
-        }
+        } else if (!aborted) {
+            const moduleLoadedHandler = (state: ModuleState) => checkState(state);
+            const lookupFoundHandler = (key: string, state: ModuleState) =>
+                filter.key === key ? checkState(state) : false;
 
-        if (!fulfilled) {
-            // Fallback: watch for new modules
-            onUntil(metroEvents, "moduleLoaded", checkState);
-            onUntil(metroEvents, "lookupFound", (key, state) => (filter.key === key ? checkState(state) : false));
+            metroEvents.on("moduleLoaded", moduleLoadedHandler);
+            metroEvents.on("lookupFound", lookupFoundHandler);
+
+            onAbort.push(
+                () => metroEvents.off("moduleLoaded", moduleLoadedHandler),
+                () => metroEvents.off("lookupFound", lookupFoundHandler),
+            );
         }
     });
 
-    return () => void (fulfilled = true);
+    return () => cleanup(onAbort);
 }
