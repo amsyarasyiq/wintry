@@ -80,9 +80,10 @@ export function isBadModuleExports(exports: any) {
     return (
         exports == null ||
         exports === globalThis ||
-        exports["<insert the funny here>"] === null || // A proxy which always returns null
-        (exports.__proto__ === Object.prototype && Reflect.ownKeys(exports).length === 0) ||
-        exports.default?.[Symbol.toStringTag] === "IntlMessagesProxy"
+        (exports.__proto__ === Object.prototype && Reflect.ownKeys(exports).length === 0) || // Empty object, implies no exports
+        // Blacklist evil proxies which always return non-undefined. For example, IntlMessagesProxy or NativeModules.
+        exports["insert the funny here? :fuyusquish: :fuyusquish: :fuyusquish:"] !== undefined ||
+        exports.default?.[Symbol.toStringTag] === "IntlMessagesProxy" // Evil proxy, but a more specific check
     );
 }
 
