@@ -1,4 +1,4 @@
-import type { DefinedOptions, OptionDefinitions, WintryPlugin } from "./types";
+import type { DefinedOptions, OptionDefinitions, WintryPluginDefinition } from "./types";
 import { registerPluginSettings, registerPlugin, type LooseWintryPlugin } from "./utils";
 
 interface PluginContextMeta {
@@ -6,11 +6,9 @@ interface PluginContextMeta {
 }
 
 interface PluginContext {
-    definePlugin<
-        P extends WintryPlugin<D, O>,
-        D extends DefinedOptions<O>,
-        O extends OptionDefinitions
-    >(plugin: LooseWintryPlugin<P>): P;
+    definePlugin<P extends WintryPluginDefinition<D, O>, D extends DefinedOptions<O>, O extends OptionDefinitions>(
+        plugin: LooseWintryPlugin<P>,
+    ): (...args: any[]) => P;
 
     definePluginSettings<Def extends OptionDefinitions>(def: Def): DefinedOptions<Def>;
 
@@ -29,6 +27,6 @@ export function getPluginContext(id: string): PluginContext {
         },
         meta: {
             id,
-        }
-    }
+        },
+    };
 }

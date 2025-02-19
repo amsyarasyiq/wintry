@@ -30,7 +30,7 @@ function getHighlightColor(): import("react-native").ColorValue {
 
 function usePluginSettings() {
     const {
-        plugin: { id },
+        plugin: { $id: id },
     } = useCardContext();
     return usePluginStore(useShallow(state => state.settings[id]));
 }
@@ -129,20 +129,20 @@ function CardSwitch() {
                 disabled={plugin.required}
                 onValueChange={(v: boolean) => {
                     if (settings.enabled && plugin.onStopRequest) {
-                        const manualHandle = plugin.onStopRequest(() => togglePlugin(plugin.id, false));
+                        const manualHandle = plugin.onStopRequest(() => togglePlugin(plugin.$id, false));
                         if (manualHandle === true) return;
                     }
 
-                    if (v && plugin.requiresRestart?.(true, plugin.state)) {
+                    if (v && plugin.requiresRestart?.(true, plugin.$state)) {
                         // TODO: Use a proper alert
                         alert("This plugin requires a restart to be enabled.");
-                        togglePlugin(plugin.id, v, false);
-                    } else if (!v && plugin.requiresRestart?.(false, plugin.state)) {
+                        togglePlugin(plugin.$id, v, false);
+                    } else if (!v && plugin.requiresRestart?.(false, plugin.$state)) {
                         // TODO: Use a proper alert
                         alert("This plugin requires a restart to be disabled.");
-                        togglePlugin(plugin.id, v, false);
+                        togglePlugin(plugin.$id, v, false);
                     } else {
-                        togglePlugin(plugin.id, v);
+                        togglePlugin(plugin.$id, v);
                     }
                 }}
             />

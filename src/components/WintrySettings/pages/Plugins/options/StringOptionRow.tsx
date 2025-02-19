@@ -6,7 +6,7 @@ import TextArea from "@components/Discord/TextInput/TextArea";
 import TextInput from "@components/Discord/TextInput/TextInput";
 
 export function StringOptionRow({ opt, plugin, settingKey }: BaseOptionRowProps<"string">) {
-    const [current, setter] = usePluginSettings<typeof opt>(plugin.id, settingKey);
+    const [current, setter] = usePluginSettings<typeof opt>(plugin.$id, settingKey);
 
     const InputComponent = opt.textArea === true ? TextArea : TextInput;
     const isValid = () => (current && opt.validate ? opt.validate(current) : true);

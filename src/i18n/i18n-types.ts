@@ -142,6 +142,10 @@ type RootTranslation = {
 				 * I​D
 				 */
 				id: string
+				/**
+				 * P​a​t​h
+				 */
+				path: string
 			}
 		}
 		developer: {
@@ -323,6 +327,10 @@ export type TranslationFunctions = {
 				 * ID
 				 */
 				id: () => LocalizedString
+				/**
+				 * Path
+				 */
+				path: () => LocalizedString
 			}
 		}
 		developer: {

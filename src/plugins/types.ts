@@ -17,18 +17,19 @@ export interface PluginSettings {
     [key: string]: any;
 }
 
-export interface WintryPlugin<D extends DefinedOptions<O>, O extends OptionDefinitions> {
-    readonly id?: string;
+export interface WintryPluginDefinition<D extends DefinedOptions<O>, O extends OptionDefinitions> {
+    // Runtime properties. Please update RequiredRuntimePropertyKey if you add more required properties.
+    readonly $id?: string;
+    readonly $settings?: D;
+    readonly $state?: PluginState;
+    readonly $path?: string;
+
     readonly name: string;
     readonly description: string;
     readonly authors: Dev[];
 
     readonly required?: boolean;
     readonly preenabled?: boolean;
-
-    readonly settings?: D;
-
-    readonly state?: PluginState;
 
     /**
      * A check if the plugin can be started/stopped without a restart.
@@ -63,13 +64,13 @@ export interface WintryPlugin<D extends DefinedOptions<O>, O extends OptionDefin
     readonly onStopRequest?: (stop: () => void) => boolean;
 }
 
-type RuntimePropertyKey = "id" | "state";
+type RequiredRuntimePropertyKey = "id" | "state" | "path";
 
 // Allows defining a plugin without the state property and allow extra properties
 export type WintryPluginInstance<
     O extends OptionDefinitions = OptionDefinitions,
     D extends DefinedOptions<O> = DefinedOptions<O>,
-> = SetRequired<WintryPlugin<D, O>, RuntimePropertyKey>;
+> = SetRequired<WintryPluginDefinition<D, O>, `$${RequiredRuntimePropertyKey}`>;
 
 export type OptionDefinitions = Record<string, OptionDefinition>;
 export type OptionDefinition =

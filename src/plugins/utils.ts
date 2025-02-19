@@ -6,7 +6,7 @@ import type {
     PluginSettings,
     PluginState,
     SettingsStore,
-    WintryPlugin,
+    WintryPluginDefinition,
     WintryPluginInstance,
 } from "./types";
 
@@ -19,10 +19,11 @@ export type LooseWintryPlugin<P> = WithThis<P, WintryPluginInstance>;
 
 const settingsDefRegistry = new Map<string, DefinedOptions<OptionDefinitions>>();
 
-export function registerPlugin<P extends WintryPlugin<D, O>, D extends DefinedOptions<O>, O extends OptionDefinitions>(
-    id: string,
-    plugin: LooseWintryPlugin<P>,
-): P {
+export function registerPlugin<
+    P extends WintryPluginDefinition<D, O>,
+    D extends DefinedOptions<O>,
+    O extends OptionDefinitions,
+>(id: string, plugin: LooseWintryPlugin<P>): (relativePath: string) => P {
     const pluginState: PluginState = { running: false, ranPreinit: false };
     const pluginSettings: PluginSettings = toDefaulted(usePluginStore.getState().settings[id] ?? {}, {
         enabled: Boolean(plugin.preenabled === true || plugin.required || false),
@@ -39,19 +40,28 @@ export function registerPlugin<P extends WintryPlugin<D, O>, D extends DefinedOp
         state.settings[id] = pluginSettings;
     });
 
+    // Set runtime properties
     Object.defineProperties(plugin, {
-        id: {
+        $id: {
             value: id,
         },
-        state: {
+        $state: {
             get: () => usePluginStore.getState().states[id],
         },
-        settings: {
+        $settings: {
             get: () => usePluginStore.getState().settings[id],
         },
     });
 
-    return plugin as P;
+    return relativePath => {
+        Object.defineProperties(plugin, {
+            $path: {
+                value: relativePath || "<unknown>",
+            },
+        });
+
+        return plugin as P;
+    };
 }
 
 function setDefaultPluginSettings(def: OptionDefinitions, pluginSettings: PluginSettings) {

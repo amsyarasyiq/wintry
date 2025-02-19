@@ -6,7 +6,7 @@ import { InfoCard } from "../PluginSheetComponent";
 import { OptionDefRow } from "./OptionDefRow";
 
 export function OptionSection({ plugin }: { plugin: WintryPluginInstance }) {
-    const options = getPluginSettings(plugin.id);
+    const options = getPluginSettings(plugin.$id);
     if (!options) return null;
 
     return (

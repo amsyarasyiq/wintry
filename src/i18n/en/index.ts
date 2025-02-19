@@ -46,6 +46,7 @@ const en = {
                 authors: "Authors",
                 version: "Version",
                 id: "ID",
+                path: "Path",
             }
         },
         developer: {

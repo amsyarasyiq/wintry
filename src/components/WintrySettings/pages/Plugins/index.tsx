@@ -26,7 +26,7 @@ export default function PluginsPage() {
                 data={results}
                 itemMinWidth={244} // Approximated number
                 estimatedItemSize={150}
-                keyExtractor={i => i.obj.id}
+                keyExtractor={i => i.obj.$id}
                 renderItem={({ item: result }) => <PluginCard result={result} item={result.obj} />}
                 ItemSeparatorComponent={ItemSeparator}
             />

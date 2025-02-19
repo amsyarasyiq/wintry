@@ -5,7 +5,7 @@ import { getIcon } from "../common/getIcon";
 import { usePluginSettings } from "../common/usePluginSettings";
 
 export function SelectOptionRow({ opt, plugin, settingKey }: BaseOptionRowProps<"select">) {
-    const [selected, setSelected] = usePluginSettings<typeof opt>(plugin.id, settingKey);
+    const [selected, setSelected] = usePluginSettings<typeof opt>(plugin.$id, settingKey);
 
     const handleToggleOption = (value: (typeof selected)[number]) => {
         setSelected(currentSelected => {

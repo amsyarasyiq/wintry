@@ -6,7 +6,7 @@ import { TableRadioGroup, TableRadioRow } from "@components/Discord";
 import RedesignCompat from "@components/Discord/RedesignCompat/RedesignCompat";
 
 export function RadioOptionRow({ opt, plugin, settingKey }: BaseOptionRowProps<"radio">) {
-    const [current, setCurrent] = usePluginSettings<typeof opt>(plugin.id, settingKey);
+    const [current, setCurrent] = usePluginSettings<typeof opt>(plugin.$id, settingKey);
 
     return (
         <BaseCardOption opt={opt}>

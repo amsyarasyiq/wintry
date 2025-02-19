@@ -4,7 +4,7 @@ import type { BaseOptionRowProps } from "./BaseOptionRowProps";
 import { getIcon } from "../common/getIcon";
 
 export function BooleanOptionRow({ opt, plugin, settingKey }: BaseOptionRowProps<"boolean">) {
-    const [current, setCurrent] = usePluginSettings<typeof opt>(plugin.id, settingKey);
+    const [current, setCurrent] = usePluginSettings<typeof opt>(plugin.$id, settingKey);
 
     return (
         <TableSwitchRow

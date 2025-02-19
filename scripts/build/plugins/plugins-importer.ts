@@ -29,7 +29,7 @@ async function makeModule() {
     const plugins = await gatherPlugins();
 
     const pluginImports = plugins.map(([plugin, relativePath]) => {
-        return `"${plugin}": require("./plugins/${relativePath}").default`;
+        return `"${plugin}": require("./plugins/${relativePath}").default(${JSON.stringify(relativePath)})`;
     });
 
     return `

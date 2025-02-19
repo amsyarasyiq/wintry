@@ -6,7 +6,7 @@ import Slider from "@components/Discord/Slider/Slider";
 import { Card, Stack, Text } from "@components/Discord";
 
 function SliderRow({ opt, plugin, settingKey }: BaseOptionRowProps<"slider">) {
-    const [current, setCurrent] = usePluginSettings<typeof opt>(plugin.id, settingKey);
+    const [current, setCurrent] = usePluginSettings<typeof opt>(plugin.$id, settingKey);
     const currentIndex = opt.points.indexOf(current);
 
     const updateValue = (newIndex: number) => {
