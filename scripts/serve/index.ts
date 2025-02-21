@@ -5,6 +5,8 @@ import logger from "../logger";
 
 import * as c from "ansi-colors";
 import { networkInterfaces } from "os";
+import * as hermesc from "hermes-compiler";
+import { writeFile } from "fs/promises";
 
 function getHostAddresses(): string[] {
     const hostAddresses: string[] = [];
@@ -20,21 +22,42 @@ function getHostAddresses(): string[] {
     return hostAddresses;
 }
 
+// Returns the bytecode version
+function parseHbcBundlePath(path: string): number | undefined {
+    const res = /^\/bundle\.(\d+)\.hbc$/.exec(path);
+    if (res?.[1]) {
+        return Number(res[1]);
+    }
+}
+
 export function startDevelopmentServer(
     getBuildContext: () => Promise<WintryBuildContext>,
     getMinifiedBuildContext: () => Promise<WintryBuildContext>,
 ) {
     let lastRequest: Request;
+
     const server = Bun.serve({
         port: args.port,
         async fetch(request: Request, server: Server) {
             lastRequest = request;
-            const { pathname } = new URL(request.url);
-            if (pathname === "/bundle.js" || pathname === "/bundle.min.js") {
-                const buildContext =
-                    pathname === "/bundle.js" ? await getBuildContext() : await getMinifiedBuildContext();
 
+            const { pathname } = new URL(request.url);
+
+            const hbcVersion = parseHbcBundlePath(pathname) || Number.NaN;
+
+            if (pathname === "/info.json") {
+                const compilers = [hermesc];
+
+                return Response.json({
+                    paths: ["/bundle.js", "/bundle.min.js", ...compilers.map(v => `/bundle.${v.VERSION}.hbc`)],
+                });
+            }
+
+            if (pathname === "/bundle.js" || pathname === "/bundle.min.js" || hbcVersion > 0) {
                 try {
+                    const buildContext =
+                        pathname !== "/bundle.min.js" ? await getBuildContext() : await getMinifiedBuildContext();
+
                     const isFreshBuild = buildContext.lastBuildConsumed;
                     if (isFreshBuild) {
                         logger(c.yellow(`Rebuilding ${pathname}...`));
@@ -46,13 +69,32 @@ export function startDevelopmentServer(
                     }
 
                     buildContext.lastBuildConsumed = true;
-                    const file = Bun.file(buildContext.outputPath!);
+                    let file = Bun.file(buildContext.outputPath!);
+
+                    if (hbcVersion > 0) {
+                        if (hbcVersion !== hermesc.VERSION) {
+                            logger(
+                                c.redBright(`Version requested is not supported: ${hbcVersion} !== ${hermesc.VERSION}`),
+                            );
+
+                            return new Response(`Unsupported version: ${hbcVersion}`, { status: 404 });
+                        }
+
+                        const bundleBuffer = Buffer.from(await file.arrayBuffer());
+                        const { bytecode } = hermesc.compile(bundleBuffer, { sourceURL: "wintry" });
+
+                        console.log(`Compiled bundle: ${bytecode.length} bytes`);
+
+                        const hbcPath = file.name!.replace(/\.js$/, `.${hbcVersion}.hbc`);
+                        await writeFile(hbcPath, bytecode);
+                        file = Bun.file(hbcPath);
+                    }
 
                     logger(
                         c.dim("Serving build:"),
                         "\n  ",
                         c.bold.green("File:"),
-                        buildContext.outputPath!,
+                        file.name!,
                         "\n  ",
                         c.bold.green("Status:"),
                         isFreshBuild ? "fresh-build" : "pre-built",
@@ -83,7 +125,7 @@ export function startDevelopmentServer(
                 }
             }
 
-            return new Response("Not found", { status: 404 });
+            return new Response(`Unknown path: ${pathname}`, { status: 404 });
         },
         websocket: {
             message: async (ws: ServerWebSocket<unknown>, message: string | Buffer) => {

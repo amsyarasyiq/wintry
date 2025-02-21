@@ -2,9 +2,12 @@ import { getEsbuildConfig } from "./esbuild-config";
 import esbuild, { type BuildResult } from "esbuild";
 import { args } from "../args-parser";
 import { bold, greenBright, yellowBright } from "ansi-colors";
-import { $ } from "bun";
+import { $, file } from "bun";
 import logger from "../logger";
 import crypto from "node:crypto";
+import * as hermesc from "hermes-compiler";
+import { writeFile } from "node:fs/promises";
+import * as c from "ansi-colors";
 
 export interface WintryBuildContext {
     contextCreated: number;
@@ -91,13 +94,33 @@ if (import.meta.main) {
         logger(yellowBright("Port argument is provided, but this is not a server script. Ignoring..."));
     }
 
+    const availablePaths = [] as string[];
     const buildContext = await createBuildContext({ minify: false });
 
+    const hash = crypto.createHash("sha256");
+
     try {
-        const result = await buildBundle(buildContext);
-        console.log(`Built bundle: ${Object.keys(result.metafile?.outputs ?? {})[0]}`);
+        await buildBundle(buildContext);
+        logger(`${c.green("Built bundle")}: ${buildContext.outputPath}`);
+
+        availablePaths.push(buildContext.outputPath!);
+        hash.update(await file(buildContext.outputPath!).text());
+
+        if (args.compile) {
+            logger(c.yellowBright("Compiling bundle with Hermes compiler..."));
+
+            const hbcOutput = buildContext.outputPath!.replace(/\.js$/, `.${hermesc.VERSION}.hbc`);
+            const bundleBuffer = Buffer.from(await file(buildContext.outputPath!).arrayBuffer());
+            const { bytecode } = hermesc.compile(bundleBuffer, { sourceURL: "wintry" });
+
+            logger(`${c.green("Compiled bundle:")} ${bytecode.length} bytes`);
+
+            await writeFile(hbcOutput, bytecode);
+            hash.update(bytecode);
+            availablePaths.push(hbcOutput);
+        }
     } catch (e) {
-        logger(`Build failed: ${e}`);
+        logger(`${c.redBright("Build failed:")} ${e}`);
     } finally {
         buildContext.context.dispose();
     }
@@ -106,12 +129,20 @@ if (import.meta.main) {
         const minifiedBuildContext = await createBuildContext({ minify: true });
 
         try {
-            const result = await buildBundle(minifiedBuildContext);
-            console.log(`Built minified bundle: ${Object.keys(result.metafile?.outputs ?? {})[0]}`);
+            await buildBundle(minifiedBuildContext);
+            logger(`${c.green("Built minified bundle:")} ${minifiedBuildContext.outputPath}`);
+
+            availablePaths.push(minifiedBuildContext.outputPath!);
+            hash.update(await file(minifiedBuildContext.outputPath!).text());
         } catch (e) {
-            logger(`Build failed: ${e}`);
+            logger(`${c.redBright("Build failed:")} ${e}`);
         } finally {
             minifiedBuildContext.context.dispose();
         }
     }
+
+    logger(`${c.yellow("Available paths:")} ${availablePaths.join(", ")}`);
+
+    await writeFile("dist/info.json", JSON.stringify({ paths: availablePaths, hash: hash.digest("hex") }, null, 2));
+    logger(c.bold.green("Info file written to dist/info.json"));
 }

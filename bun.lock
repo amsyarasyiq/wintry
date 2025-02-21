@@ -33,6 +33,7 @@
         "chalk": "^5.4.1",
         "esbuild": "^0.24.2",
         "esbuild-plugin-globals": "^0.2.0",
+        "hermes-compiler": "https://github.com/wintry-mod/hermes-compiler#builds",
         "image-size": "^1.2.0",
         "type-fest": "^4.31.0",
         "util": "^0.12.5",
@@ -716,6 +717,8 @@
     "has-tostringtag": ["has-tostringtag@1.0.2", "", { "dependencies": { "has-symbols": "^1.0.3" } }, "sha512-NqADB8VjPFLM2V0VvHUewwwsw0ZWBaIdgo+ieHtK3hasLz4qeCRjYcqfB6AQrBggRKppKF8L52/VqdVsO47Dlw=="],
 
     "hasown": ["hasown@2.0.2", "", { "dependencies": { "function-bind": "^1.1.2" } }, "sha512-0hJU9SCPvmMzIBdZFqNPXWa6dqh7WdH0cII9y+CyS8rG3nL48Bclra9HmKhVVUHyPWNH5Y7xDwAB7bfgSjkUMQ=="],
+
+    "hermes-compiler": ["hermes-compiler@github:wintry-mod/hermes-compiler#2f84118", {}, "wintry-mod-hermes-compiler-2f84118"],
 
     "hermes-estree": ["hermes-estree@0.23.1", "", {}, "sha512-eT5MU3f5aVhTqsfIReZ6n41X5sYn4IdQL0nvz6yO+MMlPxw49aSARHLg/MSehQftyjnrE8X6bYregzSumqc6cg=="],
 
