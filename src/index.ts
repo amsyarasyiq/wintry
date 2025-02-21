@@ -37,6 +37,8 @@ function initialize() {
             metroEvents.emit("metroReady");
 
             window.wintry = wintryGlobalObject();
+
+            console.log(`Fully initialized Wintry in ${nativePerformanceNow() - WINTRY_START_TIME}ms!`);
         };
     } catch (e) {
         return () => {
