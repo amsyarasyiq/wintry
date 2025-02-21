@@ -53,6 +53,8 @@ const en = {
             assetBrowser: "Asset Browser",
             sections: {
                 tools: "Tools",
+                data: "Data",
+                invalidate_metro_cache: "Invalidate Metro Cache",
             },
         },
         updater: {

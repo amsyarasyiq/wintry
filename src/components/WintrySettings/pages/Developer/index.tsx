@@ -4,12 +4,13 @@ import { findAssetId } from "@api/assets";
 import { TableRow, TableRowGroup } from "@components/Discord";
 import PageWrapper from "../../PageWrapper";
 import { NavigationNative } from "@metro/common/libraries";
+import { MetroCache } from "@metro/internal/caches";
 
 export default function DeveloperPage() {
     const navigation = NavigationNative.useNavigation();
 
     return (
-        <PageWrapper>
+        <PageWrapper style={{ gap: 12 }}>
             <TableRowGroup title={t.settings.developer.sections.tools()}>
                 <TableRow
                     arrow={true}
@@ -21,6 +22,17 @@ export default function DeveloperPage() {
                             render: lazy(() => import("./AssetBrowser")),
                         })
                     }
+                />
+            </TableRowGroup>
+            <TableRowGroup title={t.settings.developer.sections.data()}>
+                <TableRow
+                    label={t.settings.developer.sections.invalidate_metro_cache()}
+                    icon={<TableRow.Icon source={findAssetId("TrashIcon")} />}
+                    variant="danger"
+                    onPress={() => {
+                        MetroCache.invalidate();
+                        alert("Metro cache invalidated");
+                    }}
                 />
             </TableRowGroup>
         </PageWrapper>

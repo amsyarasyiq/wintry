@@ -158,6 +158,14 @@ type RootTranslation = {
 				 * T​o​o​l​s
 				 */
 				tools: string
+				/**
+				 * D​a​t​a
+				 */
+				data: string
+				/**
+				 * I​n​v​a​l​i​d​a​t​e​ ​M​e​t​r​o​ ​C​a​c​h​e
+				 */
+				invalidate_metro_cache: string
 			}
 		}
 		updater: {
@@ -343,6 +351,14 @@ export type TranslationFunctions = {
 				 * Tools
 				 */
 				tools: () => LocalizedString
+				/**
+				 * Data
+				 */
+				data: () => LocalizedString
+				/**
+				 * Invalidate Metro Cache
+				 */
+				invalidate_metro_cache: () => LocalizedString
 			}
 		}
 		updater: {

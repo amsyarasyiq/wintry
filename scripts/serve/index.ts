@@ -80,10 +80,11 @@ export function startDevelopmentServer(
                             return new Response(`Unsupported version: ${hbcVersion}`, { status: 404 });
                         }
 
+                        const startTime = performance.now();
                         const bundleBuffer = Buffer.from(await file.arrayBuffer());
                         const { bytecode } = hermesc.compile(bundleBuffer, { sourceURL: "wintry" });
 
-                        console.log(`Compiled bundle: ${bytecode.length} bytes`);
+                        logger(c.dim("Bundle compilation took:"), `${(performance.now() - startTime).toFixed(2)}ms`);
 
                         const hbcPath = file.name!.replace(/\.js$/, `.${hbcVersion}.hbc`);
                         await writeFile(hbcPath, bytecode);

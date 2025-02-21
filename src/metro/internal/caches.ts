@@ -30,6 +30,7 @@ export interface MetroCache {
     isReady(): boolean;
     initialize(): void;
     save(): void;
+    invalidate(): void;
 }
 
 interface SerializedMetroCache {
@@ -111,6 +112,12 @@ export const MetroCache: MetroCache = {
             } satisfies SerializedMetroCache),
         );
     }, 500),
+
+    invalidate() {
+        kvStorage.removeItem(WINTRY_METRO_CACHE_KEY);
+        MetroCache.initialize();
+        MetroCache.save();
+    },
 };
 
 function getModuleExportFlags(moduleExports: any) {
