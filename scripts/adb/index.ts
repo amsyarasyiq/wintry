@@ -38,6 +38,10 @@ if (import.meta.main) {
         process.exit(1);
     }
 
+    if (args.minify) {
+        logger(c.yellowBright("Minify flag is provided, but this is a development server. Ignoring..."));
+    }
+
     console.clear();
 
     const connectedDevices = await getConnectedDevices();
@@ -105,8 +109,8 @@ if (import.meta.main) {
     let minifiedBuildContext: WintryBuildContext;
 
     const { server, getLastRequest } = startDevelopmentServer(
-        async () => (buildContext ??= await createBuildContext()),
-        async () => (minifiedBuildContext ??= await createBuildContext({ ...args, minify: true })),
+        async () => (buildContext ??= await createBuildContext({ minify: false })),
+        async () => (minifiedBuildContext ??= await createBuildContext({ minify: true })),
     );
 
     console.log(`Press R key to rebuild and reload Discord ${c.blue.bold(`(${packageName})`)}.`);

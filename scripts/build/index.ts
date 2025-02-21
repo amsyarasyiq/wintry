@@ -1,5 +1,5 @@
 import { getEsbuildConfig } from "./esbuild-config";
-import esbuild from "esbuild";
+import esbuild, { type BuildResult } from "esbuild";
 import { args } from "../args-parser";
 import { bold, greenBright, yellowBright } from "ansi-colors";
 import { $ } from "bun";
@@ -14,7 +14,7 @@ export interface WintryBuildContext {
 
     config: esbuild.BuildOptions;
     context: esbuild.BuildContext;
-    build({ silent }: { silent: boolean }): Promise<Response | undefined>;
+    build({ silent }: { silent: boolean }): Promise<BuildResult>;
     updateRevision: () => Promise<void>;
 
     lastBuildConsumed: boolean;
@@ -22,11 +22,16 @@ export interface WintryBuildContext {
     outputPath?: string;
 }
 
-export async function createBuildContext(options = args): Promise<WintryBuildContext> {
-    const config = await getEsbuildConfig({
-        deploy: options.deploy,
-        minify: options.minify,
-    });
+interface BuildContextOptions {
+    deploy?: boolean;
+    minify: boolean;
+}
+
+export async function createBuildContext({
+    deploy = args.deploy,
+    minify,
+}: BuildContextOptions): Promise<WintryBuildContext> {
+    const config = await getEsbuildConfig({ deploy, minify });
 
     const context: WintryBuildContext = {
         contextCreated: Date.now(),
@@ -39,7 +44,7 @@ export async function createBuildContext(options = args): Promise<WintryBuildCon
             return result;
         },
         async updateRevision() {
-            context.revision = options.deploy
+            context.revision = deploy
                 ? (await $`git rev-parse HEAD`.text()).trim()
                 : crypto.randomBytes(20).toString("hex");
         },
@@ -60,13 +65,13 @@ async function buildBundle(buildContext: WintryBuildContext, silent = false) {
     const buildResult = await buildContext.context.rebuild();
 
     if (buildResult.errors.length > 0) {
-        return new Response(`Build failed: ${buildResult.errors[0].text}`, { status: 500 });
+        throw new Error(buildResult.errors[0].text);
     }
 
     const outputPath = Object.keys(buildResult.metafile?.outputs ?? {})[0];
 
     if (!outputPath) {
-        return new Response("Build failed: No output generated", { status: 500 });
+        throw new Error("No output generated");
     }
 
     buildContext.lastBuildTime = performance.now();
@@ -77,6 +82,8 @@ async function buildBundle(buildContext: WintryBuildContext, silent = false) {
 
     if (!silent) logger(greenBright(`Bundle built in ${bold(`${buildContext.timeTaken.toFixed(2)}ms`)}`));
     buildingContext = undefined;
+
+    return buildResult;
 }
 
 if (import.meta.main) {
@@ -84,7 +91,27 @@ if (import.meta.main) {
         logger(yellowBright("Port argument is provided, but this is not a server script. Ignoring..."));
     }
 
-    const buildContext = await createBuildContext();
-    buildBundle(buildContext);
-    buildContext.context.dispose();
+    const buildContext = await createBuildContext({ minify: false });
+
+    try {
+        const result = await buildBundle(buildContext);
+        console.log(`Built bundle: ${Object.keys(result.metafile?.outputs ?? {})[0]}`);
+    } catch (e) {
+        logger(`Build failed: ${e}`);
+    } finally {
+        buildContext.context.dispose();
+    }
+
+    if (args.minify) {
+        const minifiedBuildContext = await createBuildContext({ minify: true });
+
+        try {
+            const result = await buildBundle(minifiedBuildContext);
+            console.log(`Built minified bundle: ${Object.keys(result.metafile?.outputs ?? {})[0]}`);
+        } catch (e) {
+            logger(`Build failed: ${e}`);
+        } finally {
+            minifiedBuildContext.context.dispose();
+        }
+    }
 }

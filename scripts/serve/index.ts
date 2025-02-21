@@ -38,8 +38,11 @@ export function startDevelopmentServer(
                     const isFreshBuild = buildContext.lastBuildConsumed;
                     if (isFreshBuild) {
                         logger(c.yellow(`Rebuilding ${pathname}...`));
-                        const response = await buildContext.build({ silent: true });
-                        if (response && !response.ok) return response;
+                        try {
+                            await buildContext.build({ silent: true });
+                        } catch (e) {
+                            return new Response(`Build failed: ${e.message}`, { status: 500 });
+                        }
                     }
 
                     buildContext.lastBuildConsumed = true;
@@ -109,13 +112,17 @@ if (import.meta.main) {
         process.exit(1);
     }
 
+    if (args.minify) {
+        logger(c.yellowBright("Minify flag is provided, but this is a development server. Ignoring..."));
+    }
+
     console.clear();
 
     let buildContext: WintryBuildContext;
     let minifiedBuildContext: WintryBuildContext;
 
     startDevelopmentServer(
-        async () => (buildContext ??= await createBuildContext()),
-        async () => (minifiedBuildContext ??= await createBuildContext({ ...args, minify: true })),
+        async () => (buildContext ??= await createBuildContext({ minify: false })),
+        async () => (minifiedBuildContext ??= await createBuildContext({ minify: true })),
     );
 }
