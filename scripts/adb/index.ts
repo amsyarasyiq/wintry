@@ -1,7 +1,7 @@
 import { $, sleep } from "bun";
 import readline from "readline";
 import * as c from "ansi-colors";
-import { type WintryBuildContext, getBuildContext } from "../build";
+import { type WintryBuildContext, createBuildContext } from "../build";
 import { args } from "../args-parser";
 import logger from "../logger";
 import { startDevelopmentServer } from "../serve";
@@ -101,8 +101,13 @@ if (import.meta.main) {
     logger(c.dim(`Waiting for device: ${serialNumber}`));
     await $`adb -s ${serialNumber} wait-for-device`.quiet();
 
-    const buildContext = await getBuildContext();
-    const server = startDevelopmentServer(buildContext);
+    let buildContext: WintryBuildContext;
+    let minifiedBuildContext: WintryBuildContext;
+
+    const { server, getLastRequest } = startDevelopmentServer(
+        async () => (buildContext ??= await createBuildContext()),
+        async () => (minifiedBuildContext ??= await createBuildContext({ ...args, minify: true })),
+    );
 
     console.log(`Press R key to rebuild and reload Discord ${c.blue.bold(`(${packageName})`)}.`);
     console.log(`Press S key to force stop Discord ${c.blue.bold(`(${packageName})`)}.`);
@@ -124,7 +129,15 @@ if (import.meta.main) {
                 if (key.ctrl) process.exit(0);
                 break;
             case "r":
-                handleRebuild(serialNumber, buildContext, server.port);
+                handleRebuild(
+                    serialNumber,
+                    getLastRequest()
+                        ? new URL(getLastRequest().url).pathname === "/bundle.min.js"
+                            ? minifiedBuildContext
+                            : buildContext
+                        : buildContext,
+                    server.port,
+                );
                 break;
             case "s":
                 handleForceStop(serialNumber);
@@ -134,11 +147,15 @@ if (import.meta.main) {
 }
 
 async function handleRebuild(serialNumber: string, buildContext: WintryBuildContext, port: number) {
-    await buildContext.build({ silent: false });
+    if (buildContext) {
+        await buildContext.build({ silent: false });
 
-    logger(c.yellowBright(`Reloading Discord ${c.blue.bold(`(${packageName})`)}`));
-    if (typeof port === "number") {
-        await $`adb -s ${serialNumber} reverse tcp:${port} tcp:${port}`.quiet();
+        logger(c.yellowBright(`Reloading Discord ${c.blue.bold(`(${packageName})`)}`));
+        if (typeof port === "number") {
+            await $`adb -s ${serialNumber} reverse tcp:${port} tcp:${port}`.quiet();
+        }
+    } else {
+        logger(c.yellowBright("Build context not created, skipping rebuild and proceeding to restart app."));
     }
 
     await forceStopApp(serialNumber);

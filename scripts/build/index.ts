@@ -9,6 +9,7 @@ import crypto from "node:crypto";
 export interface WintryBuildContext {
     contextCreated: number;
     timeTaken?: number;
+    lastBuildTime?: number;
     revision: string;
 
     config: esbuild.BuildOptions;
@@ -21,7 +22,7 @@ export interface WintryBuildContext {
     outputPath?: string;
 }
 
-export async function getBuildContext(options = args): Promise<WintryBuildContext> {
+export async function createBuildContext(options = args): Promise<WintryBuildContext> {
     const config = await getEsbuildConfig({
         deploy: options.deploy,
         minify: options.minify,
@@ -68,10 +69,11 @@ async function buildBundle(buildContext: WintryBuildContext, silent = false) {
         return new Response("Build failed: No output generated", { status: 500 });
     }
 
+    buildContext.lastBuildTime = performance.now();
     buildContext.lastBuildConsumed = false;
     buildContext.lastBuildResult = buildResult;
     buildContext.outputPath = outputPath;
-    buildContext.timeTaken = performance.now() - beginTime;
+    buildContext.timeTaken = buildContext.lastBuildTime - beginTime;
 
     if (!silent) logger(greenBright(`Bundle built in ${bold(`${buildContext.timeTaken.toFixed(2)}ms`)}`));
     buildingContext = undefined;
@@ -82,7 +84,7 @@ if (import.meta.main) {
         logger(yellowBright("Port argument is provided, but this is not a server script. Ignoring..."));
     }
 
-    const buildContext = await getBuildContext();
+    const buildContext = await createBuildContext();
     buildBundle(buildContext);
     buildContext.context.dispose();
 }

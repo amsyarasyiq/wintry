@@ -1,6 +1,6 @@
 import type { Server, ServerWebSocket } from "bun";
 import { args } from "../args-parser";
-import { type WintryBuildContext, getBuildContext } from "../build";
+import { createBuildContext, type WintryBuildContext } from "../build";
 import logger from "../logger";
 
 import * as c from "ansi-colors";
@@ -20,16 +20,24 @@ function getHostAddresses(): string[] {
     return hostAddresses;
 }
 
-export function startDevelopmentServer(buildContext: WintryBuildContext) {
+export function startDevelopmentServer(
+    getBuildContext: () => Promise<WintryBuildContext>,
+    getMinifiedBuildContext: () => Promise<WintryBuildContext>,
+) {
+    let lastRequest: Request;
     const server = Bun.serve({
         port: args.port,
         async fetch(request: Request, server: Server) {
+            lastRequest = request;
             const { pathname } = new URL(request.url);
-            if (pathname === "/bundle.js") {
+            if (pathname === "/bundle.js" || pathname === "/bundle.min.js") {
+                const buildContext =
+                    pathname === "/bundle.js" ? await getBuildContext() : await getMinifiedBuildContext();
+
                 try {
                     const isFreshBuild = buildContext.lastBuildConsumed;
                     if (isFreshBuild) {
-                        logger(c.yellow("Rebuilding bundle..."));
+                        logger(c.yellow(`Rebuilding ${pathname}...`));
                         const response = await buildContext.build({ silent: true });
                         if (response && !response.ok) return response;
                     }
@@ -87,7 +95,12 @@ export function startDevelopmentServer(buildContext: WintryBuildContext) {
     }
 
     logger(c.dim("\nPress Ctrl+C to stop the server."));
-    return server;
+    return {
+        server,
+        getLastRequest() {
+            return lastRequest;
+        },
+    };
 }
 
 if (import.meta.main) {
@@ -98,6 +111,11 @@ if (import.meta.main) {
 
     console.clear();
 
-    const buildContext = await getBuildContext();
-    startDevelopmentServer(buildContext);
+    let buildContext: WintryBuildContext;
+    let minifiedBuildContext: WintryBuildContext;
+
+    startDevelopmentServer(
+        async () => (buildContext ??= await createBuildContext()),
+        async () => (minifiedBuildContext ??= await createBuildContext({ ...args, minify: true })),
+    );
 }

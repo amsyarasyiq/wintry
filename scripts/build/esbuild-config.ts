@@ -27,7 +27,7 @@ export async function getEsbuildConfig({ deploy = false, minify = false }): Prom
         minify,
         keepNames: true,
         bundle: true,
-        outfile: "dist/bundle.js",
+        outfile: minify ? "dist/bundle.min.js" : "dist/bundle.js",
         format: "iife",
         splitting: false,
         supported: {
