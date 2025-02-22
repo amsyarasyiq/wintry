@@ -130,10 +130,9 @@ export function lazyValue<T, I extends ExemptedEntries>(factory: () => T, opts: 
         if (!cache) {
             cache = factory();
 
-            if (cache != null) {
-                factories.set(cache, proxyFactory);
+            if (cache != null && isPrimitive(cache)) {
                 // @ts-expect-error - TypeScript doesn't know this is a constructor
-                if (isPrimitive(cache)) cache = new cache!.constructor(cache);
+                cache = new cache!.constructor(cache);
             }
         }
 
@@ -194,7 +193,7 @@ export function lazyDestructure<T extends Record<PropertyKey, unknown>, I extend
 }
 
 export function getProxyFactory<T>(obj: T): (() => T) | undefined {
-    return factories.get(obj) as (() => T) | undefined;
+    return factories.get(obj);
 }
 
 /**
