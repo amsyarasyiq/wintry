@@ -1,4 +1,3 @@
-import { connectToDebugger, patchLogHook } from "./debug";
 import reportErrorOnInitialization from "./error-reporter";
 import { wintryGlobalObject } from "./globals";
 import { initializeMetro } from "./metro/internal";
@@ -25,9 +24,6 @@ function initialize() {
 
         return () => {
             hasIndexInitialized = true;
-
-            patchLogHook();
-            connectToDebugger("ws://localhost:9092");
 
             // __reactDevTools!.exports.connectToDevTools({
             //     host: "localhost",
