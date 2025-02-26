@@ -42,7 +42,7 @@ if (import.meta.main) {
         logger(c.yellowBright("Minify flag is provided, but this is a development server. Ignoring..."));
     }
 
-    console.clear();
+    logger.clear();
 
     const connectedDevices = await getConnectedDevices();
     let serialNumber: string = connectedDevices[0];
@@ -53,9 +53,9 @@ if (import.meta.main) {
     }
 
     if (!args.wsa && connectedDevices.length > 1) {
-        console.log("Multiple devices found. Please choose a device:");
+        logger("Multiple devices found. Please choose a device:");
         connectedDevices.forEach((device, index) => {
-            console.log(`${index + 1}: ${device}`);
+            logger(`${index + 1}: ${device}`);
         });
 
         const answer = prompt("Enter device number: ");
@@ -113,8 +113,8 @@ if (import.meta.main) {
         async () => (minifiedBuildContext ??= await createBuildContext({ minify: true })),
     );
 
-    console.log(`Press R key to rebuild and reload Discord ${c.blue.bold(`(${packageName})`)}.`);
-    console.log(`Press S key to force stop Discord ${c.blue.bold(`(${packageName})`)}.`);
+    logger(`Press R key to rebuild and reload Discord ${c.blue.bold(`(${packageName})`)}.`);
+    logger(`Press S key to force stop Discord ${c.blue.bold(`(${packageName})`)}.`);
 
     readline.emitKeypressEvents(process.stdin);
 

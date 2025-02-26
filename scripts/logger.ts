@@ -1,1 +1,3 @@
-export default console.log;
+export default Object.assign(console.log, {
+    ...console,
+});
