@@ -5,7 +5,7 @@ import { CircleMinusIcon, CirclePlusIcon } from "@metro/common/icons";
 import Slider from "@components/Discord/Slider/Slider";
 import { Card, Stack, Text } from "@components/Discord";
 
-function SliderRow({ opt, plugin, settingKey }: BaseOptionRowProps<"slider">) {
+function SliderRow({ opt, plugin, settingKey, start, end }: BaseOptionRowProps<"slider">) {
     const [current, setCurrent] = usePluginSettings<typeof opt>(plugin.$id, settingKey);
     const currentIndex = opt.points.indexOf(current);
 
@@ -15,7 +15,7 @@ function SliderRow({ opt, plugin, settingKey }: BaseOptionRowProps<"slider">) {
     };
 
     return (
-        <Card style={{ gap: 12 }} start={false} end={false} shadow="none" border="none">
+        <Card style={{ gap: 12 }} start={start} end={end}>
             <Stack direction="horizontal" justify="space-between">
                 <Text variant="text-md/semibold">{opt.label}</Text>
                 {current !== undefined && (
@@ -48,6 +48,6 @@ function SliderRow({ opt, plugin, settingKey }: BaseOptionRowProps<"slider">) {
     );
 }
 
-export function SliderOptionRow({ opt, plugin, settingKey }: BaseOptionRowProps<"slider">) {
-    return <SliderRow opt={opt} plugin={plugin} settingKey={settingKey} />;
+export function SliderOptionRow({ opt, plugin, settingKey, start, end }: BaseOptionRowProps<"slider">) {
+    return <SliderRow start={start} end={end} opt={opt} plugin={plugin} settingKey={settingKey} />;
 }

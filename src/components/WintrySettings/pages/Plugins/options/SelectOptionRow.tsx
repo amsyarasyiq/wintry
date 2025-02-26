@@ -4,7 +4,7 @@ import type { BaseOptionRowProps } from "./BaseOptionRowProps";
 import { getIcon } from "../common/getIcon";
 import { usePluginSettings } from "../common/usePluginSettings";
 
-export function SelectOptionRow({ opt, plugin, settingKey }: BaseOptionRowProps<"select">) {
+export function SelectOptionRow({ opt, plugin, settingKey, start, end }: BaseOptionRowProps<"select">) {
     const [selected, setSelected] = usePluginSettings<typeof opt>(plugin.$id, settingKey);
 
     const handleToggleOption = (value: (typeof selected)[number]) => {
@@ -15,7 +15,7 @@ export function SelectOptionRow({ opt, plugin, settingKey }: BaseOptionRowProps<
     };
 
     return (
-        <BaseCardOption opt={opt}>
+        <BaseCardOption start={start} end={end} opt={opt}>
             <TableRowGroup title={opt.label}>
                 {opt.options.map((option, index) => (
                     <TableCheckboxRow

@@ -11,6 +11,7 @@ interface CardProps {
     end?: boolean;
     onPress?: () => void;
 
+    variant?: LiteralUnion<"primary" | "secondary", string>;
     shadow?: LiteralUnion<"none", string>;
     border?: LiteralUnion<"none", string>;
 }

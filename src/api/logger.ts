@@ -1,3 +1,5 @@
+import { inspect } from "node-inspect-extracted";
+
 type LogFn = (message: string, level: string) => void;
 
 type Message = string | TemplateStringsArray;
@@ -71,6 +73,18 @@ class Logger {
     error(template: TemplateStringsArray, ...substitutions: any[]): void;
     error(message: Message, ...substitutions: any[]): void {
         this.log("error", message, ...substitutions);
+    }
+
+    inspect(...data: any[]): void {
+        let inspected = "";
+
+        if (data.length === 1) {
+            inspected = inspect(data[0]);
+        } else {
+            inspected = inspect(data);
+        }
+
+        this.log("info", inspected);
     }
 
     pipe(logHandler: LogFn): () => void {

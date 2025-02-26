@@ -5,11 +5,11 @@ import { getIcon } from "../common/getIcon";
 import { TableRadioGroup, TableRadioRow } from "@components/Discord";
 import RedesignCompat from "@components/Discord/RedesignCompat/RedesignCompat";
 
-export function RadioOptionRow({ opt, plugin, settingKey }: BaseOptionRowProps<"radio">) {
+export function RadioOptionRow({ opt, plugin, settingKey, start, end }: BaseOptionRowProps<"radio">) {
     const [current, setCurrent] = usePluginSettings<typeof opt>(plugin.$id, settingKey);
 
     return (
-        <BaseCardOption opt={opt}>
+        <BaseCardOption start={start} end={end} opt={opt}>
             <RedesignCompat>
                 <TableRadioGroup
                     title={opt.label}

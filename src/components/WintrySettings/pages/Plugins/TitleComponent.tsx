@@ -45,38 +45,45 @@ export default function TitleComponent({ plugin }: TitleComponentProps) {
     }
 
     return (
-        <View style={{ gap: 4 }}>
-            <View>
-                <Text variant="heading-xl/semibold">{plugin.name}</Text>
+        <View style={{ gap: 6, width: "80%" }}>
+            <View style={{ gap: 8, flexDirection: "row", alignItems: "center" }}>
+                <View>
+                    <Text variant="heading-xl/semibold">{plugin.name}</Text>
+                </View>
+                <View style={{ flexDirection: "row", flexShrink: 1 }}>
+                    {authors?.length && (
+                        <View
+                            style={{
+                                flexDirection: "row",
+                                gap: 8,
+                                alignItems: "center",
+                                paddingVertical: 4,
+                                paddingHorizontal: 8,
+                                backgroundColor: "#00000016",
+                                borderRadius: 32,
+                            }}
+                        >
+                            {users.length && (
+                                <AvatarPile
+                                    size="xxsmall"
+                                    names={plugin.authors?.map(a => a.name)}
+                                    totalCount={plugin.authors?.length}
+                                >
+                                    {users.map((a, i) => (
+                                        <Avatar key={i} size="xxsmall" user={a} />
+                                    ))}
+                                </AvatarPile>
+                            )}
+                            <Text variant="text-md/medium">{authorTextNode}</Text>
+                        </View>
+                    )}
+                </View>
             </View>
-            <View style={{ flexDirection: "row", flexShrink: 1 }}>
-                {authors?.length && (
-                    <View
-                        style={{
-                            flexDirection: "row",
-                            gap: 8,
-                            alignItems: "center",
-                            paddingVertical: 4,
-                            paddingHorizontal: 8,
-                            backgroundColor: "#00000016",
-                            borderRadius: 32,
-                        }}
-                    >
-                        {users.length && (
-                            <AvatarPile
-                                size="xxsmall"
-                                names={plugin.authors?.map(a => a.name)}
-                                totalCount={plugin.authors?.length}
-                            >
-                                {users.map((a, i) => (
-                                    <Avatar key={i} size="xxsmall" user={a} />
-                                ))}
-                            </AvatarPile>
-                        )}
-                        <Text variant="text-md/medium">{authorTextNode}</Text>
-                    </View>
-                )}
-            </View>
+            {plugin.description && (
+                <Text style={{ flexShrink: 1 }} color="text-muted" variant="text-md/medium">
+                    {plugin.description}
+                </Text>
+            )}
         </View>
     );
 }
