@@ -6,7 +6,9 @@ import { kvStorage } from "@utils/kvStorage";
 import { metroEvents } from "@metro/internal/events";
 import type { PluginSettings, PluginState } from "@plugins/types";
 import { getProxyFactory, lazyValue } from "@utils/lazy";
+import { wtlogger } from "@api/logger";
 
+const logger = wtlogger.createChild("plugin-store");
 const PLUGINS = lazyValue(() => require("#wt-plugins").default, { hint: "object" });
 
 export interface PluginStore {
@@ -22,29 +24,29 @@ function startPlugin(draft: PluginStore, id: string) {
     const plugin = PLUGINS[id];
 
     if (draft.states[id].running) {
-        console.warn(`${plugin.name} already started`);
+        logger.warn(`${plugin.$id} already started`);
         return;
     }
 
     const start = () => {
-        console.info(`Starting plugin ${plugin.name}`);
+        logger.info(`Starting plugin ${plugin.$id}`);
 
         try {
             plugin.start?.();
         } catch (e) {
-            console.error(`Failed to start ${plugin.name}: ${e}`);
+            logger.error(`Failed to start ${plugin.$id}: ${e}`);
             return;
         }
     };
 
     if (plugin.preinit && !hasIndexInitialized) {
-        console.info("Preinitializing plugin", plugin.name);
+        logger.info(`Preinitializing plugin ${plugin.$id}`);
 
         try {
             plugin.preinit();
             draft.states[id].ranPreinit = true;
-        } catch (e) {
-            console.error(`Failed to preinitialize ${plugin.name}\n`, e);
+        } catch (error) {
+            logger.error`Failed to preinitialize ${plugin.$id}: ${error}`;
             return;
         }
     }
@@ -54,7 +56,7 @@ function startPlugin(draft: PluginStore, id: string) {
             start();
         } else {
             metroEvents.once("metroReady", () => start());
-            console.log(`Queued plugin ${plugin.name} for start`);
+            logger.info(`Queued plugin "${plugin.$id}" for start`);
         }
     }
 
@@ -66,17 +68,17 @@ function cleanupPlugin(draft: PluginStore, id: string) {
     const plugin = PLUGINS[id];
 
     if (!draft.states[id].running) {
-        console.warn(`${plugin.name} already stopped`);
+        logger.warn(`${plugin.$id} already stopped`);
         return;
     }
 
     if (plugin.cleanup) {
-        console.info("Cleaning up plugin", plugin.name);
+        logger.info(`Cleaning up plugin ${plugin.$id}`);
 
         try {
             plugin.cleanup();
         } catch (e) {
-            console.error(`Failed to cleanup ${plugin.name}: ${e}`);
+            logger.error(`Failed to cleanup ${plugin.$id}: ${e}`);
             return;
         }
     }

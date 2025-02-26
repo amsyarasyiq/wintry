@@ -17,6 +17,7 @@ declare module "#plugin-context" {
         meta,
         definePlugin,
         definePluginSettings,
+        logger,
     }: ReturnType<typeof import("./plugins/shared").getPluginContext>;
 
     import * as _default from "#plugin-context";

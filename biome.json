@@ -52,6 +52,13 @@
 				},
 				"noArrayIndexKey": {
 					"level": "off"
+				},
+				"noConsole": {
+					"level": "warn",
+					"fix": "safe",
+					"options": {
+						"allow": []
+					}
 				}
 			}
 		}

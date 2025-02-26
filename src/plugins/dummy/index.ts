@@ -67,7 +67,7 @@ const settings = definePluginSettings({
         description: "Set the bunny's energy level.",
         points: ["0%", "25%", "50%", "75%", "100%"],
         default: "50%",
-    }
+    },
 });
 
 export default definePlugin({

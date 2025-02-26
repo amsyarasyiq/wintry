@@ -1,3 +1,4 @@
+import { wtlogger, type BasicLogger } from "@api/logger";
 import type { DefinedOptions, OptionDefinitions, WintryPluginDefinition } from "./types";
 import { registerPluginSettings, registerPlugin, type LooseWintryPlugin } from "./utils";
 
@@ -13,7 +14,10 @@ interface PluginContext {
     definePluginSettings<Def extends OptionDefinitions>(def: Def): DefinedOptions<Def>;
 
     meta: PluginContextMeta;
+    logger: BasicLogger;
 }
+
+export const pluginlogger = wtlogger.createChild("plugins");
 
 export function getPluginContext(id: string): PluginContext {
     // If you added more properties to the context (first level), make sure to update
@@ -28,5 +32,6 @@ export function getPluginContext(id: string): PluginContext {
         meta: {
             id,
         },
+        logger: pluginlogger.createChild(id),
     };
 }

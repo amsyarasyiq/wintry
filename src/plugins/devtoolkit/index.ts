@@ -1,47 +1,11 @@
-import { definePlugin, meta } from "#plugin-context";
+import { definePlugin, logger, meta } from "#plugin-context";
 import { Devs } from "@data/constants";
 import { lookup } from "@metro";
 import { lookupByName, lookupByProps } from "@metro/common/wrappers";
 import { SingleMetroModule } from "@metro/module";
-
-import { after } from "@patcher";
 import { createContextualPatcher } from "@patcher/contextual";
-
-let socket: WebSocket;
-
-function connectToDebugger(url: string) {
-    console.log(`Connecting to debugger at ${url}`);
-    if (socket !== undefined && socket.readyState !== WebSocket.CLOSED) socket.close();
-
-    socket = new WebSocket(url);
-
-    socket.addEventListener("message", (message: any) => {
-        try {
-            // biome-ignore lint/security/noGlobalEval: Not a concern
-            eval?.(message.data);
-        } catch (e) {
-            console.error(e);
-        }
-    });
-
-    socket.addEventListener("error", (err: any) => {
-        console.log(`Debugger error: ${err.message}`);
-        // showToast("An error occurred with the debugger connection!", findAssetId("Small"));
-    });
-}
-
-function patchLogHook() {
-    const unpatch = after(globalThis, "nativeLoggingHook", ([message, level]: unknown[]) => {
-        if (socket?.readyState === WebSocket.OPEN) {
-            socket.send(JSON.stringify({ message, level }));
-        }
-    });
-
-    return () => {
-        socket?.close();
-        unpatch();
-    };
-}
+import { inspect } from "node-inspect-extracted";
+import { establishWebSocketConnection } from "./repl-client";
 
 const patcher = createContextualPatcher({ pluginId: meta.id });
 
@@ -52,6 +16,7 @@ export default definePlugin({
     version: "1.0.0",
     start() {
         Object.defineProperty(SingleMetroModule.prototype, "l", {
+            enumerable: false,
             get() {
                 return this.asLazy();
             },
@@ -66,8 +31,8 @@ export default definePlugin({
                 patcher,
                 snipe(mod: any, prop: string) {
                     patcher.after(mod, prop, (args, ret) => {
-                        console.log(prop, { args, ret });
-                        window._ = { args, ret };
+                        logger.info(`Sniped ${prop}\n${inspect({ args, ret })}`);
+                        window._r = { args, ret };
                     });
                 },
                 shotgun(mod: any) {
@@ -83,8 +48,7 @@ export default definePlugin({
             },
         });
 
-        patchLogHook();
-        connectToDebugger("ws://localhost:9092");
+        establishWebSocketConnection();
     },
     stop() {},
 });

@@ -1,3 +1,4 @@
+import { wtlogger } from "@api/logger";
 import reportErrorOnInitialization from "./error-reporter";
 import { wintryGlobalObject } from "./globals";
 import { initializeMetro } from "./metro/internal";
@@ -14,7 +15,7 @@ Object.freeze = Object.seal = Object;
 // This is a blocking function!
 function initialize() {
     try {
-        console.log("Initializing Wintry...");
+        wtlogger.info("Initializing Wintry...");
 
         initializeMetro();
 
@@ -34,7 +35,7 @@ function initialize() {
 
             window.wintry = wintryGlobalObject();
 
-            console.log(`Fully initialized Wintry in ${nativePerformanceNow() - WINTRY_START_TIME}ms!`);
+            wtlogger.info(`Fully initialized Wintry in ${nativePerformanceNow() - WINTRY_START_TIME}ms!`);
         };
     } catch (e) {
         return () => {

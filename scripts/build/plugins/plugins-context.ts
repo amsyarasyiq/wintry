@@ -12,7 +12,7 @@ function generatePluginContextScript(id: string): string {
         import { getPluginContext } from "${relativePath}";    
         var context = getPluginContext(${JSON.stringify(id)});
 
-        export var { meta, definePlugin, definePluginSettings } = context;
+        export var { meta, definePlugin, definePluginSettings, logger } = context;
         export default context;
     `;
 }

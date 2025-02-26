@@ -4,6 +4,7 @@ import { byName } from "@metro/common/filters";
 import { createContextualPatcher } from "@patcher/contextual";
 import { ErrorBoundaryScreen } from "./ErrorBoundaryScreen";
 import { lookup } from "@metro/api";
+import { wtlogger } from "@api/logger";
 
 const patcher = createContextualPatcher({ pluginId: "error-boundary" });
 
@@ -25,7 +26,7 @@ export default definePlugin({
 
             if (!error) return null;
 
-            console.error(error.stack);
+            wtlogger.error(error.stack);
             const reset = this.setState.bind(this, { error: null });
             return <ErrorBoundaryScreen error={error} reset={reset} />;
         });

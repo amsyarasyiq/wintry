@@ -17,7 +17,7 @@ export let GuildIcon = lookup(byFilePath("uikit-native/GuildIcon.tsx")).asLazy(r
 
 export let MessageEmojiActionSheet = lookup(
     byFilePath("modules/messages/native/emoji/MessageEmojiActionSheet.tsx"),
-).asLazy(r => (MessageEmojiActionSheet = r));
+).asLazy(r => (MessageEmojiActionSheet = r)) as React.FC<Record<string, unknown>>;
 
 // Utilities
 export const MediaViewer = lookupByProps("openMediaModal").asLazy();

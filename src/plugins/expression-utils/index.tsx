@@ -1,4 +1,4 @@
-import { definePlugin, meta } from "#plugin-context";
+import { definePlugin, logger, meta } from "#plugin-context";
 import { Devs } from "@data/constants";
 import { createContextualPatcher } from "@patcher/contextual";
 import { findInReactTree } from "@utils/objects";
@@ -129,8 +129,8 @@ export default definePlugin({
                             {tab}
                         </PressableScale>
                     ));
-                } catch {
-                    console.error("Failed to patch reaction header.");
+                } catch (e) {
+                    logger.error`Failed to patch reaction header: ${e}`;
                 }
             });
         });

@@ -1,5 +1,6 @@
 import { showSheet } from "@components/utils/sheets";
 import { MessageEmojiActionSheet, Surrogates } from "../common";
+import { logger } from "#plugin-context";
 
 export function openEmojiActionSheet({
     id,
@@ -30,6 +31,6 @@ export function openEmojiActionSheet({
             "stack",
         );
     } catch (err) {
-        console.log("Failed to open action sheet", err);
+        logger.error(`Failed to open emoji action sheet: ${err}`);
     }
 }
