@@ -55,13 +55,13 @@ export function ToastsRenderer() {
             entering={setupSpringMotion(FadeInUp.springify())}
             exiting={setupSpringMotion(FadeOutUp.springify())}
             layout={LinearTransition.springify().duration(500).dampingRatio(0.5)}
-            useSafeArea={true}
             itemStyle={toastStyleWorklet}
             onSwipeEdge={({ filter }) => filter(({ toast }) => toast.options?.dismissible === false)}
             render={ToastComponent}
         />
     );
 }
+
 function useToastStyleWorklet() {
     const isDiscordToastActive = FluxUtils.useStateFromStores([ToastStore], () => ToastStore.getContent()) != null;
 

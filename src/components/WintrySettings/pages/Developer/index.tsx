@@ -23,6 +23,17 @@ export default function DeveloperPage() {
                         })
                     }
                 />
+                <TableRow
+                    arrow={true}
+                    label={"Toast Playground"}
+                    icon={<TableRow.Icon source={findAssetId("ToastIcon")} />}
+                    onPress={() =>
+                        navigation.push("BUNNY_CUSTOM_PAGE", {
+                            title: "Toast Playground",
+                            render: lazy(() => import("./ToastPlayground")),
+                        })
+                    }
+                />
             </TableRowGroup>
             <TableRowGroup title={t.settings.developer.sections.data()}>
                 <TableRow

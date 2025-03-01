@@ -45,5 +45,8 @@
 		"typesafe-i18n": "typesafe-i18n",
 		"i18n:export": "bun run scripts/i18n"
 	},
-	"type": "module"
+	"type": "module",
+	"patchedDependencies": {
+		"react-native-customizable-toast@0.2.1": "patches/react-native-customizable-toast@0.2.1.patch"
+	}
 }

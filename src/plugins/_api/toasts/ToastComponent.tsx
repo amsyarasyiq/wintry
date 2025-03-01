@@ -1,6 +1,7 @@
 import type { ToastInstance } from "@api/toasts";
 import { Text } from "@components/Discord";
 import PressableScale from "@components/Discord/experimental/PressableScale";
+import { useSafeAreaInsets } from "@components/Libraries/react-native-safe-area-context";
 import { createStyles } from "@components/utils/styles";
 import { tokens } from "@metro/common/libraries";
 import { useToastStore } from "@stores/useToastStore";
@@ -47,12 +48,18 @@ function ToastContainer({
     onDismiss: () => void;
     onPress?: () => void;
 }>) {
+    const { top } = useSafeAreaInsets();
     const { width: screenWidth } = useWindowDimensions();
     const containerStyles = useContainerStyles();
 
     return (
         <Swipeable onSwipe={onDismiss} disabled={!dismissible}>
-            <PressableScale style={containerStyles.pressable} disabled={!onPress} onPress={() => onPress?.()}>
+            <PressableScale
+                pointerEvents="box-none"
+                style={containerStyles.pressable}
+                disabled={!onPress}
+                onPress={() => onPress?.()}
+            >
                 <View style={[containerStyles.container]}>
                     <Animated.View
                         layout={LinearTransition.springify().duration(500).dampingRatio(0.5)}
@@ -60,6 +67,7 @@ function ToastContainer({
                             { maxWidth: screenWidth - 16 },
                             containerStyles.contentContainer,
                             contentContainerStyle,
+                            { transform: [{ translateY: top }] },
                         ]}
                     >
                         {children}
