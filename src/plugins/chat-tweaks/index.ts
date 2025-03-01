@@ -1,4 +1,4 @@
-import { definePlugin, definePluginSettings } from "#plugin-context";
+import { definePlugin, definePluginSettings, logger } from "#plugin-context";
 import { Devs } from "@data/constants";
 import BubbleModule from "@native/modules/BubbleModule";
 import { shallow } from "zustand/shallow";
@@ -34,22 +34,12 @@ export default definePlugin({
         BubbleModule.hookBubbles();
 
         settings.subscribe(
-            s => [s.avatarRadius, s.bubbleChatRadius],
-            ([avatarRadius, bubbleRadius]) => {
-                BubbleModule.setRadius(avatarRadius, bubbleRadius);
+            s => [s.avatarRadius, s.bubbleChatRadius, s.bubbleChatColor] as const,
+            (s: readonly [number, number, string]) => {
+                BubbleModule.configure(...s).catch(logger.error);
             },
             {
                 equalityFn: shallow,
-                fireImmediately: true,
-            },
-        );
-
-        settings.subscribe(
-            s => s.bubbleChatColor,
-            color => {
-                BubbleModule.setBubbleColor(color);
-            },
-            {
                 fireImmediately: true,
             },
         );

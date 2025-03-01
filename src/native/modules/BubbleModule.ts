@@ -14,12 +14,7 @@ export default new (class BubbleModule extends LoaderModule {
         return this.callFunction("unhookBubbles", []);
     }
 
-    public setRadius(avatarRadius: number, bubbleRadius: number) {
-        return this.callFunction("setRadius", [avatarRadius, bubbleRadius]);
-    }
-
-    public setBubbleColor(color: string) {
-        const parsed = Number(processColor(color));
-        return this.callFunction("setBubbleColor", [parsed]);
+    public configure(avatarRadius: number, bubbleRadius: number, bubbleColor: string) {
+        return this.callFunction("configure", [avatarRadius, bubbleRadius, Number(processColor(bubbleColor))]);
     }
 })();
