@@ -100,6 +100,14 @@ type RootTranslation = {
 			 */
 			info: string
 			/**
+			 * L​o​g​s
+			 */
+			logs: string
+			/**
+			 * P​l​a​t​f​o​r​m
+			 */
+			platform: string
+			/**
 			 * Q​u​i​c​k​ ​A​c​t​i​o​n​s
 			 */
 			quick_actions: string
@@ -107,6 +115,32 @@ type RootTranslation = {
 			 * R​e​l​o​a​d​ ​D​i​s​c​o​r​d
 			 */
 			reload: string
+			/**
+			 * L​i​n​k​s
+			 */
+			links: string
+			/**
+			 * G​i​t​H​u​b
+			 */
+			github: string
+			/**
+			 * D​i​s​c​o​r​d
+			 */
+			discord: string
+			configurations: {
+				/**
+				 * C​o​n​f​i​g​u​r​a​t​i​o​n​s
+				 */
+				label: string
+				/**
+				 * S​a​f​e​ ​M​o​d​e
+				 */
+				enable_safe_mode: string
+				/**
+				 * T​h​i​s​ ​w​i​l​l​ ​d​i​s​a​b​l​e​ ​a​l​l​ ​p​l​u​g​i​n​s​ ​a​n​d​ ​t​h​e​m​e​s​,​ ​l​e​a​v​i​n​g​ ​o​n​l​y​ ​c​o​r​e​ ​f​u​n​c​t​i​o​n​a​l​i​t​i​e​s​.​ ​R​e​s​t​a​r​t​ ​r​e​q​u​i​r​e​d​.
+				 */
+				enable_safe_mode_description: string
+			}
 		}
 		plugins: {
 			/**
@@ -152,7 +186,7 @@ type RootTranslation = {
 			/**
 			 * A​s​s​e​t​ ​B​r​o​w​s​e​r
 			 */
-			assetBrowser: string
+			asset_browser: string
 			sections: {
 				/**
 				 * T​o​o​l​s
@@ -293,6 +327,14 @@ export type TranslationFunctions = {
 			 */
 			info: () => LocalizedString
 			/**
+			 * Logs
+			 */
+			logs: () => LocalizedString
+			/**
+			 * Platform
+			 */
+			platform: () => LocalizedString
+			/**
 			 * Quick Actions
 			 */
 			quick_actions: () => LocalizedString
@@ -300,6 +342,32 @@ export type TranslationFunctions = {
 			 * Reload Discord
 			 */
 			reload: () => LocalizedString
+			/**
+			 * Links
+			 */
+			links: () => LocalizedString
+			/**
+			 * GitHub
+			 */
+			github: () => LocalizedString
+			/**
+			 * Discord
+			 */
+			discord: () => LocalizedString
+			configurations: {
+				/**
+				 * Configurations
+				 */
+				label: () => LocalizedString
+				/**
+				 * Safe Mode
+				 */
+				enable_safe_mode: () => LocalizedString
+				/**
+				 * This will disable all plugins and themes, leaving only core functionalities. Restart required.
+				 */
+				enable_safe_mode_description: () => LocalizedString
+			}
 		}
 		plugins: {
 			/**
@@ -345,7 +413,7 @@ export type TranslationFunctions = {
 			/**
 			 * Asset Browser
 			 */
-			assetBrowser: () => LocalizedString
+			asset_browser: () => LocalizedString
 			sections: {
 				/**
 				 * Tools

@@ -33,8 +33,18 @@ const en = {
         },
         general: {
             info: "Info",
+            logs: "Logs",
+            platform: "Platform",
             quick_actions: "Quick Actions",
-            reload: "Reload Discord"
+            reload: "Reload Discord",
+            links: "Links",
+            github: "GitHub",
+            discord: "Discord",
+            configurations: {
+                label: "Configurations",
+                enable_safe_mode: "Safe Mode",
+                enable_safe_mode_description: "This will disable all plugins and themes, leaving only core functionalities. Restart required.",
+            }
         },
         plugins: {
             description: "Description",
@@ -50,7 +60,7 @@ const en = {
             }
         },
         developer: {
-            assetBrowser: "Asset Browser",
+            asset_browser: "Asset Browser",
             sections: {
                 tools: "Tools",
                 data: "Data",

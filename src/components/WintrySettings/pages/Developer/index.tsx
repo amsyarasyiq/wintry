@@ -14,11 +14,11 @@ export default function DeveloperPage() {
             <TableRowGroup title={t.settings.developer.sections.tools()}>
                 <TableRow
                     arrow={true}
-                    label={t.settings.developer.assetBrowser()}
+                    label={t.settings.developer.asset_browser()}
                     icon={<TableRow.Icon source={findAssetId("ImageIcon")} />}
                     onPress={() =>
-                        navigation.push("BUNNY_CUSTOM_PAGE", {
-                            title: t.settings.developer.assetBrowser(),
+                        navigation.push("WINTRY_CUSTOM_PAGE", {
+                            title: t.settings.developer.asset_browser(),
                             render: lazy(() => import("./AssetBrowser")),
                         })
                     }
@@ -28,7 +28,7 @@ export default function DeveloperPage() {
                     label={"Toast Playground"}
                     icon={<TableRow.Icon source={findAssetId("ToastIcon")} />}
                     onPress={() =>
-                        navigation.push("BUNNY_CUSTOM_PAGE", {
+                        navigation.push("WINTRY_CUSTOM_PAGE", {
                             title: "Toast Playground",
                             render: lazy(() => import("./ToastPlayground")),
                         })
