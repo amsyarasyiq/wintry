@@ -183,23 +183,65 @@ type RootTranslation = {
 			}
 		}
 		developer: {
-			/**
-			 * A​s​s​e​t​ ​B​r​o​w​s​e​r
-			 */
-			asset_browser: string
 			sections: {
-				/**
-				 * T​o​o​l​s
-				 */
-				tools: string
-				/**
-				 * D​a​t​a
-				 */
-				data: string
-				/**
-				 * I​n​v​a​l​i​d​a​t​e​ ​M​e​t​r​o​ ​C​a​c​h​e
-				 */
-				invalidate_metro_cache: string
+				init_config: {
+					/**
+					 * L​o​a​d​e​r​ ​C​o​n​f​i​g​u​r​a​t​i​o​n​s
+					 */
+					label: string
+					/**
+					 * C​o​n​f​i​g​u​r​e​ ​t​h​e​ ​l​o​a​d​e​r​ ​t​o​ ​u​s​e​ ​c​u​s​t​o​m​ ​e​n​d​p​o​i​n​t​ ​f​o​r​ ​b​u​n​d​l​e​ ​f​e​t​c​h​i​n​g​.​ ​R​e​f​e​r​ ​C​O​N​T​R​I​B​U​T​I​N​G​.​m​d​ ​t​o​ ​l​e​a​r​n​ ​h​o​w​ ​t​o​ ​c​o​n​f​i​g​u​r​e​ ​l​o​c​a​l​ ​d​e​v​ ​s​e​r​v​e​r​ ​f​o​r​ ​d​e​v​e​l​o​p​m​e​n​t
+					 */
+					sublabel: string
+					/**
+					 * C​u​s​t​o​m​ ​E​n​d​p​o​i​n​t
+					 */
+					custom_endpoint: string
+					/**
+					 * B​u​n​d​l​e​ ​P​a​t​h
+					 */
+					bundle_path: string
+					/**
+					 * (​O​p​t​i​o​n​a​l​)​ ​P​a​t​h​ ​t​o​ ​b​u​n​d​l​e​ ​f​i​l​e​.​ ​D​e​f​a​u​l​t​ ​i​s​ ​d​e​p​e​n​d​e​n​t​ ​o​n​ ​c​u​s​t​o​m​ ​e​n​d​p​o​i​n​t​ ​a​v​a​i​l​a​b​i​l​i​t​y
+					 */
+					bundle_path_desc: string
+					/**
+					 * F​o​r​c​e​ ​U​p​d​a​t​e
+					 */
+					force_update: string
+					/**
+					 * F​o​r​c​e​f​u​l​l​y​ ​f​e​t​c​h​ ​b​u​n​d​l​e​ ​e​v​e​r​y​ ​a​p​p​ ​s​t​a​r​t​ ​t​o​ ​e​n​s​u​r​e​ ​l​a​t​e​s​t​ ​b​u​n​d​l​e​ ​i​s​ ​l​o​a​d​e​d
+					 */
+					force_update_desc: string
+				}
+				tools: {
+					/**
+					 * T​o​o​l​s
+					 */
+					label: string
+					asset_browser: {
+						/**
+						 * A​s​s​e​t​ ​B​r​o​w​s​e​r
+						 */
+						label: string
+					}
+				}
+				playground: {
+					/**
+					 * P​l​a​y​g​r​o​u​n​d
+					 */
+					label: string
+				}
+				actions: {
+					/**
+					 * A​c​t​i​o​n​s
+					 */
+					label: string
+					/**
+					 * I​n​v​a​l​i​d​a​t​e​ ​M​e​t​r​o​ ​C​a​c​h​e
+					 */
+					invalidate_metro_cache: string
+				}
 			}
 		}
 		updater: {
@@ -410,23 +452,65 @@ export type TranslationFunctions = {
 			}
 		}
 		developer: {
-			/**
-			 * Asset Browser
-			 */
-			asset_browser: () => LocalizedString
 			sections: {
-				/**
-				 * Tools
-				 */
-				tools: () => LocalizedString
-				/**
-				 * Data
-				 */
-				data: () => LocalizedString
-				/**
-				 * Invalidate Metro Cache
-				 */
-				invalidate_metro_cache: () => LocalizedString
+				init_config: {
+					/**
+					 * Loader Configurations
+					 */
+					label: () => LocalizedString
+					/**
+					 * Configure the loader to use custom endpoint for bundle fetching. Refer CONTRIBUTING.md to learn how to configure local dev server for development
+					 */
+					sublabel: () => LocalizedString
+					/**
+					 * Custom Endpoint
+					 */
+					custom_endpoint: () => LocalizedString
+					/**
+					 * Bundle Path
+					 */
+					bundle_path: () => LocalizedString
+					/**
+					 * (Optional) Path to bundle file. Default is dependent on custom endpoint availability
+					 */
+					bundle_path_desc: () => LocalizedString
+					/**
+					 * Force Update
+					 */
+					force_update: () => LocalizedString
+					/**
+					 * Forcefully fetch bundle every app start to ensure latest bundle is loaded
+					 */
+					force_update_desc: () => LocalizedString
+				}
+				tools: {
+					/**
+					 * Tools
+					 */
+					label: () => LocalizedString
+					asset_browser: {
+						/**
+						 * Asset Browser
+						 */
+						label: () => LocalizedString
+					}
+				}
+				playground: {
+					/**
+					 * Playground
+					 */
+					label: () => LocalizedString
+				}
+				actions: {
+					/**
+					 * Actions
+					 */
+					label: () => LocalizedString
+					/**
+					 * Invalidate Metro Cache
+					 */
+					invalidate_metro_cache: () => LocalizedString
+				}
 			}
 		}
 		updater: {

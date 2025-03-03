@@ -60,11 +60,29 @@ const en = {
             }
         },
         developer: {
-            asset_browser: "Asset Browser",
             sections: {
-                tools: "Tools",
-                data: "Data",
-                invalidate_metro_cache: "Invalidate Metro Cache",
+                init_config: {
+                    label: "Loader Configurations",
+                    sublabel: "Configure the loader to use custom endpoint for bundle fetching. Refer CONTRIBUTING.md to learn how to configure local dev server for development",
+                    custom_endpoint: "Custom Endpoint",
+                    bundle_path: "Bundle Path",
+                    bundle_path_desc: "(Optional) Path to bundle file. Default is dependent on custom endpoint availability",
+                    force_update: "Force Update",
+                    force_update_desc: "Forcefully fetch bundle every app start to ensure latest bundle is loaded",
+                },
+                tools: {
+                    label: "Tools",
+                    asset_browser: {
+                        label: "Asset Browser",
+                    }
+                },
+                playground: {
+                    label: "Playground",
+                },
+                actions: {
+                    label: "Actions",
+                    invalidate_metro_cache: "Invalidate Metro Cache",
+                }
             },
         },
         updater: {
