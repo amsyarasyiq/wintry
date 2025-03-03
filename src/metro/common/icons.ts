@@ -1,5 +1,5 @@
-import { lazyValue } from "@utils/lazy";
 import { lookupByProps } from "@metro/common/wrappers";
+import { lazyValue } from "@utils/lazy";
 
 function getIcon(name: string): React.ComponentType<Record<string, unknown>> {
     return lazyValue(() => lookupByProps(name).load()[name]);
@@ -12,3 +12,6 @@ export const ActivitiesIcon = getIcon("ActivitiesIcon");
 export const WrenchIcon = getIcon("WrenchIcon");
 export const DownloadIcon = getIcon("DownloadIcon");
 export const PuzzlePieceIcon = getIcon("PuzzlePieceIcon");
+export const CircleInformationIcon = getIcon("CircleInformationIcon");
+export const CircleCheckIcon = getIcon("CircleCheckIcon");
+export const WarningIcon = getIcon("WarningIcon");

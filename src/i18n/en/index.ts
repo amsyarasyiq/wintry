@@ -48,6 +48,8 @@ const en = {
         },
         plugins: {
             description: "Description",
+            safe_mode_callout: "Safe Mode Enabled",
+            safe_mode_callout_desc: "Only internal plugins will take effect while safe mode is enabled.",
             info_sheet: {
                 details: "Details",
                 more_info: "More Info",

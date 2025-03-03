@@ -74,6 +74,17 @@ export default function DeveloperPage() {
                         })
                     }
                 />
+                <TableRow
+                    arrow={true}
+                    label={"Callouts"}
+                    icon={<TableRow.Icon source={findAssetId("WarningIcon")} />}
+                    onPress={() =>
+                        navigation.push("WINTRY_CUSTOM_PAGE", {
+                            title: "Callouts Playground",
+                            render: lazy(() => import("./CalloutPlayground")),
+                        })
+                    }
+                />
             </TableRowGroup>
             <TableRowGroup title={tSections.actions.label()}>
                 <TableRow

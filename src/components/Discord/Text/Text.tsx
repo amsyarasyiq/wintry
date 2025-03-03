@@ -1,10 +1,13 @@
 import type { LiteralUnion } from "type-fest";
 import { getComponentFromProps } from "../util";
 import type * as RN from "react-native";
+import type { SemanticColor } from "../types";
+import type { SnakeCaseToKebab } from "@utils/types";
 
 type BasicTextSize = "sm" | "md" | "lg";
 type TextSize = "xxs" | "xs" | BasicTextSize | "xl" | "xxl";
 type TextWeight = "normal" | "medium" | "semibold" | "bold" | "extrabold";
+type KebabSemanticColor = SnakeCaseToKebab<SemanticColor>;
 
 type TextVariant = LiteralUnion<
     | `heading-${Exclude<TextSize, "xxs" | "xs">}/${TextWeight}`
@@ -19,7 +22,7 @@ type TextVariant = LiteralUnion<
 
 export type TextProps = RN.TextProps & {
     variant?: TextVariant;
-    color?: string;
+    color?: LiteralUnion<KebabSemanticColor, string>;
     tabularNumbers?: boolean;
     animated?: boolean;
     experimental_useNativeText?: boolean;

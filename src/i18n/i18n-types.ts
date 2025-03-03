@@ -147,6 +147,14 @@ type RootTranslation = {
 			 * D​e​s​c​r​i​p​t​i​o​n
 			 */
 			description: string
+			/**
+			 * S​a​f​e​ ​M​o​d​e​ ​E​n​a​b​l​e​d
+			 */
+			safe_mode_callout: string
+			/**
+			 * O​n​l​y​ ​i​n​t​e​r​n​a​l​ ​p​l​u​g​i​n​s​ ​w​i​l​l​ ​t​a​k​e​ ​e​f​f​e​c​t​ ​w​h​i​l​e​ ​s​a​f​e​ ​m​o​d​e​ ​i​s​ ​e​n​a​b​l​e​d​.
+			 */
+			safe_mode_callout_desc: string
 			info_sheet: {
 				/**
 				 * D​e​t​a​i​l​s
@@ -416,6 +424,14 @@ export type TranslationFunctions = {
 			 * Description
 			 */
 			description: () => LocalizedString
+			/**
+			 * Safe Mode Enabled
+			 */
+			safe_mode_callout: () => LocalizedString
+			/**
+			 * Only internal plugins will take effect while safe mode is enabled.
+			 */
+			safe_mode_callout_desc: () => LocalizedString
 			info_sheet: {
 				/**
 				 * Details

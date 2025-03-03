@@ -6,8 +6,13 @@ import Search, { useSearchQuery } from "../../../Search";
 import PageWrapper from "../../PageWrapper";
 import PluginCard from "./PluginCard";
 import { ResponsiveMasonryFlashList } from "../ResponsiveMasonryFlashList";
-import { Text } from "@components/Discord";
+import { IconButton, Text } from "@components/Discord";
 import { isPluginInternal } from "@plugins/utils";
+import { findAssetId } from "@api/assets";
+import ContextMenu from "@components/Discord/ContextMenu/ContextMenu";
+import Callout from "@components/Callout";
+import { t } from "@i18n";
+import { isSafeModeEnabled } from "@stores/usePrefsStore";
 
 const ItemSeparator = () => <View style={{ height: 8 }} />;
 
@@ -45,7 +50,48 @@ export default function PluginsPage() {
                 keyExtractor={i => i.obj.$id}
                 renderItem={({ item: result }) => <PluginCard result={result} item={result.obj} />}
                 ItemSeparatorComponent={ItemSeparator}
-                ListHeaderComponent={<Search queryRef={queryRef} />}
+                ListHeaderComponent={
+                    <View style={{ gap: 8 }}>
+                        <View style={{ flexDirection: "row", gap: 8 }}>
+                            <Search style={{ flexGrow: 1 }} isRound={true} queryRef={queryRef} />
+                            <ContextMenu
+                                items={[
+                                    {
+                                        label: "A-Z",
+                                        iconSource: findAssetId("CheckmarkSmallBoldIcon"),
+                                        action: () => {},
+                                    },
+                                ]}
+                            >
+                                {props => (
+                                    <IconButton {...props} variant="tertiary" icon={findAssetId("ArrowsUpDownIcon")} />
+                                )}
+                            </ContextMenu>
+                            <ContextMenu
+                                items={[
+                                    {
+                                        label: "Show internal plugins",
+                                        iconSource: findAssetId("CheckmarkSmallBoldIcon"),
+                                        action: () => {},
+                                    },
+                                ]}
+                            >
+                                {props => (
+                                    <IconButton
+                                        {...props}
+                                        variant="tertiary"
+                                        icon={findAssetId("FiltersHorizontalIcon")}
+                                    />
+                                )}
+                            </ContextMenu>
+                        </View>
+                        {isSafeModeEnabled() && (
+                            <Callout variant="info" title={t.settings.plugins.safe_mode_callout()}>
+                                {t.settings.plugins.safe_mode_callout_desc()}
+                            </Callout>
+                        )}
+                    </View>
+                }
                 ListFooterComponent={() => {
                     if (showInternal) return null;
                     return (

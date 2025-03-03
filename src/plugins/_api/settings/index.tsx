@@ -1,5 +1,4 @@
 import { definePlugin, meta } from "#plugin-context";
-import { wtlogger } from "@api/logger";
 import {
     _registeredSettingItems,
     _registeredSettingSections,
@@ -104,10 +103,6 @@ export default definePlugin({
                     screen: {
                         route: "WINTRY_PLUGINS",
                         getComponent: () => lazy(() => import("@components/WintrySettings/pages/Plugins")),
-                    },
-                    preNavigationAction(a) {
-                        wtlogger.inspect(a);
-                        return true;
                     },
                 }),
                 registerSettingRenderer("WINTRY_DEVELOPER", {
