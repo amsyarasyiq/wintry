@@ -7,6 +7,8 @@ interface StackProps {
     direction?: "vertical" | "horizontal";
     /** defaults to 8 */
     spacing?: number;
+
+    align?: ViewStyle["alignItems"];
     justify?: ViewStyle["justifyContent"];
 
     style?: StyleProp<ViewStyle>;
