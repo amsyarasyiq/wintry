@@ -15,6 +15,7 @@ const en = {
         retry_render: "Retry Render",
         reload: "Reload Discord",
         safe_mode: "Safe Mode",
+        stack_trace: "Stack Trace",
         screen: {
             copy: "Copy",
             show_more: "Show more",

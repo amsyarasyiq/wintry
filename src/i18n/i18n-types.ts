@@ -48,6 +48,10 @@ type RootTranslation = {
 		 * S​a​f​e​ ​M​o​d​e
 		 */
 		safe_mode: string
+		/**
+		 * S​t​a​c​k​ ​T​r​a​c​e
+		 */
+		stack_trace: string
 		screen: {
 			/**
 			 * C​o​p​y
@@ -325,6 +329,10 @@ export type TranslationFunctions = {
 		 * Safe Mode
 		 */
 		safe_mode: () => LocalizedString
+		/**
+		 * Stack Trace
+		 */
+		stack_trace: () => LocalizedString
 		screen: {
 			/**
 			 * Copy

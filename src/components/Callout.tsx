@@ -11,7 +11,7 @@ interface CalloutProps {
     variant?: CalloutVariant;
 }
 
-const VARIANT_CONFIG = {
+const CALLOUT_VARIANT_CONFIG = {
     info: {
         background: "INFO_BOX_BACKGROUND",
         foreground: "CREATOR_REVENUE_INFO_BOX_BORDER",
@@ -39,7 +39,7 @@ const VARIANT_CONFIG = {
 };
 
 export default function Callout({ title, children, variant = "info" }: CalloutProps) {
-    const config = VARIANT_CONFIG[variant];
+    const config = CALLOUT_VARIANT_CONFIG[variant];
     const backgroundColor = useToken(tokens.colors[config.background]);
     const borderColor = useToken(tokens.colors[config.foreground]);
     const IconComponent = config.Icon;

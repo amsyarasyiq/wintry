@@ -61,6 +61,17 @@ export default function DeveloperPage() {
                         })
                     }
                 />
+                <TableRow
+                    arrow={true}
+                    label={"Token Browser"}
+                    icon={<TableRow.Icon source={findAssetId("PaintPaletteIcon")} />}
+                    onPress={() =>
+                        navigation.push("WINTRY_CUSTOM_PAGE", {
+                            title: "Token Browser",
+                            render: lazy(() => import("./TokenBrowser")),
+                        })
+                    }
+                />
             </TableRowGroup>
             <TableRowGroup title={tSections.playground.label()}>
                 <TableRow

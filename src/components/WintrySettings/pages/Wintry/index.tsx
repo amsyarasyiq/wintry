@@ -6,6 +6,8 @@ import { Card, TableRow, TableRowGroup, TableSwitchRow, Text } from "@components
 import { View, type StyleProp, type ViewStyle } from "react-native";
 import { noop } from "es-toolkit";
 import usePrefsStore from "@stores/usePrefsStore";
+import { NavigationNative } from "@metro/common/libraries";
+import { lazy } from "react";
 
 interface InfoCardProps {
     icon?: React.ReactElement;
@@ -38,6 +40,7 @@ function InfoCard({ title, style, icon, onPress, trailing }: InfoCardProps) {
 }
 
 export default function WintryPage() {
+    const navigation = NavigationNative.useNavigation();
     const { safeMode } = usePrefsStore();
     const { bunny, discord } = getVersions();
 
@@ -65,7 +68,12 @@ export default function WintryPage() {
                 <TableRow
                     arrow={true}
                     label={t.settings.general.logs()}
-                    onPress={noop}
+                    onPress={() =>
+                        navigation.push("WINTRY_CUSTOM_PAGE", {
+                            title: t.settings.general.logs(),
+                            render: lazy(() => import("./Logs")),
+                        })
+                    }
                     icon={<TableRow.Icon source={findAssetId("PaperIcon")} />}
                 />
             </TableRowGroup>

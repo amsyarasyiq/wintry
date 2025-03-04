@@ -1,8 +1,8 @@
-import type { ReactElement } from "react";
+import type { ReactNode } from "react";
 import { getComponentFromProps } from "../util";
 
 interface TwinButtonsProps {
-    children: (ReactElement | undefined)[];
+    children: ReactNode;
 }
 
 export default getComponentFromProps<TwinButtonsProps>("TwinButtons");
