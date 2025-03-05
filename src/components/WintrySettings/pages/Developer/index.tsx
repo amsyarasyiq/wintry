@@ -96,6 +96,17 @@ export default function DeveloperPage() {
                         })
                     }
                 />
+                <TableRow
+                    arrow={true}
+                    label={"Alerts"}
+                    icon={<TableRow.Icon source={findAssetId("WarningIcon")} />}
+                    onPress={() =>
+                        navigation.push("WINTRY_CUSTOM_PAGE", {
+                            title: "Alerts Playground",
+                            render: lazy(() => import("./AlertsPlayground")),
+                        })
+                    }
+                />
             </TableRowGroup>
             <TableRowGroup title={tSections.actions.label()}>
                 <TableRow

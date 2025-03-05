@@ -1,6 +1,7 @@
 import { lookupByProps } from "@metro/common/wrappers";
 import { lazyValue } from "@utils/lazy";
 import type { ReactElement } from "react";
+import type { ButtonProps } from "../Button/Button";
 
 const module = lookupByProps("AlertModal", "AlertActions");
 
@@ -8,8 +9,9 @@ function getPropLazy(prop: string) {
     return lazyValue(() => module.load()[prop]);
 }
 
-interface AlertModalProps {
-    title: string;
+export interface AlertModalProps {
+    header?: ReactElement;
+    title?: string;
     content: string;
     extraContent?: ReactElement;
     actions?: ReactElement<AlertActionButtonProps>[];
@@ -17,15 +19,17 @@ interface AlertModalProps {
 
 export const AlertModal = getPropLazy("AlertModal") as React.FC<AlertModalProps>;
 
-// biome-ignore lint/suspicious/noEmptyInterface: TODO
+// TODO
+// biome-ignore lint/suspicious/noEmptyInterface:
 interface AlertModalContainerProps {}
 
 export const AlertModalContainer = getPropLazy(
     "AlertModalContainer",
 ) as React.ForwardRefExoticComponent<AlertModalContainerProps>;
 
-// biome-ignore lint/suspicious/noEmptyInterface: TODO
-interface AlertActionButtonProps {}
+export interface AlertActionButtonProps extends ButtonProps {
+    onPress: () => unknown | Promise<unknown>;
+}
 
 export const AlertActionButton = getPropLazy("AlertActionButton") as React.FC<AlertActionButtonProps>;
 

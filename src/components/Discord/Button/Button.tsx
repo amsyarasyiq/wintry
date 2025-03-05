@@ -1,7 +1,7 @@
 import { getComponentFromProps } from "../util";
 import type { BaseButtonProps } from "./BaseButton";
 
-type ButtonProps = BaseButtonProps & {
+export type ButtonProps = BaseButtonProps & {
     text: string;
     iconPosition?: "start" | "end";
     grow?: boolean;
