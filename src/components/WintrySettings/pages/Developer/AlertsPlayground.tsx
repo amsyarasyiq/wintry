@@ -110,7 +110,7 @@ export default function AlertsPlayground() {
             <RowButton
                 label="Show direct content alert"
                 onPress={() => {
-                    const alertKey: string = showAlert({
+                    showAlert({
                         key: "direct-content-demo",
                         content: {
                             title: "Direct Content Alert",
@@ -119,7 +119,7 @@ export default function AlertsPlayground() {
                                 {
                                     text: "Dismiss Alert",
                                     variant: "destructive",
-                                    onPress: () => dismissAlert(alertKey),
+                                    onPress: () => dismissAlert("direct-content-demo"),
                                 },
                             ],
                         },

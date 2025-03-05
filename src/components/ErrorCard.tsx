@@ -5,6 +5,7 @@ import { BottomSheet, Card, Stack, Text } from "./Discord";
 import TwinButtons from "./Discord/experimental/TwinButtons";
 import Codeblock from "./Codeblock";
 import { showSheet } from "./utils/sheets";
+import { ScrollView } from "react-native";
 
 export const INDEX_BUNDLE_FILE: string = window.HermesInternal.getFunctionLocation(window.__r).fileName;
 
@@ -59,7 +60,9 @@ export default function ErrorCard({ error, header, showStackTrace = false, onRet
         <Card>
             <Stack>
                 {renderHeader(header)}
-                <Codeblock selectable={true}>{formatErrorContent(error, showStackTrace)}</Codeblock>
+                <ScrollView contentContainerStyle={{ maxHeight: 180 }} horizontal={true}>
+                    <Codeblock selectable={true}>{formatErrorContent(error, showStackTrace)}</Codeblock>
+                </ScrollView>
                 <TwinButtons>
                     {onRetryRender && (
                         <Button variant="destructive" text={t.error_boundary.retry_render()} onPress={onRetryRender} />

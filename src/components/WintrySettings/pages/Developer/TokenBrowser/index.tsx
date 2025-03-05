@@ -15,7 +15,7 @@ export default function TokenBrowser() {
                     onPress={() => {
                         navigation.push("WINTRY_CUSTOM_PAGE", {
                             title: "Colors",
-                            render: lazy(() => import("./TokenBrowser/Colors")),
+                            render: lazy(() => import("./Colors")),
                         });
                     }}
                 />

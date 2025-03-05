@@ -1,4 +1,4 @@
-import { branch, revision } from "#build-info";
+import { branch, revision, remote } from "#build-info";
 import { NativeClientInfoModule, NativeDeviceModule } from "@native";
 import { trimStart } from "es-toolkit";
 import React from "react";
@@ -15,6 +15,7 @@ export function getVersions() {
             shortRevision: revision.slice(0, 7),
             revision,
             branch,
+            remote,
         },
         discord: {
             version: NativeClientInfoModule.Version,

@@ -2,80 +2,55 @@ import { TableRow, TableRowGroup, TableSwitchRow } from "@components/Discord";
 import Button from "@components/Discord/Button/Button";
 import PageWrapper from "@components/WintrySettings/PageWrapper";
 import { t } from "@i18n";
-import UpdaterModule from "@native/modules/UpdaterModule";
-import { create } from "zustand";
-
-TableRow;
-interface UpdaterStore {
-    autoUpdate: boolean;
-    notify: boolean;
-    isChecking: boolean;
-    setAutoUpdate: (value: boolean) => void;
-    setNotify: (value: boolean) => void;
-    checkForUpdates: () => void;
-}
-
-export const useUpdaterStore = create<UpdaterStore>(set => ({
-    autoUpdate: true,
-    notify: true,
-    isChecking: false,
-    setAutoUpdate: value => set({ autoUpdate: value }),
-    setNotify: value => set({ notify: value }),
-    checkForUpdates: () => {
-        set({ isChecking: true });
-        UpdaterModule.updateBundle()
-            .then(ret => {
-                if (ret === true) {
-                    alert("Updated successfully. Restart Discord to apply changes.");
-                } else if (ret === false) {
-                    alert("No updates available");
-                } else {
-                    alert("An error occurred. Please try again later.");
-                }
-            })
-            .catch(() => {
-                alert("An error occurred");
-            })
-            .finally(() => {
-                set({ isChecking: false });
-            });
-    },
-}));
-
-const DUMMY_INFO = {
-    commitHash: "1234567",
-    branch: "main",
-    discord: "765.32 (765432)",
-    repo: "pylixonly/wintry",
-};
+import { getVersions } from "@debug/info";
+import {} from "@components/Discord/AlertModal/AlertModal";
+import { findAssetId } from "@api/assets";
+import { View } from "react-native";
+import {
+    showAlreadyUpdatedToast,
+    showUpdateAvailableAlert,
+    showUpdateErrorAlert,
+    useUpdaterStore,
+} from "../../../../stores/useUpdaterStore";
 
 export default function UpdaterPage() {
-    const { autoUpdate, notify, isChecking, setAutoUpdate, setNotify, checkForUpdates } = useUpdaterStore();
+    const { bunny } = getVersions();
+    const { autoUpdate, notify, isCheckingForUpdates, setAutoUpdate, setNotify, checkForUpdates } = useUpdaterStore();
 
     return (
         <PageWrapper style={{ paddingTop: 16, gap: 12 }}>
             <TableRowGroup title={t.settings.updater.info()}>
                 <TableRow
                     label={t.wintry()}
-                    trailing={<TableRow.TrailingText text={`${DUMMY_INFO.commitHash} (${DUMMY_INFO.branch})`} />}
+                    icon={<TableRow.Icon source={require("@assets/wintry.png")} />}
+                    trailing={<TableRow.TrailingText text={`${bunny.shortRevision} (${bunny.branch})`} />}
                 />
-                <TableRow label={t.discord()} trailing={<TableRow.TrailingText text={DUMMY_INFO.discord} />} />
                 <TableRow
                     label={t.settings.updater.repo()}
-                    trailing={<TableRow.TrailingText text={DUMMY_INFO.repo} />}
-                />
-                <TableRow
-                    label={
-                        <Button
-                            loading={isChecking}
-                            text={t.settings.updater.checkForUpdates()}
-                            onPress={() => {
-                                checkForUpdates();
-                            }}
-                        />
-                    }
+                    icon={<TableRow.Icon source={findAssetId("img_account_sync_github_light")} />}
+                    trailing={<TableRow.TrailingText text={bunny.remote} />}
                 />
             </TableRowGroup>
+            <View style={{ width: "50%", alignSelf: "flex-end" }}>
+                <Button
+                    text={t.settings.updater.checkForUpdates()}
+                    onPress={async () => {
+                        try {
+                            const updateAvailable = await checkForUpdates();
+                            if (updateAvailable) {
+                                showUpdateAvailableAlert(updateAvailable);
+                            } else {
+                                showAlreadyUpdatedToast();
+                            }
+                        } catch (e) {
+                            showUpdateErrorAlert(e);
+                        }
+                    }}
+                    icon={findAssetId("DownloadIcon")}
+                    disabled={isCheckingForUpdates}
+                    loading={isCheckingForUpdates}
+                />
+            </View>
             <TableRowGroup title={t.settings.updater.settings()}>
                 <TableSwitchRow
                     label={t.settings.updater.autoUpdate()}

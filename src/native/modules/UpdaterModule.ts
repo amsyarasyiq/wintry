@@ -1,6 +1,11 @@
 import LoaderModule from "./LoaderModule";
 
-export default new class UpdaterModule extends LoaderModule {
+export interface UpdateInfo {
+    url: string;
+    hash?: string;
+}
+
+export default new (class UpdaterModule extends LoaderModule {
     constructor() {
         super("UpdaterModule");
     }
@@ -8,4 +13,8 @@ export default new class UpdaterModule extends LoaderModule {
     public updateBundle() {
         return this.callFunction("updateBundle", []);
     }
-}
+
+    public checkForUpdates(): Promise<UpdateInfo> {
+        return this.callFunction("checkForUpdates", []);
+    }
+})();

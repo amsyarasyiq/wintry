@@ -1,6 +1,5 @@
 import Codeblock from "@components/Codeblock";
 import { BottomSheet, Text } from "@components/Discord";
-import FormCheckbox from "@components/Discord/Forms/FormCheckbox";
 import TableRowDivider from "@components/Discord/TableRow/TableRowDivider";
 import PressableScale from "@components/Discord/experimental/PressableScale";
 import ErrorCard from "@components/ErrorCard";
@@ -9,7 +8,8 @@ import { showSheet } from "@components/utils/sheets";
 import { useToken, tokens } from "@metro/common/libraries";
 import { FlashList } from "@shopify/flash-list";
 import { useMemo, useState } from "react";
-import { Pressable, ScrollView, View } from "react-native";
+import { ScrollView, View } from "react-native";
+import { InlineCheckbox } from "../../InlineCheckbox";
 
 interface Log {
     level: "info" | "warn" | "error" | "debug";
@@ -17,20 +17,6 @@ interface Log {
     timestamp: number;
     error?: Error;
     breadcrumbs?: Array<string>;
-}
-
-// TODO: Make this a shared component
-function InlineCheckbox({
-    label,
-    checked,
-    onPress,
-}: { label: string; checked: boolean; onPress: (checked: boolean) => void }) {
-    return (
-        <Pressable onPress={() => onPress(!checked)} style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-            <FormCheckbox checked={checked} />
-            <Text variant="text-md/normal">{label}</Text>
-        </Pressable>
-    );
 }
 
 const VARIANT_CONFIG = {

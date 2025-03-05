@@ -1,6 +1,6 @@
 import { lookupByProps } from "@metro/common/wrappers";
 import { lazyValue } from "@utils/lazy";
-import type { ReactElement } from "react";
+import type { ReactElement, ReactNode } from "react";
 import type { ButtonProps } from "../Button/Button";
 
 const module = lookupByProps("AlertModal", "AlertActions");
@@ -13,7 +13,7 @@ export interface AlertModalProps {
     header?: ReactElement;
     title?: string;
     content: string;
-    extraContent?: ReactElement;
+    extraContent?: ReactNode;
     actions?: ReactElement<AlertActionButtonProps>[];
 }
 
