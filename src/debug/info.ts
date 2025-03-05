@@ -1,11 +1,14 @@
 import { branch, revision } from "#build-info";
 import { NativeClientInfoModule, NativeDeviceModule } from "@native";
+import { trimStart } from "es-toolkit";
 import React from "react";
 import { Platform, type PlatformAndroidStatic, type PlatformIOSStatic } from "react-native";
 
 export function getVersions() {
     const hermesProps = window.HermesInternal.getRuntimeProperties();
-    const hermesVer = hermesProps["OSS Release Version"];
+
+    const rnVer = Platform.constants.reactNativeVersion;
+    const rnBranch = trimStart(hermesProps["OSS Release Version"], "for ");
 
     return {
         bunny: {
@@ -18,7 +21,6 @@ export function getVersions() {
             build: NativeClientInfoModule.Build,
         },
         hermes: {
-            version: hermesVer,
             buildType: hermesProps.Build,
             bytecodeVersion: hermesProps["Bytecode Version"],
         },
@@ -26,7 +28,8 @@ export function getVersions() {
             version: React.version,
         },
         reactNative: {
-            version: Platform.constants.reactNativeVersion,
+            version: `${rnVer.major}.${rnVer.minor}.${rnVer.patch}`,
+            branch: rnBranch,
         },
     };
 }

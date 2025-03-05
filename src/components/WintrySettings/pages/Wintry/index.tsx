@@ -2,42 +2,15 @@ import { t } from "@i18n";
 import { findAssetId } from "@api/assets";
 import PageWrapper from "../../PageWrapper";
 import { getVersions } from "@debug/info";
-import { Card, TableRow, TableRowGroup, TableSwitchRow, Text } from "@components/Discord";
-import { View, type StyleProp, type ViewStyle } from "react-native";
+import { TableRow, TableRowGroup, TableSwitchRow } from "@components/Discord";
+import { View } from "react-native";
 import { noop } from "es-toolkit";
 import usePrefsStore from "@stores/usePrefsStore";
 import { NavigationNative } from "@metro/common/libraries";
 import { lazy } from "react";
-
-interface InfoCardProps {
-    icon?: React.ReactElement;
-    title: string;
-    style?: StyleProp<ViewStyle>;
-    trailing: React.ReactElement | string;
-    onPress: () => void;
-}
-
-function InfoCard({ title, style, icon, onPress, trailing }: InfoCardProps) {
-    return (
-        <Card style={style} onPress={onPress}>
-            <View style={{ gap: 8 }}>
-                <View
-                    style={{
-                        flexDirection: "row",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                    }}
-                >
-                    {icon}
-                    <Text numberOfLines={2} style={{ textAlign: "right" }} variant="text-sm/medium" color="text-muted">
-                        {trailing}
-                    </Text>
-                </View>
-                <Text variant="heading-md/semibold">{title}</Text>
-            </View>
-        </Card>
-    );
-}
+import { InfoCard } from "./InfoCard";
+import { showSheet } from "@components/utils/sheets";
+import { ClientInfoSheet } from "./ClientInfoSheet";
 
 export default function WintryPage() {
     const navigation = NavigationNative.useNavigation();
@@ -53,14 +26,19 @@ export default function WintryPage() {
                         style={{ flex: 1 }}
                         trailing={`${bunny.shortRevision}\n(${bunny.branch})`}
                         icon={<TableRow.Icon source={require("@assets/wintry.png")} />}
-                        onPress={noop}
+                        onPress={() => {
+                            navigation.push("WINTRY_CUSTOM_PAGE", {
+                                title: t.wintry(),
+                                render: lazy(() => import("../Updater")),
+                            });
+                        }}
                     />
                     <InfoCard
                         title={t.discord()}
                         style={{ flex: 1 }}
                         trailing={`${discord.version}\n(${discord.build})`}
                         icon={<TableRow.Icon source={findAssetId("Discord")} />}
-                        onPress={noop}
+                        onPress={() => showSheet("ClientInfoSheet", ClientInfoSheet)}
                     />
                 </View>
             </View>

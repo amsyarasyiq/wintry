@@ -131,6 +131,24 @@ type RootTranslation = {
 			 * D​i​s​c​o​r​d
 			 */
 			discord: string
+			/**
+			 * R​e​a​c​t
+			 */
+			react: string
+			/**
+			 * R​e​a​c​t​ ​N​a​t​i​v​e
+			 */
+			react_native: string
+			/**
+			 * H​e​r​m​e​s
+			 */
+			hermes: string
+			client_info: {
+				/**
+				 * C​l​i​e​n​t​ ​I​n​f​o
+				 */
+				label: string
+			}
 			configurations: {
 				/**
 				 * C​o​n​f​i​g​u​r​a​t​i​o​n​s
@@ -412,6 +430,24 @@ export type TranslationFunctions = {
 			 * Discord
 			 */
 			discord: () => LocalizedString
+			/**
+			 * React
+			 */
+			react: () => LocalizedString
+			/**
+			 * React Native
+			 */
+			react_native: () => LocalizedString
+			/**
+			 * Hermes
+			 */
+			hermes: () => LocalizedString
+			client_info: {
+				/**
+				 * Client Info
+				 */
+				label: () => LocalizedString
+			}
 			configurations: {
 				/**
 				 * Configurations

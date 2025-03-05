@@ -21,7 +21,7 @@ interface PluginSheetComponentProps {
 export default function PluginSheetComponent({ plugin }: PluginSheetComponentProps) {
     return (
         <BottomSheet contentStyles={{ paddingHorizontal: 16 }}>
-            <RNGHScrollView contentContainerStyle={{ marginBottom: 12 }}>
+            <RNGHScrollView contentContainerStyle={{ marginBottom: 24 }}>
                 <View
                     style={{
                         flexDirection: "row",

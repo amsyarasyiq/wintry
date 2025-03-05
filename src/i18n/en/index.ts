@@ -41,6 +41,12 @@ const en = {
             links: "Links",
             github: "GitHub",
             discord: "Discord",
+            react: "React",
+            react_native: "React Native",
+            hermes: "Hermes",
+            client_info: {
+                label: "Client Info",
+            },
             configurations: {
                 label: "Configurations",
                 enable_safe_mode: "Safe Mode",

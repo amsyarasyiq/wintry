@@ -19,6 +19,7 @@ function initialize() {
 
         initializeMetro();
 
+        // TODO: Required plugins should run anyways, so move this safe mode check to a better place
         if (!isSafeModeEnabled()) {
             initializePlugins();
         }
