@@ -89,7 +89,7 @@ export default definePlugin({
                 registerSettingRenderer("WINTRY", {
                     type: "route",
                     title: () => t.wintry(),
-                    IconComponent: () => <TableRow.Icon source={require("@assets/wintry.png")} />,
+                    IconComponent: () => <TableRow.Icon source={require("@assets/ic_wintry.png")} />,
                     useTrailing: () => `${getVersions().bunny.shortRevision} (${getVersions().bunny.branch})`,
                     screen: {
                         route: "WINTRY",

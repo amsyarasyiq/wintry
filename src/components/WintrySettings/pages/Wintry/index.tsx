@@ -25,7 +25,7 @@ export default function WintryPage() {
                         title={t.wintry()}
                         style={{ flex: 1 }}
                         trailing={`${bunny.shortRevision}\n(${bunny.branch})`}
-                        icon={<TableRow.Icon source={require("@assets/wintry.png")} />}
+                        icon={<TableRow.Icon source={require("@assets/ic_wintry.png")} />}
                         onPress={() => {
                             navigation.push("WINTRY_CUSTOM_PAGE", {
                                 title: t.wintry(),

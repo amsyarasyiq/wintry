@@ -22,7 +22,7 @@ export default function UpdaterPage() {
             <TableRowGroup title={t.settings.updater.info()}>
                 <TableRow
                     label={t.wintry()}
-                    icon={<TableRow.Icon source={require("@assets/wintry.png")} />}
+                    icon={<TableRow.Icon source={require("@assets/ic_wintry.png")} />}
                     trailing={<TableRow.TrailingText text={`${bunny.shortRevision} (${bunny.branch})`} />}
                 />
                 <TableRow
