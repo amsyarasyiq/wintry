@@ -79,6 +79,42 @@ type RootTranslation = {
 			description: string
 		}
 	}
+	actions: {
+		/**
+		 * N​e​v​e​r​m​i​n​d
+		 */
+		nevermind: string
+		/**
+		 * D​i​s​m​i​s​s
+		 */
+		dismiss: string
+	}
+	updater: {
+		/**
+		 * U​p​d​a​t​e​ ​A​v​a​i​l​a​b​l​e
+		 */
+		update_available: string
+		/**
+		 * A​ ​n​e​w​ ​v​e​r​s​i​o​n​ ​o​f​ ​W​i​n​t​r​y​ ​i​s​ ​a​v​a​i​l​a​b​l​e​!
+		 */
+		new_version: string
+		/**
+		 * U​p​d​a​t​e​ ​N​o​w
+		 */
+		update_now: string
+		/**
+		 * Y​o​u​'​r​e​ ​a​l​r​e​a​d​y​ ​o​n​ ​t​h​e​ ​l​a​t​e​s​t​ ​v​e​r​s​i​o​n​!
+		 */
+		already_latest: string
+		/**
+		 * F​a​i​l​e​d​ ​t​o​ ​c​h​e​c​k​ ​f​o​r​ ​u​p​d​a​t​e​s
+		 */
+		failed_to_check: string
+		/**
+		 * A​n​ ​e​r​r​o​r​ ​o​c​c​u​r​r​e​d​ ​w​h​i​l​e​ ​c​h​e​c​k​i​n​g​ ​f​o​r​ ​u​p​d​a​t​e​s​.
+		 */
+		error_alert: string
+	}
 	settings: {
 		sections: {
 			/**
@@ -377,6 +413,42 @@ export type TranslationFunctions = {
 			 */
 			description: () => LocalizedString
 		}
+	}
+	actions: {
+		/**
+		 * Nevermind
+		 */
+		nevermind: () => LocalizedString
+		/**
+		 * Dismiss
+		 */
+		dismiss: () => LocalizedString
+	}
+	updater: {
+		/**
+		 * Update Available
+		 */
+		update_available: () => LocalizedString
+		/**
+		 * A new version of Wintry is available!
+		 */
+		new_version: () => LocalizedString
+		/**
+		 * Update Now
+		 */
+		update_now: () => LocalizedString
+		/**
+		 * You're already on the latest version!
+		 */
+		already_latest: () => LocalizedString
+		/**
+		 * Failed to check for updates
+		 */
+		failed_to_check: () => LocalizedString
+		/**
+		 * An error occurred while checking for updates.
+		 */
+		error_alert: () => LocalizedString
 	}
 	settings: {
 		sections: {

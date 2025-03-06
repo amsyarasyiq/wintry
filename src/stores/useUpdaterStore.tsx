@@ -5,6 +5,7 @@ import { showAlert } from "@api/alerts";
 import ErrorCard from "@components/ErrorCard";
 import { showToast } from "@api/toasts";
 import { Mutex, noop } from "es-toolkit";
+import { t } from "@i18n";
 
 interface UpdaterStore {
     autoUpdate: boolean;
@@ -53,8 +54,8 @@ export function showUpdateAvailableAlert(updateInfo: UpdateInfo) {
     showAlert({
         key: "update-available",
         content: {
-            title: "Update Available",
-            content: "A new version of Wintry is available!",
+            title: t.updater.update_available(),
+            content: t.updater.new_version(),
             extraContent: (
                 <Card>
                     <Text variant="text-md/medium">{updateInfo.hash || "Unknown hash"}</Text>
@@ -62,13 +63,13 @@ export function showUpdateAvailableAlert(updateInfo: UpdateInfo) {
             ),
             actions: [
                 {
-                    text: "Download",
+                    text: t.updater.update_now(),
                     onPress: () => {
                         return UpdaterModule.updateBundle();
                     },
                 },
                 {
-                    text: "Nevermind",
+                    text: t.actions.nevermind(),
                     variant: "secondary",
                     onPress: () => {},
                 },
@@ -79,14 +80,14 @@ export function showUpdateAvailableAlert(updateInfo: UpdateInfo) {
 
 export function showAlreadyUpdatedToast() {
     showToast({
-        content: "You're already on the latest version!",
+        content: t.updater.already_latest(),
     });
 }
 
 // TODO: Show more proper
 export function showUpdateErrorToast(error: unknown) {
     showToast({
-        content: "An error occurred while checking for updates.",
+        content: t.updater.failed_to_check(),
         options: {
             onPress: () => {
                 showUpdateErrorAlert(error);
@@ -99,12 +100,12 @@ export function showUpdateErrorAlert(error: unknown) {
     showAlert({
         key: "update-error",
         content: {
-            title: "Failed to check for updates",
-            content: "An error occurred while checking for updates.",
+            title: t.updater.failed_to_check(),
+            content: t.updater.error_alert(),
             extraContent: <ErrorCard header={null} showStackTrace={true} error={error} />,
             actions: [
                 {
-                    text: "Dismiss",
+                    text: t.actions.dismiss(),
                     variant: "destructive",
                     onPress: noop,
                 },
