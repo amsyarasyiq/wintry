@@ -37,7 +37,7 @@ function CardDevs<T extends Addon>({ addon }: { addon: T }) {
 
 function Description() {
     const DescriptionText = useHighlightedSearchTerm(1);
-    return <DescriptionText variant="text-md/medium" />;
+    return <DescriptionText variant="text-md/medium" color="text-secondary" />;
 }
 
 function CardActions<T extends Addon>({ addon, pageProps }: AddonCardProps<T>) {
