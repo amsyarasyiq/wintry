@@ -96,7 +96,7 @@ export default function AssetBrowser() {
     );
 
     return (
-        <PageWrapper style={{ gap: 12, paddingHorizontal: 12, paddingTop: 8 }}>
+        <PageWrapper containerStyle={{ gap: 12, paddingHorizontal: 12, paddingTop: 8 }}>
             <Search queryRef={ref} />
             <FlashList
                 data={assets}

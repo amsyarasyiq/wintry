@@ -15,7 +15,7 @@ export default function DeveloperPage() {
     const tSections = t.settings.developer.sections;
 
     return (
-        <PageWrapper style={{ gap: 12 }}>
+        <PageWrapper scrollable={true} containerStyle={{ gap: 12 }}>
             <TableRowGroup title={tSections.init_config.label()}>
                 <TableRow
                     label={

@@ -18,7 +18,7 @@ export default function UpdaterPage() {
     const { autoUpdate, notify, isCheckingForUpdates, setAutoUpdate, setNotify, checkForUpdates } = useUpdaterStore();
 
     return (
-        <PageWrapper style={{ paddingTop: 16, gap: 12 }}>
+        <PageWrapper scrollable={true} containerStyle={{ paddingTop: 16, gap: 12 }}>
             <TableRowGroup title={t.settings.updater.info()}>
                 <TableRow
                     label={t.wintry()}

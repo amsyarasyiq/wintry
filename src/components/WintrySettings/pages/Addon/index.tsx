@@ -30,7 +30,7 @@ export default function AddonPage<T extends Addon>(props: AddonPageProps<T>) {
     const results = useFilterResults();
 
     return (
-        <PageWrapper style={{ paddingHorizontal: 0 }}>
+        <PageWrapper containerStyle={{ paddingHorizontal: 0 }}>
             <ResponsiveMasonryFlashList
                 data={results}
                 itemMinWidth={244}

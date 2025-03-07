@@ -81,7 +81,7 @@ function CountdownDemoAlert() {
 
 export default function AlertsPlayground() {
     return (
-        <PageWrapper style={{ gap: 12 }}>
+        <PageWrapper containerStyle={{ gap: 12 }}>
             <View style={{ height: "60%" }} />
             <RowButton
                 label="Show alert"

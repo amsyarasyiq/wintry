@@ -3,7 +3,7 @@ import PageWrapper from "@components/WintrySettings/PageWrapper";
 
 export default function CalloutPlayground() {
     return (
-        <PageWrapper style={{ gap: 12 }}>
+        <PageWrapper containerStyle={{ gap: 12 }}>
             <Callout title="Info" variant="info">
                 This is used to provide additional information.
             </Callout>

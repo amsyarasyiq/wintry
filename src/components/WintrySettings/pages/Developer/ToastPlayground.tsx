@@ -27,7 +27,7 @@ function DemoToastComponent(props: CustomToastRendererProps): ReactNode {
 
 export default function ToastPlayground() {
     return (
-        <PageWrapper style={{ gap: 12 }}>
+        <PageWrapper containerStyle={{ gap: 12 }}>
             <View style={{ height: "60%" }} />
             <RowButton
                 label="Show generic toast"

@@ -18,7 +18,7 @@ export default function WintryPage() {
     const { bunny, discord } = getVersions();
 
     return (
-        <PageWrapper style={{ paddingTop: 16, gap: 12 }}>
+        <PageWrapper scrollable={true} containerStyle={{ paddingTop: 16, gap: 12 }}>
             <View style={{ gap: 12 }}>
                 <View style={{ flexDirection: "row", gap: 12, flexWrap: "wrap" }}>
                     <InfoCard

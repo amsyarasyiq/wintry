@@ -27,7 +27,7 @@ function ColorRow({ token, start, end }: { token: string; start: boolean; end: b
 
 export default function Colors() {
     return (
-        <PageWrapper style={{ paddingHorizontal: 0 }}>
+        <PageWrapper containerStyle={{ paddingHorizontal: 0 }}>
             <FlashList
                 data={Object.keys(tokens.colors)}
                 contentContainerStyle={{ paddingHorizontal: 12 }}
