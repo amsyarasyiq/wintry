@@ -3,6 +3,12 @@ import { useEmojiAdderStore } from "../stores/useEmojiAdderStore";
 import type { PartialGuild, EmojiNode } from "../types";
 import { EmojiStore } from "@metro/common/stores";
 import { FluxUtils } from "@metro/common/libraries/Flux";
+import { lookupByProps } from "@metro/common/wrappers";
+import { lazyDestructure } from "@utils/lazy";
+
+const { getMaxEmojiSlots } = lazyDestructure(() =>
+    lookupByProps("getMaxEmojiSlots", "getAvailableStickerSlotCount").load(),
+);
 
 export function useSlots(
     guild: PartialGuild,
@@ -15,7 +21,7 @@ export function useSlots(
     );
 
     return useMemo(() => {
-        const maxSlots = guild.getMaxEmojiSlots();
+        const maxSlots = getMaxEmojiSlots(guild);
         const isAnimated = emojiNode.src.includes(".gif");
         const currentCount = guildEmojis.filter((e: { animated: boolean }) => e?.animated === isAnimated).length;
 
