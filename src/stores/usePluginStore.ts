@@ -30,6 +30,11 @@ function startPlugin(draft: PluginStore, id: string) {
         return;
     }
 
+    if (plugin.isAvailable?.() === false) {
+        logger.warn(`Plugin ${plugin.$id} is not available, skipping`);
+        return;
+    }
+
     if (draft.states[id].running) {
         logger.warn(`${plugin.$id} already started`);
         return;

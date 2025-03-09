@@ -17,6 +17,7 @@ export interface WintryPluginDefinition<D extends DefinedOptions<O>, O extends O
     readonly $settings?: D;
     readonly $state?: PluginState;
     readonly $path?: string;
+    readonly $isToggleable?: () => boolean;
 
     readonly name: string;
     readonly description: string;
@@ -29,8 +30,13 @@ export interface WintryPluginDefinition<D extends DefinedOptions<O>, O extends O
      * A check if the plugin can be started/stopped without a restart.
      * If true, the plugin will not load/unload.
      */
-    // Probably should have better naming here
     readonly requiresRestart?: (start: boolean, state: PluginState) => boolean;
+
+    /**
+     * Checks whether the plugin is supported for the current platform. Value returned must be consistent.
+     * @returns non-false if the plugin is available to be started.
+     */
+    readonly isAvailable?: () => boolean;
 
     /**
      * This is called once the index module is loaded and you can force lookup modules from here.
@@ -52,7 +58,7 @@ export interface WintryPluginDefinition<D extends DefinedOptions<O>, O extends O
     readonly onStopRequest?: (stop: () => void) => boolean;
 }
 
-type RequiredRuntimePropertyKey = "id" | "state" | "path";
+type RequiredRuntimePropertyKey = "id" | "state" | "path" | "isToggleable";
 
 // Allows defining a plugin without the state property and allow extra properties
 export type WintryPluginInstance<

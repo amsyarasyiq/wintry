@@ -51,6 +51,10 @@ export function registerPlugin<
         $settings: {
             get: () => usePluginStore.getState().settings[id],
         },
+        $isToggleable: {
+            // @ts-expect-error - TS went insane
+            value: () => !plugin.required && plugin.isAvailable?.() !== false,
+        },
     });
 
     return relativePath => {
@@ -123,7 +127,7 @@ export function registerPluginSettings<Def extends OptionDefinitions>(id: string
             for (const unsub of unsubscribers) unsub();
         },
 
-        // TODO: Implement this
+        // TODO: Implement this?
         // withPrivateSettings<T>() {
         //     return ret;
         // },

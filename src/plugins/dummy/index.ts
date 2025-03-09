@@ -72,9 +72,10 @@ const settings = definePluginSettings({
 
 export default definePlugin({
     name: "Dummy",
-    description: "Does nothing!",
+    description: "Does literally nothing! Used for showcasing plugin settings.",
     authors: [Devs.Pylix],
 
+    isAvailable: () => false,
     start() {
         // console.log({
         //     settings
