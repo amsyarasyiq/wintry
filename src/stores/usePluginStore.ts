@@ -2,12 +2,16 @@ import { create } from "zustand";
 import { createJSONStorage, persist, subscribeWithSelector } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import { kvStorage } from "@utils/kvStorage";
-import type { PluginSettings, PluginState } from "@plugins/types";
+import type { PluginSettings, PluginState, WintryPluginInstance } from "@plugins/types";
 import { getProxyFactory, lazyValue } from "@utils/lazy";
 import { wtlogger } from "@api/logger";
+import { isSafeModeEnabled } from "./usePrefsStore";
 
-const logger = wtlogger.createChild("plugin-store");
-const PLUGINS = lazyValue(() => require("#wt-plugins").default, { hint: "object" });
+const logger = wtlogger.createChild("PluginStore");
+const PLUGINS = lazyValue(() => require("#wt-plugins").default, { hint: "object" }) as Record<
+    string,
+    WintryPluginInstance
+>;
 
 export interface PluginStore {
     settings: Record<string, PluginSettings>;
@@ -21,6 +25,11 @@ export interface PluginStore {
 function startPlugin(draft: PluginStore, id: string) {
     const plugin = PLUGINS[id];
 
+    if (isSafeModeEnabled() && !plugin.required) {
+        logger.info(`Plugin ${plugin.$id} is not required and safe mode is enabled, skipping`);
+        return;
+    }
+
     if (draft.states[id].running) {
         logger.warn(`${plugin.$id} already started`);
         return;
@@ -30,6 +39,7 @@ function startPlugin(draft: PluginStore, id: string) {
         logger.info(`Starting plugin ${plugin.$id}`);
 
         try {
+            draft.states[id].running = true;
             plugin.start?.();
         } catch (e) {
             logger.error`Failed to start ${plugin.$id}: ${e}`;
@@ -41,12 +51,17 @@ function startPlugin(draft: PluginStore, id: string) {
         start();
     }
 
-    draft.states[id].running = true;
     return;
 }
 
 function cleanupPlugin(draft: PluginStore, id: string) {
     const plugin = PLUGINS[id];
+
+    if (plugin.required) {
+        logger.warn(`Cannot stop required plugin '${plugin.$id}'`);
+        if (__DEV__) throw new Error(`Cannot stop required plugin '${plugin.$id}'`);
+        return;
+    }
 
     if (!draft.states[id].running) {
         logger.warn(`${plugin.$id} already stopped`);
@@ -101,7 +116,7 @@ const usePluginStore = create(
                         if (target === draft.settings[id].enabled) return;
 
                         draft.settings[id].enabled = target;
-                        if (startOrStop) {
+                        if (startOrStop && !isSafeModeEnabled()) {
                             if (draft.settings[id].enabled) {
                                 startPlugin(draft, id);
                             } else {

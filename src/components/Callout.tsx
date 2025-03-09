@@ -52,14 +52,14 @@ export default function Callout({ title, children, variant = "info" }: CalloutPr
                 borderWidth: 1,
                 borderColor,
                 borderRadius: 12,
-                rowGap: 12,
+                rowGap: 8,
             }}
         >
             <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
                 <IconComponent style={{ width: 18, height: 18 }} />
                 {title && <Text variant="heading-lg/semibold">{title}</Text>}
             </View>
-            <Text variant="text-sm" color={config.textColor}>
+            <Text variant="text-md/medium" color={config.textColor}>
                 {children}
             </Text>
         </View>

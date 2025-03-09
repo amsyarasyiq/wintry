@@ -3,7 +3,6 @@ import reportErrorOnInitialization from "./error-reporter";
 import { wintryGlobalObject } from "./globals";
 import { initializeMetro } from "./metro/internal";
 import { initializePlugins } from "./stores/usePluginStore";
-import { isSafeModeEnabled } from "./stores/usePrefsStore";
 
 Object.freeze = Object.seal = Object;
 
@@ -12,11 +11,7 @@ export function initializeWintry() {
         wtlogger.info("Initializing Wintry...");
 
         initializeMetro();
-
-        // TODO: Required plugins should run anyways, so move this safe mode check to a better place
-        if (!isSafeModeEnabled()) {
-            initializePlugins();
-        }
+        initializePlugins();
 
         window.wintry = wintryGlobalObject();
 

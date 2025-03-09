@@ -4,12 +4,15 @@ import { kvStorage } from "@utils/kvStorage";
 
 interface PrefsStore {
     safeMode: boolean;
+
+    toggleSafeMode: (to: boolean) => void;
 }
 
 const usePrefsStore = create(
     persist<PrefsStore>(
-        () => ({
+        set => ({
             safeMode: false,
+            toggleSafeMode: to => set({ safeMode: to }),
         }),
         {
             name: "prefs-store",

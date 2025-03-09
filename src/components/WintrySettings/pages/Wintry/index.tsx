@@ -4,17 +4,19 @@ import PageWrapper from "../../PageWrapper";
 import { getVersions } from "@debug/info";
 import { TableRow, TableRowGroup, TableSwitchRow } from "@components/Discord";
 import { View } from "react-native";
-import { noop } from "es-toolkit";
+import { delay, noop } from "es-toolkit";
 import usePrefsStore from "@stores/usePrefsStore";
 import { NavigationNative } from "@metro/common/libraries";
 import { lazy } from "react";
 import { InfoCard } from "./InfoCard";
 import { showSheet } from "@components/utils/sheets";
 import { ClientInfoSheet } from "./ClientInfoSheet";
+import { showAlert } from "@api/alerts";
+import { BundleUpdaterModule } from "@native";
 
 export default function WintryPage() {
     const navigation = NavigationNative.useNavigation();
-    const { safeMode } = usePrefsStore();
+    const { safeMode, toggleSafeMode } = usePrefsStore();
     const { bunny, discord } = getVersions();
 
     return (
@@ -57,11 +59,48 @@ export default function WintryPage() {
             </TableRowGroup>
             <TableRowGroup title={t.settings.general.configurations.label()}>
                 <TableSwitchRow
-                    label={t.settings.general.configurations.enable_safe_mode()}
-                    subLabel={t.settings.general.configurations.enable_safe_mode_description()}
+                    label={t.settings.general.configurations.safe_mode.label()}
+                    subLabel={t.settings.general.configurations.safe_mode.description()}
                     icon={<TableRow.Icon source={findAssetId("ShieldIcon")} />}
                     value={safeMode}
-                    onValueChange={noop}
+                    onValueChange={v => {
+                        const showSafeModeAlert = (enable: boolean) => {
+                            const ts = t.settings.general.configurations.safe_mode.alert;
+                            const action = enable ? "enable" : "disable";
+
+                            showAlert({
+                                key: `safe-mode-${action}`,
+                                content: {
+                                    title: ts.title({ action }),
+                                    content: ts.description({ action }),
+                                    actions: [
+                                        {
+                                            text: ts.apply_and_restart(),
+                                            onPress: async () => {
+                                                toggleSafeMode(enable);
+                                                await delay(500); // Allow time for preferences to be saved
+                                                BundleUpdaterModule.reload();
+                                            },
+                                        },
+                                        {
+                                            text: ts.apply_without_restart(),
+                                            variant: enable ? "primary" : "secondary",
+                                            onPress: async () => {
+                                                toggleSafeMode(enable);
+                                            },
+                                        },
+                                        {
+                                            text: t.actions.nevermind(),
+                                            variant: "secondary",
+                                            onPress: () => {},
+                                        },
+                                    ],
+                                },
+                            });
+                        };
+
+                        showSafeModeAlert(v);
+                    }}
                 />
             </TableRowGroup>
             <TableRowGroup title={t.settings.general.links()}>

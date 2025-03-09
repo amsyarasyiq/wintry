@@ -62,14 +62,22 @@ const en = {
             },
             configurations: {
                 label: "Configurations",
-                enable_safe_mode: "Safe Mode",
-                enable_safe_mode_description: "This will disable all plugins and themes, leaving only core functionalities. Restart required.",
+                safe_mode: {
+                    label: "Safe Mode",
+                    description: "This will stop non-essential addons from running, leaving only core functionalities. Restart required.",
+                    alert: {
+                        title: "{action|{disable: Disable, enable: Enable}} Safe Mode?",
+                        description: "Do you want to {action:string} safe mode? This will {action|{disable: stop non-essential plugins from running, enable: allow all plugins to run as usual}}. A restart is needed for changes to take effect.",
+                        apply_and_restart: "Apply and Restart",
+                        apply_without_restart: "Apply Without Restart",
+                    },
+                }
             }
         },
         plugins: {
             description: "Description",
             safe_mode_callout: "Safe Mode Enabled",
-            safe_mode_callout_desc: "Only internal plugins will take effect while safe mode is enabled.",
+            safe_mode_callout_desc: "Only essential plugins will take effect while safe mode is enabled.",
             info_sheet: {
                 details: "Details",
                 more_info: "More Info",
