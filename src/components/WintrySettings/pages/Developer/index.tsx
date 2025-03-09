@@ -1,7 +1,7 @@
 import { lazy } from "react";
 import { t } from "@i18n";
 import { findAssetId } from "@api/assets";
-import { TableCheckboxRow, TableRow, TableRowGroup, Text, TextInput } from "@components/Discord";
+import { TableRow, TableRowGroup, TableSwitchRow, Text, TextInput } from "@components/Discord";
 import PageWrapper from "../../PageWrapper";
 import { NavigationNative } from "@metro/common/libraries";
 import { MetroCache } from "@metro/internal/caches";
@@ -41,14 +41,14 @@ export default function DeveloperPage() {
                     }
                     subLabel={tSections.init_config.bundle_path_desc()}
                 />
-                <TableCheckboxRow
+                <TableSwitchRow
                     label={tSections.init_config.force_update()}
                     subLabel={tSections.init_config.force_update_desc()}
                     icon={<TableRow.Icon source={findAssetId("RefreshIcon")} />}
-                    checked={config.forceUpdate}
-                    onPress={() =>
+                    value={config.forceUpdate}
+                    onValueChange={v =>
                         useInitConfigStore.setState(s => ({
-                            config: { ...s.config, forceUpdate: !s.config.forceUpdate },
+                            config: { ...s.config, forceUpdate: v },
                         }))
                     }
                 />
