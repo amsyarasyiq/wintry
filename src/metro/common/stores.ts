@@ -2,12 +2,6 @@ import { createModuleFilter, withInteropOptions } from "@metro/filters";
 import { lookup } from "../api";
 import type * as S from "discord-types/stores";
 
-interface FluxStore {
-    getName(): string;
-
-    [key: string]: any;
-}
-
 export const byStoreName = createModuleFilter(
     withInteropOptions<string>({
         filter: ([name, m]) => m.constructor?.displayName === name && m.getName() === name,
@@ -15,8 +9,8 @@ export const byStoreName = createModuleFilter(
     }),
 );
 
-export function getStore(name: string, resolver?: (store: any) => any): FluxStore {
-    return lookup(byStoreName(name, { checkEsmDefault: true })).asLazy(resolver) as FluxStore;
+export function getStore(name: string, resolver?: (store: any) => any): S.FluxStore & Record<string, any> {
+    return lookup(byStoreName(name, { checkEsmDefault: true })).asLazy(resolver) as S.FluxStore;
 }
 
 export let UserStore = getStore("UserStore", m => (UserStore = m)) as S.UserStore;
@@ -30,3 +24,5 @@ export let ToastStore = getStore("ToastStore", m => (ToastStore = m));
 export let PermissionStore = getStore("PermissionStore", m => (PermissionStore = m));
 
 export let EmojiStore = getStore("EmojiStore", m => (EmojiStore = m));
+
+export let ThemeStore = getStore("ThemeStore", m => (ThemeStore = m));

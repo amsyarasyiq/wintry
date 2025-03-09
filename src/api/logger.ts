@@ -65,7 +65,7 @@ class Logger {
 
             if (level === "error") {
                 const error = substitutions.find(a => a instanceof Error);
-                logParameters.errorStack = error.stack;
+                logParameters.errorStack = error?.stack;
             }
 
             if (logger.logHandlers.size > 0) {

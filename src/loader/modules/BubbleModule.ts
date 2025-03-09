@@ -5,7 +5,7 @@ import type { LoaderModule } from "..";
 interface BubbleModule extends LoaderModule {
     hookBubbles(): Promise<void>;
     unhookBubbles(): Promise<void>;
-    configure(avatarRadius: number, bubbleRadius: number, bubbleColor: string): Promise<void>;
+    configure(avatarRadius?: number, bubbleRadius?: number, bubbleColor?: string): Promise<void>;
 }
 
 export default getModule<BubbleModule>({
