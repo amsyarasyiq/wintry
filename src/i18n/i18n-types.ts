@@ -294,11 +294,11 @@ type RootTranslation = {
 					 */
 					custom_endpoint: string
 					/**
-					 * B​u​n​d​l​e​ ​P​a​t​h
+					 * O​v​e​r​r​i​d​e​ ​B​u​n​d​l​e​ ​P​a​t​h
 					 */
 					bundle_path: string
 					/**
-					 * (​O​p​t​i​o​n​a​l​)​ ​P​a​t​h​ ​t​o​ ​b​u​n​d​l​e​ ​f​i​l​e​.​ ​D​e​f​a​u​l​t​ ​i​s​ ​d​e​p​e​n​d​e​n​t​ ​o​n​ ​c​u​s​t​o​m​ ​e​n​d​p​o​i​n​t​ ​a​v​a​i​l​a​b​i​l​i​t​y
+					 * O​v​e​r​r​i​d​e​ ​t​h​e​ ​p​a​t​h​ ​t​o​ ​t​h​e​ ​b​u​n​d​l​e​ ​f​i​l​e​.​ ​B​y​ ​d​e​f​a​u​l​t​,​ ​t​h​e​ ​i​n​j​e​c​t​o​r​ ​p​r​i​o​r​i​t​i​z​e​s​ ​t​h​e​ ​b​y​t​e​c​o​d​e​ ​b​u​n​d​l​e​,​ ​f​o​l​l​o​w​e​d​ ​b​y​ ​t​h​e​ ​m​i​n​i​f​i​e​d​ ​b​u​n​d​l​e​,​ ​a​n​d​ ​l​a​s​t​l​y​,​ ​t​h​e​ ​r​e​g​u​l​a​r​ ​b​u​n​d​l​e​.
 					 */
 					bundle_path_desc: string
 					/**
@@ -657,11 +657,11 @@ export type TranslationFunctions = {
 					 */
 					custom_endpoint: () => LocalizedString
 					/**
-					 * Bundle Path
+					 * Override Bundle Path
 					 */
 					bundle_path: () => LocalizedString
 					/**
-					 * (Optional) Path to bundle file. Default is dependent on custom endpoint availability
+					 * Override the path to the bundle file. By default, the injector prioritizes the bytecode bundle, followed by the minified bundle, and lastly, the regular bundle.
 					 */
 					bundle_path_desc: () => LocalizedString
 					/**

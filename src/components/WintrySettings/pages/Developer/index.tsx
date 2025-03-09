@@ -1,14 +1,15 @@
-import { lazy, useState } from "react";
+import { lazy } from "react";
 import { t } from "@i18n";
 import { findAssetId } from "@api/assets";
 import { TableCheckboxRow, TableRow, TableRowGroup, Text, TextInput } from "@components/Discord";
 import PageWrapper from "../../PageWrapper";
 import { NavigationNative } from "@metro/common/libraries";
 import { MetroCache } from "@metro/internal/caches";
+import { useInitConfigStore } from "@stores/useInitConfigStore";
+import { useShallow } from "zustand/shallow";
 
 export default function DeveloperPage() {
-    const [customEndpoint, setCustomEndpoint] = useState("");
-    const [bundlePath, setBundlePath] = useState("");
+    const config = useInitConfigStore(useShallow(s => s.config));
 
     const navigation = NavigationNative.useNavigation();
 
@@ -21,9 +22,9 @@ export default function DeveloperPage() {
                     label={
                         <TextInput
                             label={tSections.init_config.custom_endpoint()}
-                            value={customEndpoint}
+                            value={config.baseUrl}
                             placeholder="http://localhost:4040/"
-                            onChange={setCustomEndpoint}
+                            onChange={v => useInitConfigStore.setState(s => ({ config: { ...s.config, baseUrl: v } }))}
                         />
                     }
                 />
@@ -31,9 +32,11 @@ export default function DeveloperPage() {
                     label={
                         <TextInput
                             label={tSections.init_config.bundle_path()}
-                            value={bundlePath}
-                            placeholder="/bundle.js"
-                            onChange={setBundlePath}
+                            value={config.bundlePath || ""}
+                            placeholder="bundle.js"
+                            onChange={v =>
+                                useInitConfigStore.setState(s => ({ config: { ...s.config, bundlePath: v || null } }))
+                            }
                         />
                     }
                     subLabel={tSections.init_config.bundle_path_desc()}
@@ -42,8 +45,12 @@ export default function DeveloperPage() {
                     label={tSections.init_config.force_update()}
                     subLabel={tSections.init_config.force_update_desc()}
                     icon={<TableRow.Icon source={findAssetId("RefreshIcon")} />}
-                    checked={false}
-                    onPress={() => {}}
+                    checked={config.forceUpdate}
+                    onPress={() =>
+                        useInitConfigStore.setState(s => ({
+                            config: { ...s.config, forceUpdate: !s.config.forceUpdate },
+                        }))
+                    }
                 />
             </TableRowGroup>
             <Text style={{ marginTop: -6 }} variant="text-xs/normal" color="text-muted">
