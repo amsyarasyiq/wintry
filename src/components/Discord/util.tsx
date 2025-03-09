@@ -11,10 +11,9 @@ export function getComponentFromProps<P extends AnyRecord>(
     props: string | string[],
     { singular = false } = {},
 ): ComponentType<P> {
-    // biome-ignore lint/style/noParameterAssign:
-    props = typeof props === "string" ? [props] : props;
+    const actualProps = typeof props === "string" ? [props] : props;
 
-    const ActualComponent = singular ? findSingular(props[0]) : findProp(...props);
+    const ActualComponent = singular ? findSingular(actualProps[0]) : findProp(...actualProps);
 
     return ActualComponent as ComponentType<P>;
 }

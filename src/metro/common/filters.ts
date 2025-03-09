@@ -18,7 +18,7 @@ type ByProps = <T extends string>(
 
 export const byProps = createModuleFilter(
     withInteropOptions<string[]>({
-        filter: ({ a: props, m }) => (props.length === 1 ? m[props[0]] : props.every(p => m[p])),
+        filter: ([props, m]) => (props.length === 1 ? m[props[0]] : props.every(p => m[p])),
         stringify: arg => `byProps([${arg.join(",")}])`,
     }),
 ) as Filter<ByProps>;
@@ -30,7 +30,7 @@ type ByName = <T extends string>(
 
 export const byName = createModuleFilter(
     withInteropOptions<string>({
-        filter: ({ a: name, m }) => typeof m === "function" && m.name === name,
+        filter: ([name, m]) => typeof m === "function" && m.name === name,
         stringify: arg => `byName(${arg})`,
     }),
 ) as Filter<ByName>;
@@ -39,7 +39,7 @@ type ByFilePath = <T extends string>(path: T, options?: InteropOption) => Module
 
 export const byFilePath = createModuleFilter(
     withInteropOptions<string>({
-        filter: ({ a: path, state }) => state.meta.filePath === path,
+        filter: ([path, _, state]) => state.meta.filePath === path,
         stringify: arg => `byFilePath(${arg})`,
     }),
 ) as Filter<ByFilePath>;
@@ -48,7 +48,7 @@ type BySingularProp = <T extends string>(prop: T) => ModuleFilter<T, AnyRecord &
 
 export const bySingularProp = createModuleFilter(
     withInteropOptions<string>({
-        filter: ({ a: prop, m }) => m[prop] && Object.keys(m).length === 1,
+        filter: ([prop, m]) => m[prop] && Object.keys(m).length === 1,
         stringify: arg => `bySingularProp(${arg})`,
     }),
 ) as Filter<BySingularProp>;

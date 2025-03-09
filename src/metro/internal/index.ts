@@ -1,10 +1,34 @@
 import { before, instead } from "@patcher";
-import { MetroCache, markExportsFlags } from "./caches";
-import { _importingModuleId, moduleRegistry, patchModule } from "./modules";
+import { markExportsFlags } from "./caches";
+import { _importingModuleId, internal_onModuleLoaded, moduleRegistry } from "./registry";
+import type { ModuleState } from "@metro/types";
+import { isBadModuleExports } from "./modules";
+
+/**
+ * Very similar to `waitFor`, but much simpler.
+ * @internal
+ */
+function patchModule(
+    predicate: (module: any, state: ModuleState) => boolean,
+    patch: (state: ModuleState) => void,
+    { count = 1 } = {},
+) {
+    let _count = 0;
+
+    const callback = (state: ModuleState) => {
+        const exports = state.module.exports;
+        if (exports && !isBadModuleExports(exports) && predicate(exports, state)) {
+            patch(state);
+            if (++_count === count) {
+                internal_onModuleLoaded.delete(callback);
+            }
+        }
+    };
+
+    internal_onModuleLoaded.add(callback);
+}
 
 export function initializeMetro() {
-    MetroCache.initialize();
-
     // Patches required for extra metadata of the modules
     patchModule(
         exports => exports.registerAsset,
@@ -20,6 +44,17 @@ export function initializeMetro() {
         { count: 2 },
     );
 
+    patchModule(
+        exports => exports.fileFinishedImporting,
+        state => {
+            before(state.module.exports, "fileFinishedImporting", (args: any) => {
+                if (_importingModuleId === -1 || !args[0]) return;
+                moduleRegistry.get(_importingModuleId)!.meta.filePath = args[0];
+            });
+        },
+    );
+
+    // Patch required to transform our custom assets to be renderable by React Native
     patchModule(
         exports => exports.name === "resolveAssetSource",
         ({ module: { exports: resolveAssetSource } }) => {
@@ -45,20 +80,12 @@ export function initializeMetro() {
         },
     );
 
-    patchModule(
-        exports => exports.fileFinishedImporting,
-        state => {
-            before(state.module.exports, "fileFinishedImporting", (args: any) => {
-                if (_importingModuleId === -1 || !args[0]) return;
-                moduleRegistry.get(_importingModuleId)!.meta.filePath = args[0];
-            });
-        },
-    );
-
     // Essential patch for brute finding modules, so (bad) modules that aren't supposed to be initialized
     // won't make the app stop working/working oddly
 
-    // Fix UI thread hanging
+    // Fix UI thread hanging on Android. This patch is flawed and considered hacky since there are
+    // multiple modules that matches the filter. patchModule is also lazy, but we can ignore that for now
+    // since this happens while brute finding modules and imports are required in order (the module we want is the first one)
     patchModule(
         exp => exp.default?.reactProfilingEnabled,
         // The bad module is next to the module that is being checked
@@ -66,7 +93,6 @@ export function initializeMetro() {
     );
 
     // Prevent modules that registers a moment locale from changing the current locale
-    // Not tested, directly ported from Bunny's code, but it should work
     patchModule(
         exp => exp.isMoment,
         ({ module: { exports } }) => {

@@ -129,11 +129,12 @@ export namespace Metro {
 
 export interface ModuleState {
     id: Metro.ModuleID;
-    factory: Metro.FactoryFn;
     dependencies: Metro.DependencyMap;
     initialized: boolean;
 
     module?: any;
+    error?: unknown;
+
     meta: {
         filePath?: string;
         isAsset?: boolean;

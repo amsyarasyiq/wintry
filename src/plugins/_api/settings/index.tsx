@@ -17,7 +17,7 @@ import { NavigationNative } from "@metro/common/libraries";
 import { waitFor } from "@metro/internal/modules";
 import { createContextualPatcher } from "@patcher/contextual";
 import { findInReactTree } from "@utils/objects";
-import { memoize } from "es-toolkit";
+import { delay, memoize } from "es-toolkit";
 import { lazy, memo, useLayoutEffect } from "react";
 
 const SettingsOverviewScreen = lookup(byName("SettingsOverviewScreen", { returnEsmDefault: false })).asLazy();
@@ -29,7 +29,7 @@ export default definePlugin({
     authors: [Devs.Pylix],
     required: true,
 
-    start() {
+    async start() {
         waitFor(byProps(["SETTING_RENDERER_CONFIG"]), SettingConstants => {
             const origRendererConfig = SettingConstants.SETTING_RENDERER_CONFIG as SettingRendererConfig;
 
@@ -57,6 +57,8 @@ export default definePlugin({
             const { props } = findInReactTree(ret, i => i.props?.sections);
             props.sections = [..._registeredSettingSections, ...props.sections];
         });
+
+        await delay(1000);
 
         // Hack that allows pushing custom pages without having to register the setting renderer
         // by passing the component through the route params

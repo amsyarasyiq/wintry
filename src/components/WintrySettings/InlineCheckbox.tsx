@@ -2,7 +2,6 @@ import { Text } from "@components/Discord";
 import FormCheckbox from "@components/Discord/Forms/FormCheckbox";
 import { Pressable } from "react-native";
 
-// TODO: Make this a shared component
 export function InlineCheckbox({
     label,
     checked,

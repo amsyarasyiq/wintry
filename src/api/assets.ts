@@ -1,6 +1,5 @@
-import { requireModule } from "../metro";
 import { AssetsRegistry } from "../metro/common/libraries";
-import { moduleRegistry } from "../metro/internal/modules";
+import { moduleRegistry } from "@metro/internal/registry";
 
 export type Asset = { id: number } & {
     fileSystemLocation?: string;
@@ -27,7 +26,7 @@ export function* iterateAssets() {
 
     for (const state of moduleRegistry.values()) {
         if (state.meta.isAsset) {
-            const assetId = requireModule(state.id);
+            const assetId = window.__r(state.id);
             if (yielded.has(state.id) || typeof assetId !== "number") {
                 continue;
             }

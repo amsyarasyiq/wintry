@@ -2,14 +2,8 @@ import type { SetRequired } from "type-fest";
 import type { Dev } from "@data/constants";
 import type usePluginStore from "@stores/usePluginStore";
 
-export enum StartAt {
-    Init = 0,
-    MetroReady = 1,
-}
-
 export interface PluginState {
     running: boolean;
-    ranPreinit: boolean;
 }
 
 export interface PluginSettings {
@@ -37,12 +31,6 @@ export interface WintryPluginDefinition<D extends DefinedOptions<O>, O extends O
      */
     // Probably should have better naming here
     readonly requiresRestart?: (start: boolean, state: PluginState) => boolean;
-
-    /**
-     * Called very early, when most APIs are not available and Metro is not ready (you can't forcefully load modules).
-     * You can patch modules which are loaded before the index module is initialized here. (e.g. waitFor)
-     */
-    readonly preinit?: () => void;
 
     /**
      * This is called once the index module is loaded and you can force lookup modules from here.

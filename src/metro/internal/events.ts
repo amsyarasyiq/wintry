@@ -1,13 +1,10 @@
+// This folder is required during preinitialization. Imports are very sensitive.
 import { Emitter } from "strict-event-emitter";
 import type { ModuleState } from "../types";
-import type { MetroCache } from "./caches";
 
 type MetroEvents = {
-    metroReady: [];
-    moduleDefined: [ModuleState];
     moduleLoaded: [ModuleState];
     lookupFound: [string, ModuleState];
-    cacheLoaded: [MetroCache];
 };
 
 export const metroEvents = new Emitter<MetroEvents>();

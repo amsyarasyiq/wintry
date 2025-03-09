@@ -18,7 +18,7 @@ export async function getEsbuildConfig({ deploy = false, minify = false }): Prom
             resolveDir: path.dirname(require.resolve("../../src")),
             contents: `
                 try {
-                    require("./index.ts");
+                    require("./entry.ts");
                 } catch (e) {
                     require("./error-reporter.ts").default(e);
                 }

@@ -1,29 +1,25 @@
 import type { AnyRecord } from "@utils/types";
-import { moduleRegistry } from "./internal/modules";
+import { moduleRegistry } from "./internal/registry";
 import type { ModuleState } from "./types";
 
 type Resolver = (exp: any) => any;
 export type Resolvers = Array<Resolver>;
 
-export interface FilterPredicateArg<A> {
+export type FilterPredicateArg<A> = [
     /**
      * Argument passed to the filter.
      */
-    a: A;
+    args: A,
     /**
      * Resolved module exports.
      */
-    m: any;
+    module: any,
     /**
      * Module state.
      */
 
-    state: ModuleState;
-    /**
-     * Module ID.
-     */
-    id: number;
-}
+    state: ModuleState,
+];
 
 export const defaultResolvers: Resolvers = [exp => exp?.__esModule && exp.default, exp => exp];
 
@@ -32,8 +28,6 @@ export interface ModuleFilter<A, R, O> {
     resolvers: Resolvers;
     check: (id: number, exp: any) => boolean;
     factory: ModuleFilterFactory<A, R, O>;
-
-    __type__?: [A, R, O];
 }
 
 export interface ModuleFilterFactory<A, R, O = AnyRecord> {
@@ -64,15 +58,7 @@ export function createModuleFilter<A, R, O = AnyRecord>({
                 factory: moduleFilter,
 
                 check: (id: number, exports: any) => {
-                    return !!filter(
-                        {
-                            id,
-                            a: arg,
-                            m: exports,
-                            state: moduleRegistry.get(id)!,
-                        },
-                        options,
-                    );
+                    return !!filter([arg, exports, moduleRegistry.get(id)!], options);
                 },
             };
         },
@@ -121,8 +107,8 @@ export function withInteropOptions<A, O = InteropOption>(
             const { checkEsmDefault, returnEsmDefault = true } = options;
 
             // Read the comment in the `getResolvers` function for more information.
-            if (checkEsmDefault !== false && returnEsmDefault === false && arg.m?.__esModule && arg.m.default) {
-                const res = props.filter({ ...arg, m: arg.state.module?.exports?.default }, options);
+            if (checkEsmDefault !== false && returnEsmDefault === false && arg[1]?.__esModule && arg[1].default) {
+                const res = props.filter([arg[0], arg[2].module?.exports?.default, arg[2]], options);
                 if (res || checkEsmDefault === true) return res;
             }
 
@@ -130,12 +116,9 @@ export function withInteropOptions<A, O = InteropOption>(
         },
         stringify: (arg, options) => {
             const VERSION = 1;
-            const boolToNum = (bool?: boolean) => (bool === true ? 2 : bool === false ? 1 : 0);
+            const boolToNum = (bool?: boolean) => (bool ? 2 : bool === false ? 1 : 0);
 
-            let str = props.stringify(arg, options);
-            str += `::interop:${VERSION}:${boolToNum(options.checkEsmDefault)}:${boolToNum(options.returnEsmDefault)}`;
-
-            return str;
+            return `${props.stringify(arg, options)}::interop:${VERSION}:${boolToNum(options.checkEsmDefault)}:${boolToNum(options.returnEsmDefault)}`;
         },
         getResolvers: (arg, options) => {
             const { checkEsmDefault, returnEsmDefault = true } = options;

@@ -72,6 +72,11 @@ class Logger {
     error(message: string): void;
     error(template: TemplateStringsArray, ...substitutions: any[]): void;
     error(message: Message, ...substitutions: any[]): void {
+        substitutions.forEach((a, i) => {
+            if (a instanceof Error) {
+                substitutions[i] = a.stack;
+            }
+        });
         this.log("error", message, ...substitutions);
     }
 

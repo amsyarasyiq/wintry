@@ -1,9 +1,7 @@
 import { create } from "zustand";
 import { createJSONStorage, persist, subscribeWithSelector } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
-import { hasIndexInitialized } from "..";
 import { kvStorage } from "@utils/kvStorage";
-import { metroEvents } from "@metro/internal/events";
 import type { PluginSettings, PluginState } from "@plugins/types";
 import { getProxyFactory, lazyValue } from "@utils/lazy";
 import { wtlogger } from "@api/logger";
@@ -34,30 +32,13 @@ function startPlugin(draft: PluginStore, id: string) {
         try {
             plugin.start?.();
         } catch (e) {
-            logger.error(`Failed to start ${plugin.$id}: ${e}`);
+            logger.error`Failed to start ${plugin.$id}: ${e}`;
             return;
         }
     };
 
-    if (plugin.preinit && !hasIndexInitialized) {
-        logger.info(`Preinitializing plugin ${plugin.$id}`);
-
-        try {
-            plugin.preinit();
-            draft.states[id].ranPreinit = true;
-        } catch (error) {
-            logger.error`Failed to preinitialize ${plugin.$id}: ${error}`;
-            return;
-        }
-    }
-
     if (plugin.start) {
-        if (hasIndexInitialized) {
-            start();
-        } else {
-            metroEvents.once("metroReady", () => start());
-            logger.info(`Queued plugin "${plugin.$id}" for start`);
-        }
+        start();
     }
 
     draft.states[id].running = true;

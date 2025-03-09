@@ -1,109 +1,21 @@
-import { hasIndexInitialized } from "../..";
-import { onUntil } from "@utils/events";
-import type { Metro, ModuleState } from "../types";
-import { createCacheHandler, getAllCachedModuleIds, markExportsFlags, onceCacheReady } from "./caches";
+import type { ModuleState } from "../types";
+import { createCacheHandler, getAllCachedModuleIds, isModuleBlacklisted } from "./caches";
 import { metroEvents, modulesInitializationEvents } from "./events";
 import type { ModuleFilter } from "@metro/filters";
 import { testExports } from "@metro/api";
-
-export const moduleRegistry = new Map<number, ModuleState>();
-export let _importingModuleId = -1;
-
-/** @internal */
-export function internal_getDefiner(
-    originalDefiner: Metro.DefineFn,
-    onceIndexRequired: (runFactory: () => void) => void,
-) {
-    return (factory: Metro.FactoryFn, id: Metro.ModuleID, dependencies: Metro.DependencyMap) => {
-        const wrappedFactory: Metro.FactoryFn = (...args) => {
-            const state = moduleRegistry.get(id)!;
-
-            if (id === 0) {
-                onceIndexRequired(() => factory(...args));
-                state.initialized = true;
-
-                return;
-            }
-
-            const { 1: metroRequire, 4: publicModule } = args;
-
-            // Avoid catching default or named exports
-            args[2 /* metroImportDefault */] = id => {
-                const exps = metroRequire(id);
-                return exps?.__esModule ? exps.default : exps;
-            };
-
-            args[3 /* metroImportAll */] = id => {
-                const exps = metroRequire(id);
-                if (exps?.__esModule) return exps;
-
-                const importAll: Record<string, any> = {};
-                if (exps) Object.assign(importAll, exps);
-                importAll.default = exps;
-                return importAll;
-            };
-
-            const originalImportingModuleId = _importingModuleId;
-            _importingModuleId = id;
-
-            try {
-                factory(...args); // Factory does not return anything
-            } catch {
-                // Blacklist the module if the factory throws an error
-                markExportsFlags(id, undefined);
-            }
-
-            _importingModuleId = originalImportingModuleId;
-
-            state.module = publicModule;
-            state.initialized = true;
-
-            if (publicModule) {
-                markExportsFlags(id, publicModule.exports);
-
-                if (!isBadModuleExports(publicModule.exports)) {
-                    metroEvents.emit("moduleLoaded", state);
-                    modulesInitializationEvents.emit(id);
-                }
-            }
-        };
-
-        const state: ModuleState = { id, factory, dependencies, initialized: false, meta: {} };
-        moduleRegistry.set(id, state);
-        metroEvents.emit("moduleDefined", state);
-
-        originalDefiner(wrappedFactory, id, dependencies);
-    };
-}
+import { initializedModuleRegistry, moduleRegistry } from "./registry";
 
 export function isBadModuleExports(exports: any) {
+    const RANDOM_STRING = "insert the funny here? :fuyusquish:";
+
     return (
         exports == null ||
         exports === globalThis ||
         (exports.__proto__ === Object.prototype && Reflect.ownKeys(exports).length === 0) || // Empty object, implies no exports
         // Blacklist evil proxies which always return non-undefined. For example, IntlMessagesProxy or NativeModules.
-        exports["insert the funny here? :fuyusquish: :fuyusquish: :fuyusquish:"] !== undefined ||
-        exports.default?.[Symbol.toStringTag] === "IntlMessagesProxy" // Evil proxy, but a more specific check
+        exports[RANDOM_STRING] !== undefined ||
+        exports.default?.[RANDOM_STRING] !== undefined
     );
-}
-
-export function patchModule(
-    predicate: (module: any, state: ModuleState) => boolean,
-    patch: (state: ModuleState) => void,
-    { count = 1 } = {},
-) {
-    let _count = 0;
-
-    onUntil(metroEvents, "moduleLoaded", state => {
-        const exports = state.module.exports;
-        if (exports && predicate(exports, state)) {
-            patch(state);
-
-            if (++_count === count) return true;
-        }
-
-        return false;
-    });
 }
 
 export function waitFor<A, R, O>(
@@ -112,71 +24,69 @@ export function waitFor<A, R, O>(
     { count = 1 } = {},
 ) {
     let currentCount = 0;
-    let aborted = false;
-
-    function cleanup(eventHandlers: Array<() => void>) {
-        if (aborted) return;
-        aborted = true;
-        for (const handler of eventHandlers) handler();
-    }
 
     const onAbort: Array<() => void> = [];
+    let cleanup: (() => void) | null = () => {
+        for (const handler of onAbort) handler();
+        cleanup = null;
+    };
 
-    onceCacheReady(() => {
-        if (aborted) return;
-        const cachedModuleIds = getAllCachedModuleIds(filter.key);
-        const cacheHandler = createCacheHandler(filter.key, false);
+    const cachedModuleIds = getAllCachedModuleIds(filter.key);
+    const cacheHandler = createCacheHandler(filter.key, false);
 
-        function checkState(state: ModuleState) {
-            if (aborted) return true;
+    function checkState(state: ModuleState) {
+        if (!cleanup) return true;
 
-            const exports = state.module?.exports;
-            if (isBadModuleExports(exports)) {
-                return false;
-            }
-
-            const result = testExports(state.id, exports, filter);
-            if (!result) return false;
-
-            cacheHandler.cacheId(state.id, result);
-            callback(result, state);
-
-            if (++currentCount === count) {
-                cleanup(onAbort);
-                return true;
-            }
-
+        const exports = state.module.exports;
+        if (isBadModuleExports(exports) || isModuleBlacklisted(state.id)) {
             return false;
         }
 
-        // Check already loaded modules
-        if (hasIndexInitialized && cachedModuleIds && cachedModuleIds.length >= count) {
-            for (const id of cachedModuleIds) {
-                const state = moduleRegistry.get(id);
-                if (!state) continue;
+        const result = testExports(state.id, exports, filter);
+        if (!result) return false;
 
-                if (state.module?.exports) {
-                    if (checkState(state)) return;
-                } else {
-                    const cb = () => checkState(state);
-                    modulesInitializationEvents.once(state.id, cb);
-                    onAbort.push(() => modulesInitializationEvents.off(state.id, cb));
-                }
-            }
-        } else if (!aborted) {
-            const moduleLoadedHandler = (state: ModuleState) => checkState(state);
-            const lookupFoundHandler = (key: string, state: ModuleState) =>
-                filter.key === key ? checkState(state) : false;
+        cacheHandler.cacheId(state.id, result);
+        callback(result, state);
 
-            metroEvents.on("moduleLoaded", moduleLoadedHandler);
-            metroEvents.on("lookupFound", lookupFoundHandler);
-
-            onAbort.push(
-                () => metroEvents.off("moduleLoaded", moduleLoadedHandler),
-                () => metroEvents.off("lookupFound", lookupFoundHandler),
-            );
+        if (++currentCount === count) {
+            cleanup();
+            return true;
         }
-    });
 
-    return () => cleanup(onAbort);
+        return false;
+    }
+
+    if (cachedModuleIds && cachedModuleIds.length >= count) {
+        for (const id of cachedModuleIds) {
+            const state = moduleRegistry.get(id);
+            if (!state) continue;
+
+            if (state.module?.exports) {
+                if (checkState(state)) return cleanup;
+            } else {
+                const cb = () => checkState(state);
+                modulesInitializationEvents.once(state.id, cb);
+                onAbort.push(() => modulesInitializationEvents.off(state.id, cb));
+            }
+        }
+    } else if (!cleanup) {
+        // Check already loaded modules
+        for (const state of initializedModuleRegistry) {
+            if (checkState(state)) return cleanup;
+        }
+
+        const moduleLoadedHandler = (state: ModuleState) => checkState(state);
+        const lookupFoundHandler = (key: string, state: ModuleState) =>
+            filter.key === key ? checkState(state) : false;
+
+        metroEvents.on("moduleLoaded", moduleLoadedHandler);
+        metroEvents.on("lookupFound", lookupFoundHandler);
+
+        onAbort.push(
+            () => metroEvents.off("moduleLoaded", moduleLoadedHandler),
+            () => metroEvents.off("lookupFound", lookupFoundHandler),
+        );
+    }
+
+    return cleanup;
 }

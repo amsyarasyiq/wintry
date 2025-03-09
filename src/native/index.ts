@@ -1,20 +1,13 @@
-import { lazyValue } from "@utils/lazy";
-
-function getModule<T = any>(...names: string[]): T {
+function getNativeModule<T = any>(...names: string[]): T {
     const moduleProxy = window.nativeModuleProxy;
-    return lazyValue(
-        () => {
-            const module = names.find(name => moduleProxy[name] !== null)!;
-            return moduleProxy[module];
-        },
-        { hint: "object" },
-    );
+    const module = names.find(name => moduleProxy[name] !== null)!;
+    return moduleProxy[module];
 }
 
 // Names are based on 259204 (Android), this is probably not the same on iOS
-export const NativeCacheModule = getModule("NativeCacheModule");
-export const NativeFileModule = getModule("NativeFileModule");
-export const NativeClientInfoModule = getModule("NativeClientInfoModule");
-export const NativeDeviceModule = getModule("NativeDeviceModule");
-export const BundleUpdaterModule = getModule("BundleUpdaterManager");
-export const ThemeModule = getModule("NativeThemeModule");
+export const NativeCacheModule = getNativeModule("NativeCacheModule");
+export const NativeFileModule = getNativeModule("NativeFileModule");
+export const NativeClientInfoModule = getNativeModule("NativeClientInfoModule");
+export const NativeDeviceModule = getNativeModule("NativeDeviceModule");
+export const BundleUpdaterModule = getNativeModule("BundleUpdaterManager");
+export const ThemeModule = getNativeModule("NativeThemeModule");

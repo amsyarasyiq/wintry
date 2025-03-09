@@ -24,7 +24,7 @@ export function registerPlugin<
     D extends DefinedOptions<O>,
     O extends OptionDefinitions,
 >(id: string, plugin: LooseWintryPlugin<P>): (relativePath: string) => P {
-    const pluginState: PluginState = { running: false, ranPreinit: false };
+    const pluginState: PluginState = { running: false };
     const pluginSettings: PluginSettings = toDefaulted(usePluginStore.getState().settings[id] ?? {}, {
         enabled: Boolean(plugin.preenabled === true || plugin.required || false),
     });

@@ -1,10 +1,8 @@
-import { requireModule } from "..";
-import { hasIndexInitialized } from "../..";
 import { kvStorage } from "@utils/kvStorage";
 import { NativeClientInfoModule } from "../../native";
 import { ModuleFlags, ModulesMapInternal } from "./enums";
-import { metroEvents } from "./events";
-import { isBadModuleExports, moduleRegistry } from "./modules";
+import { isBadModuleExports } from "./modules";
+import { moduleRegistry } from "./registry";
 import { debounce } from "es-toolkit";
 
 const CACHE_VERSION = 1;
@@ -27,8 +25,6 @@ export interface MetroCache {
     moduleFlags: Map<number, ModuleFlags>;
     lookupIndex: Map<string, ModulesMap | undefined>;
 
-    isReady(): boolean;
-    initialize(): void;
     save(): void;
     invalidate(): void;
 }
@@ -42,33 +38,30 @@ interface SerializedMetroCache {
     lookupIndex: Record<string, SerializableModulesMap | undefined>;
 }
 
-export const MetroCache: MetroCache = {
-    version: 0,
-    moduleFlags: new Map<number, ModuleFlags>(),
-    lookupIndex: new Map<string, ModulesMap | undefined>(),
+export const MetroCache = setupMetroCache();
 
-    isReady: () => MetroCache.version !== 0,
-    initialize: () => {
-        let serialized: SerializedMetroCache;
+function setupMetroCache() {
+    let serialized: SerializedMetroCache;
 
-        try {
-            serialized = JSON.parse(kvStorage.getItem(WINTRY_METRO_CACHE_KEY)!);
-            if (serialized.v.cache !== CACHE_VERSION || serialized.v.bundle !== NativeClientInfoModule.Build)
-                throw new Error("Cache version mismatch");
-        } catch {
-            serialized = {
-                v: {
-                    cache: CACHE_VERSION,
-                    bundle: NativeClientInfoModule.Build as number,
-                },
-                moduleFlags: {},
-                lookupIndex: {},
-            };
-        }
+    try {
+        serialized = JSON.parse(kvStorage.getItem(WINTRY_METRO_CACHE_KEY)!);
+        if (serialized.v.cache !== CACHE_VERSION || serialized.v.bundle !== NativeClientInfoModule.Build)
+            throw new Error("Cache version mismatch");
+    } catch {
+        serialized = {
+            v: {
+                cache: CACHE_VERSION,
+                bundle: NativeClientInfoModule.Build as number,
+            },
+            moduleFlags: {},
+            lookupIndex: {},
+        };
+    }
 
-        MetroCache.version = serialized.v.cache;
-        MetroCache.moduleFlags = new Map(Object.entries(serialized.moduleFlags).map(([k, v]) => [Number(k), v]));
-        MetroCache.lookupIndex = new Map(
+    const cache: MetroCache = {
+        version: serialized.v.cache,
+        moduleFlags: new Map(Object.entries(serialized.moduleFlags).map(([k, v]) => [Number(k), v])),
+        lookupIndex: new Map(
             Object.entries(serialized.lookupIndex).map(([k, v]) => {
                 const map = new Map<number, ModuleFlags>() as ModulesMap;
 
@@ -82,43 +75,42 @@ export const MetroCache: MetroCache = {
 
                 return [k, map];
             }),
-        );
+        ),
+        save: debounce(() => {
+            kvStorage.setItem(
+                WINTRY_METRO_CACHE_KEY,
+                JSON.stringify({
+                    v: {
+                        cache: CACHE_VERSION,
+                        bundle: NativeClientInfoModule.Build as number,
+                    },
+                    moduleFlags: Object.fromEntries(cache.moduleFlags),
+                    lookupIndex: Object.fromEntries(
+                        [...cache.lookupIndex].map(([k, v]) => {
+                            const serializedMap: SerializableModulesMap = {
+                                _: [v?.fullLookup ? 1 : 0, v?.notFound ? 1 : 0],
+                            };
 
-        metroEvents.emit("cacheLoaded", MetroCache);
-    },
+                            for (const [id, flags] of v!) {
+                                serializedMap[id] = flags;
+                            }
 
-    save: debounce(() => {
-        kvStorage.setItem(
-            WINTRY_METRO_CACHE_KEY,
-            JSON.stringify({
-                v: {
-                    cache: CACHE_VERSION,
-                    bundle: NativeClientInfoModule.Build as number,
-                },
-                moduleFlags: Object.fromEntries(MetroCache.moduleFlags),
-                lookupIndex: Object.fromEntries(
-                    [...MetroCache.lookupIndex].map(([k, v]) => {
-                        const serializedMap: SerializableModulesMap = {
-                            _: [v?.fullLookup ? 1 : 0, v?.notFound ? 1 : 0],
-                        };
+                            return [k, serializedMap];
+                        }),
+                    ),
+                } satisfies SerializedMetroCache),
+            );
+        }, 500),
 
-                        for (const [id, flags] of v!) {
-                            serializedMap[id] = flags;
-                        }
+        invalidate() {
+            kvStorage.removeItem(WINTRY_METRO_CACHE_KEY);
+            Object.assign(cache, setupMetroCache());
+            cache.save();
+        },
+    };
 
-                        return [k, serializedMap];
-                    }),
-                ),
-            } satisfies SerializedMetroCache),
-        );
-    }, 500),
-
-    invalidate() {
-        kvStorage.removeItem(WINTRY_METRO_CACHE_KEY);
-        MetroCache.initialize();
-        MetroCache.save();
-    },
-};
+    return cache;
+}
 
 function getModuleExportFlags(moduleExports: any) {
     let bit = ModuleFlags.EXISTS;
@@ -177,20 +169,18 @@ export function* iterateModulesForCache(key: string, fullLookup: boolean): Gener
 
     if (cache) {
         for (const id of cache.keys()) {
-            const exports = requireModule(id);
+            const exports = window.__r(id);
             if (isBadModuleExports(exports)) continue;
             yield [id, exports];
         }
     }
 
-    for (const [id, state] of moduleRegistry) {
+    for (const id of moduleRegistry.keys()) {
         let exports: any;
         try {
             if (isModuleBlacklisted(id) || cache?.has(id)) continue;
-            if (__DEV__ && !state.initialized && !hasIndexInitialized)
-                throw new Error(`Module '${id}' is getting forcefully initialized before the index module!`);
 
-            exports = requireModule(id);
+            exports = window.__r(id);
         } catch {
             // noop
         }
@@ -208,9 +198,5 @@ export function getAllCachedModuleIds(id: string) {
 }
 
 export function onceCacheReady(callback: (cache: MetroCache) => void) {
-    if (MetroCache) {
-        callback(MetroCache);
-    } else {
-        metroEvents.once("cacheLoaded", callback);
-    }
+    callback(MetroCache);
 }

@@ -10,7 +10,7 @@ interface FluxStore {
 
 export const byStoreName = createModuleFilter(
     withInteropOptions<string>({
-        filter: ({ a: name, m }) => m.constructor?.displayName === name && m.getName() === name,
+        filter: ([name, m]) => m.constructor?.displayName === name && m.getName() === name,
         stringify: arg => `byStoreName(${arg})`,
     }),
 );

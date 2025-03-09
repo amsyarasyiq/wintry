@@ -10,7 +10,7 @@ export default definePlugin({
     authors: [Devs.Pylix],
     required: true,
 
-    preinit() {
+    start() {
         waitFor(byProps(["initSentry"]), exports => {
             exports.initSentry = () => undefined;
         });
