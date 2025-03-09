@@ -37,14 +37,12 @@ export default definePlugin({
     start() {
         BubbleModule.hookBubbles();
 
-        let themeStoreReady = false;
-
         const getBubbleColor = () => {
             const userColor = settings.get().bubbleChatColor;
             if (userColor) return userColor;
 
             const token = tokens.colors.BG_BASE_TERTIARY;
-            return tokens.internal.resolveSemanticColor(themeStoreReady ? ThemeStore.theme : "darker", token);
+            return tokens.internal.resolveSemanticColor(ThemeStore.theme, token);
         };
 
         const updateBubbleAppearance = () => {
@@ -55,7 +53,6 @@ export default definePlugin({
         };
 
         waitFor(byStoreName("ThemeStore"), ThemeStore => {
-            themeStoreReady = true;
             ThemeStore.addChangeListener(updateBubbleAppearance);
         });
 
@@ -69,10 +66,7 @@ export default definePlugin({
         settings.subscribe(
             s => [s.avatarRadius, s.bubbleChatRadius, s.bubbleChatColor] as const,
             () => updateBubbleAppearance(),
-            {
-                equalityFn: shallow,
-                fireImmediately: true,
-            },
+            { equalityFn: shallow },
         );
     },
 
