@@ -17,12 +17,14 @@ export interface WintryBuildContext {
 
     config: esbuild.BuildOptions;
     context: esbuild.BuildContext;
-    build({ silent }: { silent: boolean }): Promise<BuildResult>;
+    build(options: { silent?: boolean; skipCompile?: boolean }): Promise<BuildResult>;
     updateRevision: () => Promise<void>;
 
     lastBuildConsumed: boolean;
     lastBuildResult?: esbuild.BuildResult;
+
     outputPath?: string;
+    bytecodePath?: Record<number, string>;
 }
 
 interface BuildContextOptions {
@@ -42,8 +44,8 @@ export async function createBuildContext({
         config: config,
         context: await esbuild.context(config),
         revision: "N/A",
-        async build({ silent = false }) {
-            const result = await buildBundle(context, silent);
+        async build({ silent = false, skipCompile = false }) {
+            const result = await buildBundle(context, silent, skipCompile);
             return result;
         },
         async updateRevision() {
@@ -58,7 +60,7 @@ export async function createBuildContext({
 
 export let buildingContext: WintryBuildContext | undefined;
 
-async function buildBundle(buildContext: WintryBuildContext, silent = false) {
+async function buildBundle(buildContext: WintryBuildContext, silent = false, skipCompile = false) {
     buildingContext = buildContext;
     if (!silent) logger(yellowBright(`Building ${bold(buildContext.config.outfile ?? "bundle")}...`));
 
@@ -83,10 +85,32 @@ async function buildBundle(buildContext: WintryBuildContext, silent = false) {
     buildContext.outputPath = outputPath;
     buildContext.timeTaken = buildContext.lastBuildTime - beginTime;
 
+    buildContext.bytecodePath = {
+        [hermesc.VERSION]: await compileToBytecode(outputPath, hermesc.VERSION),
+    };
+
     if (!silent) logger(greenBright(`Bundle built in ${bold(`${buildContext.timeTaken.toFixed(2)}ms`)}`));
     buildingContext = undefined;
 
     return buildResult;
+}
+
+async function compileToBytecode(target: string, hbcVersion: number) {
+    if (hbcVersion <= 0 || hermesc.VERSION !== hbcVersion) {
+        throw new Error(`Unsupported version: ${hbcVersion} !== ${hermesc.VERSION}`);
+    }
+
+    const startTime = performance.now();
+
+    const file = Bun.file(target);
+    const bundleBuffer = Buffer.from(await file.arrayBuffer());
+    const { bytecode } = hermesc.compile(bundleBuffer, { sourceURL: "wintry" });
+    const hbcPath = file.name!.replace(/\.js$/, `.${hbcVersion}.hbc`);
+
+    logger(c.dim("Bundle compilation took:"), `${(performance.now() - startTime).toFixed(2)}ms`);
+
+    await writeFile(hbcPath, bytecode);
+    return hbcPath;
 }
 
 if (import.meta.main) {
@@ -106,18 +130,12 @@ if (import.meta.main) {
         availablePaths.push(buildContext.outputPath!);
         hash.update(await file(buildContext.outputPath!).text());
 
-        if (args.compile) {
-            logger(c.yellowBright("Compiling bundle with Hermes compiler..."));
+        if (!args.nocompile) {
+            const bytecodePath = await compileToBytecode(buildContext.outputPath!, hermesc.VERSION);
+            logger(`${c.green("Compiled bytecode")}: ${bytecodePath}`);
 
-            const hbcOutput = buildContext.outputPath!.replace(/\.js$/, `.${hermesc.VERSION}.hbc`);
-            const bundleBuffer = Buffer.from(await file(buildContext.outputPath!).arrayBuffer());
-            const { bytecode } = hermesc.compile(bundleBuffer, { sourceURL: "wintry" });
-
-            logger(`${c.green("Compiled bundle:")} ${bytecode.length} bytes`);
-
-            await writeFile(hbcOutput, bytecode);
-            hash.update(bytecode);
-            availablePaths.push(hbcOutput);
+            availablePaths.push(bytecodePath);
+            hash.update(await file(bytecodePath).text());
         }
     } catch (e) {
         logger(`${c.redBright("Build failed:")} ${e}`);
@@ -134,6 +152,14 @@ if (import.meta.main) {
 
             availablePaths.push(minifiedBuildContext.outputPath!);
             hash.update(await file(minifiedBuildContext.outputPath!).text());
+
+            if (!args.nocompile) {
+                const bytecodePath = await compileToBytecode(minifiedBuildContext.outputPath!, hermesc.VERSION);
+                logger(`${c.green("Compiled minified bytecode")}: ${bytecodePath}`);
+
+                availablePaths.push(bytecodePath);
+                hash.update(await file(bytecodePath).text());
+            }
         } catch (e) {
             logger(`${c.redBright("Build failed:")} ${e}`);
         } finally {

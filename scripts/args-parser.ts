@@ -25,8 +25,7 @@ export const { values: args } = parseArgs({
             type: "boolean",
             default: false,
         },
-        compile: {
-            short: "c",
+        nocompile: {
             type: "boolean",
             default: false,
         },

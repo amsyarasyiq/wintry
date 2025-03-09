@@ -6,7 +6,6 @@ import logger from "../logger";
 import * as c from "ansi-colors";
 import { networkInterfaces } from "os";
 import * as hermesc from "hermes-compiler";
-import { writeFile } from "fs/promises";
 
 function getHostAddresses(): string[] {
     const hostAddresses: string[] = [];
@@ -46,7 +45,7 @@ export function startDevelopmentServer(
             const hbcVersion = parseHbcBundlePath(pathname) || Number.NaN;
 
             if (pathname === "/info.json") {
-                const compilers = [hermesc];
+                const compilers = args.nocompile ? [] : [hermesc];
 
                 return Response.json({
                     paths: ["/bundle.js", "/bundle.min.js", ...compilers.map(v => `/bundle.${v.VERSION}.hbc`)],
@@ -62,34 +61,20 @@ export function startDevelopmentServer(
                     if (isFreshBuild) {
                         logger(c.yellow(`Rebuilding ${pathname}...`));
                         try {
-                            await buildContext.build({ silent: true });
+                            await buildContext.build({ silent: true, skipCompile: args.nocompile });
                         } catch (e) {
                             return new Response(`Build failed: ${e.message}`, { status: 500 });
                         }
                     }
 
-                    buildContext.lastBuildConsumed = true;
-                    let file = Bun.file(buildContext.outputPath!);
-
-                    if (hbcVersion > 0) {
-                        if (hbcVersion !== hermesc.VERSION) {
-                            logger(
-                                c.redBright(`Version requested is not supported: ${hbcVersion} !== ${hermesc.VERSION}`),
-                            );
-
-                            return new Response(`Unsupported version: ${hbcVersion}`, { status: 404 });
-                        }
-
-                        const startTime = performance.now();
-                        const bundleBuffer = Buffer.from(await file.arrayBuffer());
-                        const { bytecode } = hermesc.compile(bundleBuffer, { sourceURL: "wintry" });
-
-                        logger(c.dim("Bundle compilation took:"), `${(performance.now() - startTime).toFixed(2)}ms`);
-
-                        const hbcPath = file.name!.replace(/\.js$/, `.${hbcVersion}.hbc`);
-                        await writeFile(hbcPath, bytecode);
-                        file = Bun.file(hbcPath);
+                    if (hbcVersion > 0 && !buildContext.bytecodePath?.[hbcVersion]) {
+                        return new Response(`Bytecode version ${hbcVersion} not found`, { status: 404 });
                     }
+
+                    buildContext.lastBuildConsumed = true;
+                    const file = Bun.file(
+                        hbcVersion > 0 ? buildContext.bytecodePath?.[hbcVersion]! : buildContext.outputPath!,
+                    );
 
                     logger(
                         c.dim("Serving build:"),
@@ -121,7 +106,7 @@ export function startDevelopmentServer(
                         },
                     });
                 } catch (error) {
-                    console.error("Build error:", error);
+                    logger.error("Build error:", error);
                     return new Response(`Build failed: ${error.message}`, { status: 500 });
                 }
             }
@@ -158,8 +143,6 @@ if (import.meta.main) {
     if (args.minify) {
         logger(c.yellowBright("Minify flag is provided, but this is a development server. Ignoring..."));
     }
-
-    console.clear();
 
     let buildContext: WintryBuildContext;
     let minifiedBuildContext: WintryBuildContext;
