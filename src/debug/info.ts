@@ -1,6 +1,5 @@
 import { branch, revision, remote } from "#build-info";
 import { NativeClientInfoModule, NativeDeviceModule } from "@native";
-import { trimStart } from "es-toolkit";
 import React from "react";
 import { Platform, type PlatformAndroidStatic, type PlatformIOSStatic } from "react-native";
 
@@ -8,7 +7,7 @@ export function getVersions() {
     const hermesProps = window.HermesInternal.getRuntimeProperties();
 
     const rnVer = Platform.constants.reactNativeVersion;
-    const rnBranch = trimStart(hermesProps["OSS Release Version"], "for ");
+    const rnBranch = hermesProps["OSS Release Version"].replace(/^for /, "");
 
     return {
         bunny: {

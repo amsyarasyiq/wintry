@@ -11,7 +11,7 @@ const patcher = createContextualPatcher({ pluginId: meta.id });
 
 export default definePlugin({
     name: "DevToolkit",
-    description: "A toolkit for developers",
+    description: "A toolkit for developers to ease the development process.",
     authors: [Devs.Pylix],
     version: "1.0.0",
     start() {

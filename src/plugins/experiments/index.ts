@@ -19,7 +19,7 @@ function reinitStore() {
 // Potential enhancement: Add warning on Experiments page when this plugin is enabled
 export default definePlugin({
     name: "Experiments",
-    description: "Exposes internal developer sections, allowing Discord experiments overriding",
+    description: "Exposes internal developer sections, allowing you to override Discord experiments.",
     authors: [Devs.Pylix],
 
     start() {
