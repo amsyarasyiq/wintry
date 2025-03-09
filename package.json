@@ -33,6 +33,7 @@
 		"esbuild-plugin-globals": "^0.2.0",
 		"hermes-compiler": "https://github.com/wintry-mod/hermes-compiler#builds",
 		"image-size": "^1.2.0",
+		"release-it": "^18.1.2",
 		"type-fest": "^4.31.0",
 		"util": "^0.12.5",
 		"yargs-parser": "^21.1.1"
@@ -43,7 +44,8 @@
 		"adb": "bun run scripts/adb",
 		"adb:wsa": "bun run scripts/adb --wsa",
 		"typesafe-i18n": "typesafe-i18n",
-		"i18n:export": "bun run scripts/i18n"
+		"i18n:export": "bun run scripts/i18n",
+		"release": "bun run scripts/release"
 	},
 	"type": "module",
 	"patchedDependencies": {
