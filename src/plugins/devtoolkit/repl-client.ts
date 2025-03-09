@@ -40,12 +40,11 @@ const setupWebsocketConnection = (): Promise<WebSocket> => {
 
 // Log forwarding setup
 const setupLogForwarding = (socket: WebSocket) => {
-    return wtlogger.pipe((message, level) => {
+    return wtlogger.pipe(args => {
         socket.send(
             JSON.stringify({
                 type: "log",
-                level: level ?? "info",
-                message,
+                details: args,
             }),
         );
     });

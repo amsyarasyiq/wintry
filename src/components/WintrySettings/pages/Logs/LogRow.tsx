@@ -4,13 +4,12 @@ import { showSheet } from "@components/utils/sheets";
 import { useToken, tokens } from "@metro/common/libraries";
 import { View } from "react-native";
 import { LogDetailsSheet } from "./LogDetailsSheet";
-import { type Log, VARIANT_CONFIG, LOG_HISTORY_MOCK } from ".";
+import { VARIANT_CONFIG } from "./constants";
+import type { LogDetails } from "@api/logger";
 
-export function LogRow({ item: log, index }: { item: Log; index: number }) {
+export function LogRow({ item: log, start, end }: { item: LogDetails; start: boolean; end: boolean }) {
     const variantStyles = VARIANT_CONFIG[log.level];
     const backgroundColor = useToken(tokens.colors[variantStyles.background]);
-    const isFirst = index === 0;
-    const isLast = index === LOG_HISTORY_MOCK.length - 1;
 
     const handlePress = () => {
         showSheet("Log Details", LogDetailsSheet, { log });
@@ -23,9 +22,9 @@ export function LogRow({ item: log, index }: { item: Log; index: number }) {
                 paddingVertical: 8,
                 paddingHorizontal: 12,
                 backgroundColor,
-                ...(isFirst
+                ...(start
                     ? { borderTopLeftRadius: 12, borderTopRightRadius: 12 }
-                    : isLast
+                    : end
                       ? { borderBottomLeftRadius: 12, borderBottomRightRadius: 12 }
                       : {}),
             }}

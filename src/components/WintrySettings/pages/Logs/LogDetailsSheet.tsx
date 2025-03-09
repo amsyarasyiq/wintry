@@ -1,14 +1,14 @@
 import Codeblock from "@components/Codeblock";
 import { BottomSheet, Button, Stack, Text } from "@components/Discord";
-import ErrorCard from "@components/ErrorCard";
 import { useToken, tokens } from "@metro/common/libraries";
 import { View } from "react-native";
 import { InfoSection } from "../InfoSection";
 import { copyToClipboard } from "@utils/clipboard";
 import { t } from "@i18n";
-import { type Log, VARIANT_CONFIG } from ".";
+import { VARIANT_CONFIG } from "./constants";
+import type { LogDetails } from "@api/logger";
 
-export function LogDetailsSheet({ log }: { log: Log }) {
+export function LogDetailsSheet({ log }: { log: LogDetails }) {
     const variantStyles = VARIANT_CONFIG[log.level];
     const backgroundColor = useToken(tokens.colors[variantStyles.background]);
 
@@ -37,7 +37,17 @@ export function LogDetailsSheet({ log }: { log: Log }) {
                     <Button
                         size="sm"
                         variant="secondary"
-                        onPress={() => copyToClipboard(log.message)}
+                        onPress={() => {
+                            let toCopy = `${log.level.toUpperCase()} | ${new Date(log.timestamp).toLocaleString()}\n${log.message}`;
+                            if (log.breadcrumbs?.length) {
+                                toCopy += `\n${log.breadcrumbs.join(" > ")}`;
+                            }
+                            if (log.errorStack) {
+                                toCopy += `\n${log.errorStack}`;
+                            }
+
+                            copyToClipboard(toCopy);
+                        }}
                         text={t.actions.copy()}
                     />
                 </Stack>
@@ -46,9 +56,9 @@ export function LogDetailsSheet({ log }: { log: Log }) {
                     <Codeblock>{log.message}</Codeblock>
                 </InfoSection>
 
-                {log.error && (
+                {log.errorStack && (
                     <InfoSection label="Error">
-                        <ErrorCard header={null} showStackTrace={true} error={log.error} />
+                        <Codeblock selectable={true}>{log.errorStack}</Codeblock>
                     </InfoSection>
                 )}
             </View>

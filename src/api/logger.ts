@@ -1,6 +1,15 @@
 import { inspect } from "node-inspect-extracted";
 
-type LogFn = (message: string, level: string) => void;
+type LogLevel = "info" | "warn" | "error" | "debug";
+export interface LogDetails {
+    level: LogLevel;
+    message: string;
+    timestamp: number;
+    errorStack?: string;
+    breadcrumbs?: Array<string>;
+}
+
+type LogFn = (details: LogDetails) => void;
 
 type Message = string | TemplateStringsArray;
 export type BasicLogger = Omit<Logger, "pipe" | "unpipe" | "unpipeAll">;
@@ -10,7 +19,7 @@ class Logger {
     breadcrumbs: string[] = [];
     parent: Logger | null = null;
 
-    logs: Parameters<LogFn>[] = [];
+    logs: LogDetails[] = [];
     private logHandlers: Set<LogFn> = new Set();
 
     constructor(name: string) {
@@ -40,20 +49,32 @@ class Logger {
         return logger;
     }
 
-    private log(level: string, message: Message, ...substitutions: any[]): void {
+    private log(level: LogLevel, message: Message, ...substitutions: any[]): void {
         if (typeof message === "object") {
             // biome-ignore lint/style/noParameterAssign:
             message = String.raw(message, ...substitutions);
         }
 
         this.executeOnSelfAndAncestors(logger => {
+            const logParameters: LogDetails = {
+                message,
+                level,
+                timestamp: Date.now(),
+                breadcrumbs: logger.breadcrumbs,
+            };
+
+            if (level === "error") {
+                const error = substitutions.find(a => a instanceof Error);
+                logParameters.errorStack = error.stack;
+            }
+
             if (logger.logHandlers.size > 0) {
                 for (const handler of logger.logHandlers) {
-                    handler(message, level);
+                    handler(logParameters);
                 }
             }
 
-            logger.logs.push([message, level]);
+            logger.logs.push(logParameters);
         });
     }
 
@@ -72,11 +93,6 @@ class Logger {
     error(message: string): void;
     error(template: TemplateStringsArray, ...substitutions: any[]): void;
     error(message: Message, ...substitutions: any[]): void {
-        substitutions.forEach((a, i) => {
-            if (a instanceof Error) {
-                substitutions[i] = a.stack;
-            }
-        });
         this.log("error", message, ...substitutions);
     }
 
@@ -89,7 +105,7 @@ class Logger {
             inspected = inspect(data);
         }
 
-        this.log("info", inspected);
+        this.log("debug", inspected);
     }
 
     pipe(logHandler: LogFn): () => void {
