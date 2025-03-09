@@ -8,6 +8,7 @@ interface InfoCardProps {
     trailing: React.ReactElement | string;
     onPress: () => void;
 }
+
 export function InfoCard({ title, style, icon, onPress, trailing }: InfoCardProps) {
     return (
         <Card style={style} onPress={onPress}>

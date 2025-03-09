@@ -28,6 +28,7 @@ const en = {
     actions: {
         nevermind: "Nevermind",
         dismiss: "Dismiss",
+        copy: "Copy",
     },
     updater: {
         update_available: "Update Available",

@@ -1,17 +1,12 @@
-import Codeblock from "@components/Codeblock";
-import { BottomSheet, Text } from "@components/Discord";
 import TableRowDivider from "@components/Discord/TableRow/TableRowDivider";
-import PressableScale from "@components/Discord/experimental/PressableScale";
-import ErrorCard from "@components/ErrorCard";
 import PageWrapper from "@components/WintrySettings/PageWrapper";
-import { showSheet } from "@components/utils/sheets";
-import { useToken, tokens } from "@metro/common/libraries";
 import { FlashList } from "@shopify/flash-list";
 import { useMemo, useState } from "react";
-import { ScrollView, View } from "react-native";
+import { ScrollView } from "react-native";
 import { InlineCheckbox } from "../../InlineCheckbox";
+import { LogRow } from "./LogRow";
 
-interface Log {
+export interface Log {
     level: "info" | "warn" | "error" | "debug";
     message: string;
     timestamp: number;
@@ -19,7 +14,7 @@ interface Log {
     breadcrumbs?: Array<string>;
 }
 
-const VARIANT_CONFIG = {
+export const VARIANT_CONFIG = {
     info: {
         background: "CARD_PRIMARY_BG",
         textColor: "text-normal",
@@ -86,100 +81,8 @@ const generateMockLogs = (count: number): Log[] =>
         };
     });
 
-const LOG_HISTORY_MOCK = generateMockLogs(100);
+export const LOG_HISTORY_MOCK = generateMockLogs(100);
 
-// Components
-const LogDetails = ({ log }: { log: Log }) => {
-    const variantStyles = VARIANT_CONFIG[log.level];
-    const backgroundColor = useToken(tokens.colors[variantStyles.background]);
-
-    return (
-        <BottomSheet>
-            <View style={{ padding: 16, gap: 16 }}>
-                <View
-                    style={{
-                        gap: 4,
-                        padding: 12,
-                        paddingHorizontal: 16,
-                        backgroundColor,
-                        borderRadius: 16,
-                    }}
-                >
-                    <Text variant="text-lg/semibold" color={variantStyles.textColor}>
-                        {log.level.toUpperCase()}
-                    </Text>
-                    <Text variant="text-xs/semibold" color={variantStyles.textColor}>
-                        {new Date(log.timestamp).toLocaleString()}
-                    </Text>
-                </View>
-
-                <LogDetailSection title="Message">
-                    <Codeblock>{log.message}</Codeblock>
-                </LogDetailSection>
-
-                {log.error && (
-                    <LogDetailSection title="Error">
-                        <ErrorCard header={null} showStackTrace={true} error={log.error} />
-                    </LogDetailSection>
-                )}
-            </View>
-        </BottomSheet>
-    );
-};
-
-const LogDetailSection = ({ title, children }: { title: string; children: React.ReactNode }) => (
-    <View>
-        <Text variant="text-sm/semibold" style={{ marginBottom: 4 }}>
-            {title}
-        </Text>
-        {children}
-    </View>
-);
-
-const LogRow = ({ item: log, index }: { item: Log; index: number }) => {
-    const variantStyles = VARIANT_CONFIG[log.level];
-    const backgroundColor = useToken(tokens.colors[variantStyles.background]);
-    const isFirst = index === 0;
-    const isLast = index === LOG_HISTORY_MOCK.length - 1;
-
-    const handlePress = () => {
-        showSheet("Log Details", LogDetails, { log });
-    };
-
-    return (
-        <View
-            style={{
-                gap: 2,
-                paddingVertical: 8,
-                paddingHorizontal: 12,
-                backgroundColor,
-                ...(isFirst
-                    ? { borderTopLeftRadius: 12, borderTopRightRadius: 12 }
-                    : isLast
-                      ? { borderBottomLeftRadius: 12, borderBottomRightRadius: 12 }
-                      : {}),
-            }}
-        >
-            <PressableScale onPress={handlePress}>
-                <Text variant="text-xxs/semibold" color={variantStyles.timestampColor}>
-                    {log.level.toUpperCase()} | {new Date(log.timestamp).toLocaleString()}
-                </Text>
-
-                {log.breadcrumbs?.length !== 0 && (
-                    <Text style={{ paddingBottom: 4 }} variant="text-xs/semibold" color={variantStyles.timestampColor}>
-                        {log.breadcrumbs!.join(" > ")}
-                    </Text>
-                )}
-
-                <Text numberOfLines={6} variant="text-sm/semibold" color={variantStyles.textColor}>
-                    {log.message}
-                </Text>
-            </PressableScale>
-        </View>
-    );
-};
-
-// Main component
 export default function LogsPage() {
     const [showDebug, setShowDebug] = useState(false);
 

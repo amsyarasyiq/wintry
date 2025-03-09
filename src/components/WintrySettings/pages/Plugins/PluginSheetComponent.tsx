@@ -1,7 +1,6 @@
 import type { WintryPluginInstance } from "@plugins/types";
 import { View } from "react-native";
 import { findAssetId } from "@api/assets";
-import type React from "react";
 import TitleComponent from "./TitleComponent";
 import { t } from "@i18n";
 import { RNGHScrollView } from "./common";
@@ -11,7 +10,6 @@ import { PluginDetailsSheet } from "./PluginDetailsSheet";
 import { SheetAwareIconButton } from "./SheetAwareIconButton";
 import IconButton from "@components/Discord/Button/IconButton";
 import BottomSheet from "@components/Discord/Sheet/BottomSheet";
-import { Text } from "@components/Discord";
 import ContextMenu from "@components/Discord/ContextMenu/ContextMenu";
 
 interface PluginSheetComponentProps {
@@ -84,22 +82,5 @@ export default function PluginSheetComponent({ plugin }: PluginSheetComponentPro
                 </View>
             </RNGHScrollView>
         </BottomSheet>
-    );
-}
-
-export function InfoSection({
-    label,
-    children,
-}: {
-    label?: string;
-    children?: React.ReactNode | string;
-}) {
-    return (
-        <View>
-            <Text variant="heading-sm/semibold" color="text-secondary" style={{ marginBottom: 8 }}>
-                {label}
-            </Text>
-            {typeof children === "string" ? <Text variant="text-md/medium">{children}</Text> : children}
-        </View>
     );
 }

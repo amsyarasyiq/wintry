@@ -49,7 +49,7 @@ export default function WintryPage() {
                     onPress={() =>
                         navigation.push("WINTRY_CUSTOM_PAGE", {
                             title: t.settings.general.logs(),
-                            render: lazy(() => import("./Logs")),
+                            render: lazy(() => import("../Logs")),
                         })
                     }
                     icon={<TableRow.Icon source={findAssetId("PaperIcon")} />}

@@ -1,7 +1,7 @@
 import { t } from "@i18n";
 import type { OptionDefinition, WintryPluginInstance } from "@plugins/types";
 import { getPluginSettings } from "@plugins/utils";
-import { InfoSection } from "../PluginSheetComponent";
+import { InfoSection } from "../../InfoSection";
 import { View } from "react-native";
 import { OptionDefRow } from "./OptionDefRow";
 

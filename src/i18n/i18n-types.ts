@@ -88,6 +88,10 @@ type RootTranslation = {
 		 * D​i​s​m​i​s​s
 		 */
 		dismiss: string
+		/**
+		 * C​o​p​y
+		 */
+		copy: string
 	}
 	updater: {
 		/**
@@ -423,6 +427,10 @@ export type TranslationFunctions = {
 		 * Dismiss
 		 */
 		dismiss: () => LocalizedString
+		/**
+		 * Copy
+		 */
+		copy: () => LocalizedString
 	}
 	updater: {
 		/**
