@@ -36,7 +36,7 @@ function startPlugin(draft: PluginStore, id: string) {
     }
 
     const start = () => {
-        logger.info(`Starting plugin ${plugin.$id}`);
+        logger.debug(`Starting plugin '${plugin.$id}'`);
 
         try {
             draft.states[id].running = true;

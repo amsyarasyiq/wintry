@@ -90,7 +90,7 @@ export default function AssetBrowser() {
     const assets = useMemo(
         () =>
             sortAssets(getAssets()).filter(
-                a => a.name.toLowerCase().includes(ref.query) || a.id.toString() === ref.query,
+                a => a.name.toLowerCase().includes(ref.query.toLowerCase()) || a.id.toString() === ref.query,
             ),
         [ref.query],
     );

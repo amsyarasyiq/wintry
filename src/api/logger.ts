@@ -96,6 +96,12 @@ class Logger {
         this.log("error", message, ...substitutions);
     }
 
+    debug(message: string): void;
+    debug(template: TemplateStringsArray, ...substitutions: any[]): void;
+    debug(message: Message, ...substitutions: any[]): void {
+        this.log("debug", message, ...substitutions);
+    }
+
     inspect(...data: any[]): void {
         let inspected = "";
 

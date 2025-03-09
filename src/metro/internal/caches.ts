@@ -4,6 +4,7 @@ import { ModuleFlags, ModulesMapInternal } from "./enums";
 import { isBadModuleExports } from "./modules";
 import { moduleRegistry } from "./registry";
 import { debounce } from "es-toolkit";
+import { logger } from "@metro";
 
 const CACHE_VERSION = 1;
 const WINTRY_METRO_CACHE_KEY = "__wintry_metro_cache_key__";
@@ -45,9 +46,12 @@ function setupMetroCache() {
 
     try {
         serialized = JSON.parse(kvStorage.getItem(WINTRY_METRO_CACHE_KEY)!);
-        if (serialized.v.cache !== CACHE_VERSION || serialized.v.bundle !== NativeClientInfoModule.Build)
-            throw new Error("Cache version mismatch");
-    } catch {
+        if (serialized.v.cache !== CACHE_VERSION || serialized.v.bundle !== NativeClientInfoModule.Build) {
+            throw "Cache version mismatch";
+        }
+    } catch (error) {
+        logger.info("Metro cache invalidated/not exist, creating a new one");
+
         serialized = {
             v: {
                 cache: CACHE_VERSION,
@@ -108,6 +112,10 @@ function setupMetroCache() {
             cache.save();
         },
     };
+
+    logger.info(
+        `Loaded Metro cache with ${cache.moduleFlags.size} module flags and ${cache.lookupIndex.size} lookup indexes`,
+    );
 
     return cache;
 }

@@ -15,7 +15,7 @@ export function initializeWintry() {
 
         window.wintry = wintryGlobalObject();
 
-        wtlogger.info(`Fully initialized Wintry in ${nativePerformanceNow() - WINTRY_START_TIME}ms!`);
+        wtlogger.info(`Fully initialized Wintry in ${(nativePerformanceNow() - WINTRY_START_TIME).toFixed(2)}ms!`);
     } catch (e) {
         reportErrorOnInitialization(e);
     }

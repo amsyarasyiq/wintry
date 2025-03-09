@@ -4,7 +4,7 @@ import PageWrapper from "../../PageWrapper";
 import { getVersions } from "@debug/info";
 import { TableRow, TableRowGroup, TableSwitchRow } from "@components/Discord";
 import { View } from "react-native";
-import { delay, noop } from "es-toolkit";
+import { delay } from "es-toolkit";
 import usePrefsStore from "@stores/usePrefsStore";
 import { NavigationNative } from "@metro/common/libraries";
 import { lazy } from "react";
@@ -13,6 +13,8 @@ import { showSheet } from "@components/utils/sheets";
 import { ClientInfoSheet } from "./ClientInfoSheet";
 import { showAlert } from "@api/alerts";
 import { BundleUpdaterModule } from "@native";
+import { openURL } from "@utils/network/url";
+import { Links } from "@data/constants";
 
 export default function WintryPage() {
     const navigation = NavigationNative.useNavigation();
@@ -108,15 +110,22 @@ export default function WintryPage() {
                     label={t.settings.general.github()}
                     icon={<TableRow.Icon source={findAssetId("img_account_sync_github_light")} />}
                     arrow={true}
-                    trailing={<TableRow.TrailingText text="github.com/wintry-mod" />}
-                    onPress={noop}
+                    trailing={<TableRow.TrailingText text={Links.GITHUB} />}
+                    onPress={() => openURL(`https://${Links.GITHUB}`)}
                 />
                 <TableRow
                     label={t.settings.general.discord()}
                     icon={<TableRow.Icon source={findAssetId("Discord")} />}
                     arrow={true}
-                    trailing={<TableRow.TrailingText text="discord.gg/xxxxx" />}
-                    onPress={noop}
+                    trailing={<TableRow.TrailingText text={Links.DISCORD} />}
+                    onPress={() => openURL(`https://${Links.DISCORD}`)}
+                />
+                <TableRow
+                    label={t.settings.general.x()}
+                    icon={<TableRow.Icon source={findAssetId("img_account_sync_x_light")} />}
+                    arrow={true}
+                    trailing={<TableRow.TrailingText text={Links.X} />}
+                    onPress={() => openURL(`https://${Links.X}`)}
                 />
             </TableRowGroup>
         </PageWrapper>
