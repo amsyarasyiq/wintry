@@ -71,3 +71,12 @@ export function getModule<T extends LoaderModule>({ name, argumentProcessors: pr
 
     return baseObject as T;
 }
+
+/**
+ * Determines if safe mode is currently enabled. The result remains consistent over time.
+ * This will not change until the app is restarted. For draft changes, use the InitConfigStore.
+ * @returns True if safe mode is enabled for the current instance, otherwise false.
+ */
+export function isSafeModeEnabled() {
+    return Boolean(loaderPayload.loader.initConfig.safeMode);
+}

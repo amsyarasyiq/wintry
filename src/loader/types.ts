@@ -1,5 +1,8 @@
-interface InitConfig {
+export interface InitConfig {
     baseUrl: string;
+    forceUpdate: boolean;
+    bundlePath: string | null;
+    safeMode: boolean;
 }
 
 interface LoaderConstants {

@@ -1,12 +1,12 @@
 import Callout from "@components/Callout";
 import { t } from "@i18n";
-import { isSafeModeEnabled } from "@stores/usePrefsStore";
 import { View } from "react-native";
 import PageWrapper from "../../PageWrapper";
 import { ResponsiveMasonryFlashList } from "../ResponsiveMasonryFlashList";
 import AddonCard from "./AddonCard";
 import { HighlightProvider } from "./SearchTermHighlight";
 import type { AddonCollectionManager } from "./AddonCollectionManager";
+import { isSafeModeEnabled } from "@loader";
 
 const ItemSeparator = () => <View style={{ height: 8 }} />;
 

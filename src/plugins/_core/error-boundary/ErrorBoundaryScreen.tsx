@@ -2,7 +2,6 @@ import Codeblock from "@components/Codeblock";
 import { createStyles } from "@components/utils/styles";
 import { t } from "@i18n";
 import { BundleUpdaterModule } from "@native";
-import usePrefsStore, { isSafeModeEnabled } from "@stores/usePrefsStore";
 import { hasStack, isComponentStack } from "@utils/errors/isError";
 import { ScrollView, View } from "react-native";
 import ErrorComponentStackCard from "./ErrorComponentStackCard";
@@ -12,6 +11,8 @@ import Button from "@components/Discord/Button/Button";
 import { Card, Text } from "@components/Discord";
 import { tokens } from "@metro/common/libraries";
 import { SafeAreaProvider, SafeAreaView } from "@components/Libraries/react-native-safe-area-context";
+import { isSafeModeEnabled } from "@loader";
+import { useInitConfigStore } from "@stores/useInitConfigStore";
 
 const useStyles = createStyles(() => ({
     container: {
@@ -60,7 +61,7 @@ export function ErrorBoundaryScreen(props: ErrorBoundaryScreenProps) {
                         <Button
                             text={t.error_boundary.safe_mode()}
                             onPress={() => {
-                                usePrefsStore.setState({ safeMode: true });
+                                useInitConfigStore.setState(s => ({ config: { ...s.config, safeMode: true } }));
                             }}
                         />
                     )}

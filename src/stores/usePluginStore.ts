@@ -5,7 +5,7 @@ import { kvStorage } from "@utils/kvStorage";
 import type { PluginSettings, PluginState, WintryPluginInstance } from "@plugins/types";
 import { getProxyFactory, lazyValue } from "@utils/lazy";
 import { wtlogger } from "@api/logger";
-import { isSafeModeEnabled } from "./usePrefsStore";
+import { isSafeModeEnabled } from "@loader";
 
 const logger = wtlogger.createChild("PluginStore");
 const PLUGINS = lazyValue(() => require("#wt-plugins").default, { hint: "object" }) as Record<

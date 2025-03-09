@@ -5,7 +5,6 @@ import { getVersions } from "@debug/info";
 import { TableRow, TableRowGroup, TableSwitchRow } from "@components/Discord";
 import { View } from "react-native";
 import { delay } from "es-toolkit";
-import usePrefsStore from "@stores/usePrefsStore";
 import { NavigationNative } from "@metro/common/libraries";
 import { lazy } from "react";
 import { InfoCard } from "./InfoCard";
@@ -15,10 +14,11 @@ import { showAlert } from "@api/alerts";
 import { BundleUpdaterModule } from "@native";
 import { openURL } from "@utils/network/url";
 import { Links } from "@data/constants";
+import { useInitConfigStore } from "@stores/useInitConfigStore";
 
 export default function WintryPage() {
     const navigation = NavigationNative.useNavigation();
-    const { safeMode, toggleSafeMode } = usePrefsStore();
+    const { config, toggleSafeMode } = useInitConfigStore();
     const { bunny, discord } = getVersions();
 
     return (
@@ -64,7 +64,7 @@ export default function WintryPage() {
                     label={t.settings.general.configurations.safe_mode.label()}
                     subLabel={t.settings.general.configurations.safe_mode.description()}
                     icon={<TableRow.Icon source={findAssetId("ShieldIcon")} />}
-                    value={safeMode}
+                    value={config.safeMode}
                     onValueChange={v => {
                         const showSafeModeAlert = (enable: boolean) => {
                             const ts = t.settings.general.configurations.safe_mode.alert;
