@@ -10,13 +10,13 @@ import { shallow } from "zustand/shallow";
 const settings = definePluginSettings({
     avatarRadius: {
         type: "slider",
-        label: "Avatar Radius",
+        label: "Avatar Curve",
         points: [0, 3, 6, 9, 12, 15, 18],
         default: 12,
     },
     bubbleChatRadius: {
         type: "slider",
-        label: "Bubble Radius",
+        label: "Bubble Curve",
         points: [0, 3, 6, 9, 12, 15, 18],
         default: 12,
     },
@@ -30,8 +30,8 @@ const settings = definePluginSettings({
 });
 
 export default definePlugin({
-    name: "ChatTweaks",
-    description: "Tweaks the chat",
+    name: "ChatBubbles",
+    description: "Adds customizable chat bubbles to the chat, similar to Flowercord.",
     authors: [Devs.Pylix],
 
     start() {
