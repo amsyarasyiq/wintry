@@ -1,8 +1,8 @@
 import { debounce } from "es-toolkit";
 import { writeFile } from "@api/fs";
-import { LoaderPayload } from "@native/loader";
+import { loaderPayload } from "@loader";
 
-const state: { [key in string]?: string } = JSON.parse(LoaderPayload.preload?.["kv.json"] ?? "{}");
+const state: { [key in string]?: string } = JSON.parse(loaderPayload.loader.preload?.["kv.json"] ?? "{}");
 
 const saveState = debounce(() => {
     writeFile("preload/kv.json", JSON.stringify(state));

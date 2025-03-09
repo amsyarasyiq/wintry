@@ -1,6 +1,6 @@
 import { definePlugin, definePluginSettings, logger } from "#plugin-context";
 import { Devs } from "@data/constants";
-import BubbleModule from "@native/modules/BubbleModule";
+import BubbleModule from "@loader/modules/BubbleModule";
 import { shallow } from "zustand/shallow";
 
 const settings = definePluginSettings({

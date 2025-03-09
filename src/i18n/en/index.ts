@@ -68,7 +68,7 @@ const en = {
                     description: "This will stop non-essential addons from running, leaving only core functionalities. Restart required.",
                     alert: {
                         title: "{action|{disable: Disable, enable: Enable}} Safe Mode?",
-                        description: "Do you want to {action:string} safe mode? This will {action|{disable: stop non-essential plugins from running, enable: allow all plugins to run as usual}}. A restart is needed for changes to take effect.",
+                        description: "Do you want to {action:string} safe mode? This will {action|{enable: stop non-essential plugins from running, disable: allow all plugins to run as usual}}. A restart is needed for changes to take effect.",
                         apply_and_restart: "Apply and Restart",
                         apply_without_restart: "Apply Without Restart",
                     },

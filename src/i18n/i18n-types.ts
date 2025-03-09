@@ -214,10 +214,10 @@ type RootTranslation = {
 						 */
 						title: RequiredParams<`action|{disable:${string}, enable:${string}}`>
 						/**
-						 * D​o​ ​y​o​u​ ​w​a​n​t​ ​t​o​ ​{​a​c​t​i​o​n​}​ ​s​a​f​e​ ​m​o​d​e​?​ ​T​h​i​s​ ​w​i​l​l​ ​{​a​c​t​i​o​n​|​{​d​i​s​a​b​l​e​:​ ​s​t​o​p​ ​n​o​n​-​e​s​s​e​n​t​i​a​l​ ​p​l​u​g​i​n​s​ ​f​r​o​m​ ​r​u​n​n​i​n​g​,​ ​e​n​a​b​l​e​:​ ​a​l​l​o​w​ ​a​l​l​ ​p​l​u​g​i​n​s​ ​t​o​ ​r​u​n​ ​a​s​ ​u​s​u​a​l​}​}​.​ ​A​ ​r​e​s​t​a​r​t​ ​i​s​ ​n​e​e​d​e​d​ ​f​o​r​ ​c​h​a​n​g​e​s​ ​t​o​ ​t​a​k​e​ ​e​f​f​e​c​t​.
-						 * @param {string | 'disable' | 'enable'} action
+						 * D​o​ ​y​o​u​ ​w​a​n​t​ ​t​o​ ​{​a​c​t​i​o​n​}​ ​s​a​f​e​ ​m​o​d​e​?​ ​T​h​i​s​ ​w​i​l​l​ ​{​a​c​t​i​o​n​|​{​e​n​a​b​l​e​:​ ​s​t​o​p​ ​n​o​n​-​e​s​s​e​n​t​i​a​l​ ​p​l​u​g​i​n​s​ ​f​r​o​m​ ​r​u​n​n​i​n​g​,​ ​d​i​s​a​b​l​e​:​ ​a​l​l​o​w​ ​a​l​l​ ​p​l​u​g​i​n​s​ ​t​o​ ​r​u​n​ ​a​s​ ​u​s​u​a​l​}​}​.​ ​A​ ​r​e​s​t​a​r​t​ ​i​s​ ​n​e​e​d​e​d​ ​f​o​r​ ​c​h​a​n​g​e​s​ ​t​o​ ​t​a​k​e​ ​e​f​f​e​c​t​.
+						 * @param {string | 'enable' | 'disable'} action
 						 */
-						description: RequiredParams<'action' | `action|{disable:${string}, enable:${string}}`>
+						description: RequiredParams<'action' | `action|{enable:${string}, disable:${string}}`>
 						/**
 						 * A​p​p​l​y​ ​a​n​d​ ​R​e​s​t​a​r​t
 						 */
@@ -578,9 +578,9 @@ export type TranslationFunctions = {
 						 */
 						title: (arg: { action: 'disable' | 'enable' }) => LocalizedString
 						/**
-						 * Do you want to {action} safe mode? This will {action|{disable: stop non-essential plugins from running, enable: allow all plugins to run as usual}}. A restart is needed for changes to take effect.
+						 * Do you want to {action} safe mode? This will {action|{enable: stop non-essential plugins from running, disable: allow all plugins to run as usual}}. A restart is needed for changes to take effect.
 						 */
-						description: (arg: { action: string | 'disable' | 'enable' }) => LocalizedString
+						description: (arg: { action: string | 'enable' | 'disable' }) => LocalizedString
 						/**
 						 * Apply and Restart
 						 */

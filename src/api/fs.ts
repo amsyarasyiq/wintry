@@ -1,11 +1,11 @@
 import { NativeFileModule } from "@native";
-import { LoaderPayload } from "@native/loader";
+import { loaderPayload } from "@loader";
 
 const BASE_DIR = "wintry";
 const ENCODING = "utf8";
 
 function getFullPath(path: string): string {
-    return `${LoaderPayload.constants.WINTRY_DIR}/${path}`;
+    return `${loaderPayload.loader.constants.WINTRY_DIR}/${path}`;
 }
 
 /**

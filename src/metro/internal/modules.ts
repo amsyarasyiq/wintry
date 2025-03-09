@@ -69,7 +69,7 @@ export function waitFor<A, R, O>(
                 onAbort.push(() => modulesInitializationEvents.off(state.id, cb));
             }
         }
-    } else if (!cleanup) {
+    } else if (cleanup) {
         // Check already loaded modules
         for (const state of initializedModuleRegistry) {
             if (checkState(state)) return cleanup;

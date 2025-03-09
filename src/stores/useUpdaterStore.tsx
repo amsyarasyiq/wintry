@@ -1,11 +1,12 @@
 import { Card, Text } from "@components/Discord";
-import UpdaterModule, { type UpdateInfo } from "@native/modules/UpdaterModule";
+import UpdaterModule, { type UpdateInfo } from "@loader/modules/UpdaterModule";
 import { create } from "zustand";
 import { showAlert } from "@api/alerts";
 import ErrorCard from "@components/ErrorCard";
 import { showToast } from "@api/toasts";
 import { Mutex, noop } from "es-toolkit";
 import { t } from "@i18n";
+import { wtlogger } from "@api/logger";
 
 interface UpdaterStore {
     autoUpdate: boolean;
@@ -19,6 +20,7 @@ interface UpdaterStore {
     checkForUpdates: () => Promise<UpdateInfo | null>;
 }
 
+const logger = wtlogger.createChild("UpdaterStore");
 const _updateMutex = new Mutex();
 
 export const useUpdaterStore = create<UpdaterStore>((set, get) => ({
@@ -58,14 +60,19 @@ export function showUpdateAvailableAlert(updateInfo: UpdateInfo) {
             content: t.updater.new_version(),
             extraContent: (
                 <Card>
-                    <Text variant="text-md/medium">{updateInfo.hash || "Unknown hash"}</Text>
+                    <Text variant="text-md/medium">{updateInfo.revision || "Unknown hash"}</Text>
                 </Card>
             ),
             actions: [
                 {
                     text: t.updater.update_now(),
-                    onPress: () => {
-                        return UpdaterModule.updateBundle();
+                    onPress: async () => {
+                        try {
+                            await UpdaterModule.fetchBundle(updateInfo.url, updateInfo.revision);
+                        } catch (e) {
+                            logger.error`Failed to fetch bundle: ${e}`;
+                            showUpdateErrorToast(e);
+                        }
                     },
                 },
                 {

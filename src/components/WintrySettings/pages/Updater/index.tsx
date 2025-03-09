@@ -11,7 +11,7 @@ import {
     showUpdateAvailableAlert,
     showUpdateErrorAlert,
     useUpdaterStore,
-} from "../../../../stores/useUpdaterStore";
+} from "@stores/useUpdaterStore";
 
 export default function UpdaterPage() {
     const { bunny } = getVersions();
@@ -31,7 +31,7 @@ export default function UpdaterPage() {
                     trailing={<TableRow.TrailingText text={bunny.remote} />}
                 />
             </TableRowGroup>
-            <View style={{ width: "50%", alignSelf: "flex-end" }}>
+            <View style={{ flexShrink: 1, alignSelf: "flex-end" }}>
                 <Button
                     text={t.settings.updater.checkForUpdates()}
                     onPress={async () => {
