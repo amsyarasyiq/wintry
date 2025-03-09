@@ -17,7 +17,7 @@ interface PluginContext {
     logger: BasicLogger;
 }
 
-export const pluginlogger = wtlogger.createChild("plugins");
+export const pluginlogger = wtlogger.createChild("Plugins");
 
 export function getPluginContext(id: string): PluginContext {
     // If you added more properties to the context (first level), make sure to update

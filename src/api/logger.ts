@@ -60,7 +60,7 @@ class Logger {
                 message,
                 level,
                 timestamp: Date.now(),
-                breadcrumbs: logger.breadcrumbs,
+                breadcrumbs: this.breadcrumbs,
             };
 
             if (level === "error") {

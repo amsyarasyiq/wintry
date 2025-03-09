@@ -10,7 +10,7 @@ import {
 } from "@components/Discord/AlertModal/AlertModal";
 import { uniqueId } from "es-toolkit/compat";
 
-const logger = wtlogger.createChild("alerts");
+const logger = wtlogger.createChild("Alerts");
 const AlertStore = lookupByProps("openAlert", "useAlertStore").asLazy();
 
 type DirectAlertContentProps = Omit<AlertModalProps, "actions"> & {
