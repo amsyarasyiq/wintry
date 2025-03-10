@@ -1,4 +1,4 @@
-import { definePlugin, logger, meta } from "#plugin-context";
+import { definePlugin, definePluginSettings, logger, meta } from "#plugin-context";
 import {
     _registeredSettingItems,
     _registeredSettingSections,
@@ -24,6 +24,15 @@ import { lazy, memo, useLayoutEffect } from "react";
 
 const SettingsOverviewScreen = lookup(byName("SettingsOverviewScreen", { returnEsmDefault: false })).asLazy();
 const patcher = createContextualPatcher({ pluginId: meta.id });
+
+const settings = definePluginSettings({
+    onTop: {
+        label: "Put on top",
+        description: "Put the settings on top of the settings list",
+        type: "boolean",
+        default: false,
+    },
+});
 
 export default definePlugin({
     name: "Settings",
@@ -59,9 +68,26 @@ export default definePlugin({
             const { props } = findInReactTree(ret, i => i.props?.sections);
             if (!props) {
                 logger.warn("Failed to find settings sections in SettingsOverviewScreen");
-            } else {
-                props.sections = [..._registeredSettingSections, ...props.sections];
+                return;
             }
+
+            if (!settings.get().onTop) {
+                try {
+                    const accountSectionIndex = props.sections.findIndex((i: any) => i.settings.includes("ACCOUNT"));
+                    if (accountSectionIndex !== -1) {
+                        props.sections = [
+                            ...props.sections.slice(0, accountSectionIndex + 1),
+                            ..._registeredSettingSections,
+                            ...props.sections.slice(accountSectionIndex + 1),
+                        ];
+                        return;
+                    }
+                } catch (e) {
+                    logger.warn`Failed to insert settings sections next to account section: ${e}`;
+                }
+            }
+
+            props.sections = [..._registeredSettingSections, ...props.sections];
         });
 
         setImmediate(() => {
