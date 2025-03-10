@@ -4,53 +4,90 @@ import { create } from "zustand";
 import { showAlert } from "@api/alerts";
 import ErrorCard from "@components/ErrorCard";
 import { showToast } from "@api/toasts";
-import { Mutex, noop } from "es-toolkit";
+import { Mutex, delay, noop, pick } from "es-toolkit";
 import { t } from "@i18n";
 import { wtlogger } from "@api/logger";
+import { loaderPayload } from "@loader";
+import { BundleUpdaterModule } from "@native";
+import { createJSONStorage, persist } from "zustand/middleware";
+import { kvStorage } from "@utils/kvStorage";
 
 interface UpdaterStore {
-    autoUpdate: boolean;
-    notify: boolean;
+    // Persisted
+    notifyOnNewUpdate: boolean;
 
     isCheckingForUpdates: boolean;
     availableUpdate: null | UpdateInfo;
 
-    setAutoUpdate: (value: boolean) => void;
-    setNotify: (value: boolean) => void;
     checkForUpdates: () => Promise<UpdateInfo | null>;
 }
 
 const logger = wtlogger.createChild("UpdaterStore");
 const _updateMutex = new Mutex();
 
-export const useUpdaterStore = create<UpdaterStore>((set, get) => ({
-    autoUpdate: true,
-    notify: true,
+export const useUpdaterStore = create(
+    persist<UpdaterStore>(
+        (set, get) => ({
+            notifyOnNewUpdate: false,
+            isCheckingForUpdates: false,
+            availableUpdate: null,
 
-    isCheckingForUpdates: false,
-    availableUpdate: null,
+            checkForUpdates: async () => {
+                if (get().availableUpdate) {
+                    return get().availableUpdate;
+                }
 
-    setAutoUpdate: value => set({ autoUpdate: value, notify: false }),
-    setNotify: value => set({ notify: value }),
-    checkForUpdates: async () => {
-        if (get().availableUpdate) {
-            return get().availableUpdate;
+                await _updateMutex.acquire();
+                set({ isCheckingForUpdates: true });
+
+                try {
+                    const ret = await UpdaterModule.checkForUpdates();
+
+                    set({ availableUpdate: ret });
+                    return ret;
+                } finally {
+                    set({ isCheckingForUpdates: false });
+                    _updateMutex.release();
+                }
+            },
+        }),
+        {
+            name: "updater-store",
+            storage: createJSONStorage(() => kvStorage),
+            // @ts-expect-error - bad types
+            partialize: s => pick(s, ["notifyOnNewUpdate"]),
+        },
+    ),
+);
+
+export async function initCheckForUpdates() {
+    if (!loaderPayload.loader.initConfig.skipUpdate) {
+        return; // Loader already has done this job
+    }
+
+    const { checkForUpdates, notifyOnNewUpdate } = useUpdaterStore.getState();
+
+    try {
+        const updateAvailable = await checkForUpdates();
+        if (updateAvailable && notifyOnNewUpdate) {
+            showUpdateAvailableToast(updateAvailable);
         }
+    } catch (e) {
+        logger.error`Failed to check for updates: ${e}`;
+        showUpdateErrorToast(e);
+    }
+}
 
-        await _updateMutex.acquire();
-        set({ isCheckingForUpdates: true });
-
-        try {
-            const ret = await UpdaterModule.checkForUpdates();
-
-            set({ availableUpdate: ret });
-            return ret;
-        } finally {
-            set({ isCheckingForUpdates: false });
-            _updateMutex.release();
-        }
-    },
-}));
+export function showUpdateAvailableToast(updateInfo: UpdateInfo) {
+    showToast({
+        content: t.updater.new_version(),
+        options: {
+            onPress: () => {
+                showUpdateAvailableAlert(updateInfo);
+            },
+        },
+    });
+}
 
 export function showUpdateAvailableAlert(updateInfo: UpdateInfo) {
     showAlert({
@@ -65,10 +102,12 @@ export function showUpdateAvailableAlert(updateInfo: UpdateInfo) {
             ),
             actions: [
                 {
-                    text: t.updater.update_now(),
+                    text: t.updater.update_and_restart(),
                     onPress: async () => {
                         try {
                             await UpdaterModule.fetchBundle(updateInfo.url, updateInfo.revision);
+                            await delay(500); // Just in case
+                            BundleUpdaterModule.reload();
                         } catch (e) {
                             logger.error`Failed to fetch bundle: ${e}`;
                             showUpdateErrorToast(e);

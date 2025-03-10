@@ -1,6 +1,7 @@
 export interface InitConfig {
     baseUrl: string;
     forceUpdate: boolean;
+    skipUpdate: boolean;
     bundlePath: string | null;
     safeMode: boolean;
 }
@@ -24,6 +25,9 @@ interface LoaderModules {
 }
 
 export interface LoaderPayload {
+    bundle: {
+        revision: string;
+    };
     loader: {
         name: string;
         version: string;

@@ -95,6 +95,10 @@ type RootTranslation = {
 	}
 	updater: {
 		/**
+		 * U​p​d​a​t​e
+		 */
+		update_tag: string
+		/**
 		 * U​p​d​a​t​e​ ​A​v​a​i​l​a​b​l​e
 		 */
 		update_available: string
@@ -106,6 +110,10 @@ type RootTranslation = {
 		 * U​p​d​a​t​e​ ​N​o​w
 		 */
 		update_now: string
+		/**
+		 * U​p​d​a​t​e​ ​a​n​d​ ​R​e​s​t​a​r​t
+		 */
+		update_and_restart: string
 		/**
 		 * Y​o​u​'​r​e​ ​a​l​r​e​a​d​y​ ​o​n​ ​t​h​e​ ​l​a​t​e​s​t​ ​v​e​r​s​i​o​n​!
 		 */
@@ -358,17 +366,17 @@ type RootTranslation = {
 			 */
 			autoUpdate: string
 			/**
-			 * E​n​a​b​l​e​ ​a​u​t​o​m​a​t​i​c​ ​W​i​n​t​r​y​ ​u​p​d​a​t​e​s​ ​w​i​t​h​o​u​t​ ​p​r​o​m​p​t​s
+			 * E​n​a​b​l​e​ ​a​u​t​o​m​a​t​i​c​ ​b​u​n​d​l​e​ ​u​p​d​a​t​e​s​ ​w​i​t​h​o​u​t​ ​p​r​o​m​p​t​s​.​ ​B​u​n​d​l​e​s​ ​a​r​e​ ​f​o​r​c​e​f​u​l​l​y​ ​f​e​t​c​h​e​d​ ​i​f​ ​u​n​c​a​c​h​e​d​.
 			 */
 			autoUpdateDescription: string
 			/**
-			 * N​o​t​i​f​y​ ​A​f​t​e​r​ ​U​p​d​a​t​e
+			 * N​o​t​i​f​y​ ​N​e​w​ ​U​p​d​a​t​e​s
 			 */
-			notify: string
+			notifyNewUpdates: string
 			/**
-			 * D​i​s​p​l​a​y​ ​a​ ​m​e​s​s​a​g​e​ ​o​n​c​e​ ​W​i​n​t​r​y​ ​i​s​ ​a​u​t​o​-​u​p​d​a​t​e​d
+			 * S​h​o​w​ ​a​ ​n​o​t​i​f​i​c​a​t​i​o​n​ ​w​h​e​n​ ​a​ ​n​e​w​ ​u​p​d​a​t​e​ ​i​s​ ​a​v​a​i​l​a​b​l​e​.
 			 */
-			notifyDescription: string
+			notifyNewUpdatesDescription: string
 			/**
 			 * C​h​e​c​k​ ​f​o​r​ ​U​p​d​a​t​e​s
 			 */
@@ -460,6 +468,10 @@ export type TranslationFunctions = {
 	}
 	updater: {
 		/**
+		 * Update
+		 */
+		update_tag: () => LocalizedString
+		/**
 		 * Update Available
 		 */
 		update_available: () => LocalizedString
@@ -471,6 +483,10 @@ export type TranslationFunctions = {
 		 * Update Now
 		 */
 		update_now: () => LocalizedString
+		/**
+		 * Update and Restart
+		 */
+		update_and_restart: () => LocalizedString
 		/**
 		 * You're already on the latest version!
 		 */
@@ -721,17 +737,17 @@ export type TranslationFunctions = {
 			 */
 			autoUpdate: () => LocalizedString
 			/**
-			 * Enable automatic Wintry updates without prompts
+			 * Enable automatic bundle updates without prompts. Bundles are forcefully fetched if uncached.
 			 */
 			autoUpdateDescription: () => LocalizedString
 			/**
-			 * Notify After Update
+			 * Notify New Updates
 			 */
-			notify: () => LocalizedString
+			notifyNewUpdates: () => LocalizedString
 			/**
-			 * Display a message once Wintry is auto-updated
+			 * Show a notification when a new update is available.
 			 */
-			notifyDescription: () => LocalizedString
+			notifyNewUpdatesDescription: () => LocalizedString
 			/**
 			 * Check for Updates
 			 */

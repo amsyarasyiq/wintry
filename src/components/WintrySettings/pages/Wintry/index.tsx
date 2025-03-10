@@ -15,10 +15,12 @@ import { BundleUpdaterModule } from "@native";
 import { openURL } from "@utils/network/url";
 import { Links } from "@data/constants";
 import { useInitConfigStore } from "@stores/useInitConfigStore";
+import { useUpdaterStore } from "@stores/useUpdaterStore";
 
 export default function WintryPage() {
     const navigation = NavigationNative.useNavigation();
     const { config, toggleSafeMode } = useInitConfigStore();
+    const updateAvailable = useUpdaterStore(state => state.availableUpdate);
     const { bunny, discord } = getVersions();
 
     return (
@@ -27,8 +29,9 @@ export default function WintryPage() {
                 <View style={{ flexDirection: "row", gap: 12, flexWrap: "wrap" }}>
                     <InfoCard
                         title={t.wintry()}
+                        tag={updateAvailable ? t.updater.update_tag() : undefined}
                         style={{ flex: 1 }}
-                        trailing={`${bunny.shortRevision}\n(${bunny.branch})`}
+                        trailing={`${bunny.version}-${bunny.shortRevision}\n(${bunny.branch})`}
                         icon={<TableRow.Icon source={require("@assets/ic_wintry.png")} />}
                         onPress={() => {
                             navigation.push("WINTRY_CUSTOM_PAGE", {

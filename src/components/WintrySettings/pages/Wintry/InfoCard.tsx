@@ -1,4 +1,5 @@
 import { Card, Text } from "@components/Discord";
+import Tag from "@components/Tag";
 import { View, type StyleProp, type ViewStyle } from "react-native";
 
 interface InfoCardProps {
@@ -6,13 +7,19 @@ interface InfoCardProps {
     title: string;
     style?: StyleProp<ViewStyle>;
     trailing: React.ReactElement | string;
+    tag?: string;
     onPress: () => void;
 }
 
-export function InfoCard({ title, style, icon, onPress, trailing }: InfoCardProps) {
+export function InfoCard({ title, style, icon, tag, onPress, trailing }: InfoCardProps) {
     return (
         <Card style={style} onPress={onPress}>
             <View style={{ gap: 8 }}>
+                {tag && (
+                    <View style={{ position: "absolute", top: -28, right: -18 }}>
+                        <Tag text={tag} />
+                    </View>
+                )}
                 <View
                     style={{
                         flexDirection: "row",

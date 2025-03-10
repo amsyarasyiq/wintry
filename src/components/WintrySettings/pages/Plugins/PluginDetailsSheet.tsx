@@ -29,11 +29,13 @@ export function PluginDetailsSheet({ plugin }: PluginDetailsSheetProps) {
                         label={t.settings.plugins.info_sheet.id()}
                         trailing={<TableRow.TrailingText text={plugin.$id} />}
                     />
-                    {/** TODO: Implement this */}
-                    <TableRow
-                        label={t.settings.plugins.info_sheet.version()}
-                        trailing={<TableRow.TrailingText text={"<insert version here>"} />}
-                    />
+                    {/* TODO: Implement this */}
+                    {false && (
+                        <TableRow
+                            label={t.settings.plugins.info_sheet.version()}
+                            trailing={<TableRow.TrailingText text={"<insert version here>"} />}
+                        />
+                    )}
                     <TableRow
                         label={t.settings.plugins.info_sheet.authors()}
                         trailing={

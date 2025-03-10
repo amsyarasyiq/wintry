@@ -2,7 +2,7 @@ import { getModule, type LoaderModule } from "@loader";
 
 export interface UpdateInfo {
     url: string;
-    revision?: string;
+    revision: string;
 }
 
 interface UpdaterModule extends LoaderModule {
