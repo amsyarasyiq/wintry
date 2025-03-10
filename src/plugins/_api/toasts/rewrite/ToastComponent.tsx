@@ -1,81 +1,19 @@
 import type { ToastInstance } from "@api/toasts";
 import { Text } from "@components/Discord";
-import PressableScale from "@components/Discord/experimental/PressableScale";
-import { useSafeAreaInsets } from "@components/Libraries/react-native-safe-area-context";
-import { createStyles } from "@components/utils/styles";
-import { tokens } from "@metro/common/libraries";
 import { useToastStore } from "@stores/useToastStore";
 import { useCallback, useState, type PropsWithChildren } from "react";
-import { View, useWindowDimensions, type StyleProp, type TextLayoutEventData, type ViewStyle } from "react-native";
-import { Swipeable, useToast } from "react-native-customizable-toast" with { lazy: "on" };
-import Animated, { LinearTransition } from "react-native-reanimated";
+import { View, type StyleProp, type TextLayoutEventData, type ViewStyle } from "react-native";
 import { useShallow } from "zustand/shallow";
-
-const useContainerStyles = createStyles(() => ({
-    pressable: {
-        marginTop: tokens.spacing.PX_8,
-        marginHorizontal: tokens.spacing.PX_12,
-    },
-    container: {
-        alignSelf: "center",
-        flexDirection: "row",
-        justifyContent: "center",
-        shadowColor: tokens.colors.TOAST_CONTAINER_SHADOW_COLOR,
-    },
-    contentContainer: {
-        overflow: "hidden",
-        flexDirection: "row",
-        alignItems: "center",
-        borderRadius: tokens.radii.xxl,
-        padding: tokens.spacing.PX_8,
-        paddingHorizontal: tokens.spacing.PX_12,
-        backgroundColor: tokens.colors.TOAST_BG,
-        borderColor: tokens.colors.BORDER_SUBTLE,
-        borderWidth: 1,
-        ...tokens.shadows.SHADOW_HIGH,
-    },
-}));
 
 function ToastContainer({
     children,
-    contentContainerStyle,
-    dismissible,
-    onDismiss,
-    onPress,
 }: PropsWithChildren<{
     contentContainerStyle?: StyleProp<ViewStyle>;
     dismissible: boolean;
     onDismiss: () => void;
     onPress?: () => void;
 }>) {
-    const { top } = useSafeAreaInsets();
-    const { width: screenWidth } = useWindowDimensions();
-    const containerStyles = useContainerStyles();
-
-    return (
-        <Swipeable onSwipe={onDismiss} disabled={!dismissible}>
-            <PressableScale
-                pointerEvents="box-none"
-                style={containerStyles.pressable}
-                disabled={!onPress}
-                onPress={() => onPress?.()}
-            >
-                <View style={[containerStyles.container]}>
-                    <Animated.View
-                        layout={LinearTransition.springify().duration(500).dampingRatio(0.5)}
-                        style={[
-                            { maxWidth: screenWidth - 16 },
-                            containerStyles.contentContainer,
-                            contentContainerStyle,
-                            { transform: [{ translateY: top }] },
-                        ]}
-                    >
-                        {children}
-                    </Animated.View>
-                </View>
-            </PressableScale>
-        </Swipeable>
-    );
+    return <View>{children}</View>;
 }
 
 function GenericToast({ toast, onDismiss }: { toast: ToastInstance & { type: "generic" }; onDismiss: () => void }) {
@@ -130,9 +68,8 @@ function CustomToast({
     );
 }
 
-export function ToastComponent() {
+export function ToastComponent({ toast }: { toast: ToastInstance }) {
     const hideToast = useToastStore(s => s.hideToast);
-    const { toast } = useToast<{ toast: ToastInstance }>();
 
     if (toast.id == null) return null;
 
