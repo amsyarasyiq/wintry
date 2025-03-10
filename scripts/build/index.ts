@@ -169,6 +169,17 @@ if (import.meta.main) {
 
     logger(`${c.yellow("Available paths:")} ${availablePaths.join(", ")}`);
 
-    await writeFile("dist/info.json", JSON.stringify({ paths: availablePaths, revision: hash.digest("hex") }, null, 2));
+    await writeFile(
+        "dist/info.json",
+        JSON.stringify(
+            {
+                paths: availablePaths,
+                version: (await Bun.file("./package.json").json()).version,
+                revision: hash.digest("hex"),
+            },
+            null,
+            2,
+        ),
+    );
     logger(c.bold.green("Info file written to dist/info.json"));
 }

@@ -28,7 +28,7 @@ export default function WintryPage() {
                     <InfoCard
                         title={t.wintry()}
                         style={{ flex: 1 }}
-                        trailing={`${bunny.shortRevision}\n(${bunny.branch})`}
+                        trailing={`${bunny.version}\n(${bunny.branch}-${bunny.shortRevision})`}
                         icon={<TableRow.Icon source={require("@assets/ic_wintry.png")} />}
                         onPress={() => {
                             navigation.push("WINTRY_CUSTOM_PAGE", {

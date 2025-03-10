@@ -12,10 +12,12 @@ import {
     showUpdateErrorAlert,
     useUpdaterStore,
 } from "@stores/useUpdaterStore";
+import { useInitConfigStore } from "@stores/useInitConfigStore";
 
 export default function UpdaterPage() {
     const { bunny } = getVersions();
-    const { autoUpdate, notify, isCheckingForUpdates, setAutoUpdate, setNotify, checkForUpdates } = useUpdaterStore();
+    const { isCheckingForUpdates, checkForUpdates } = useUpdaterStore();
+    const { config } = useInitConfigStore();
 
     return (
         <PageWrapper scrollable={true} containerStyle={{ paddingTop: 16, gap: 12 }}>
@@ -23,7 +25,9 @@ export default function UpdaterPage() {
                 <TableRow
                     label={t.wintry()}
                     icon={<TableRow.Icon source={require("@assets/ic_wintry.png")} />}
-                    trailing={<TableRow.TrailingText text={`${bunny.shortRevision} (${bunny.branch})`} />}
+                    trailing={
+                        <TableRow.TrailingText text={`${bunny.version} (${bunny.branch}-${bunny.shortRevision})`} />
+                    }
                 />
                 <TableRow
                     label={t.settings.updater.repo()}
@@ -55,15 +59,8 @@ export default function UpdaterPage() {
                 <TableSwitchRow
                     label={t.settings.updater.autoUpdate()}
                     subLabel={t.settings.updater.autoUpdateDescription()}
-                    value={autoUpdate}
-                    onValueChange={v => setAutoUpdate(v)}
-                />
-                <TableSwitchRow
-                    label={t.settings.updater.notify()}
-                    subLabel={t.settings.updater.notifyDescription()}
-                    value={notify}
-                    disabled={!autoUpdate}
-                    onValueChange={v => setNotify(v)}
+                    value={!config.skipUpdate}
+                    onValueChange={v => useInitConfigStore.setState(s => ({ config: { ...s.config, skipUpdate: !v } }))}
                 />
             </TableRowGroup>
         </PageWrapper>

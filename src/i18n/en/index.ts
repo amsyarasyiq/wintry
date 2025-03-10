@@ -121,9 +121,7 @@ const en = {
             repo: "Repository",
             settings: "Settings",
             autoUpdate: "Automatic Updates",
-            autoUpdateDescription: "Enable automatic Wintry updates without prompts",
-            notify: "Notify After Update",
-            notifyDescription: "Display a message once Wintry is auto-updated",
+            autoUpdateDescription: "Enable automatic bundle updates without prompts. Bundles are forcefully fetched if uncached.",
             checkForUpdates: "Check for Updates",
         }
     },

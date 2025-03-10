@@ -9,14 +9,9 @@ import { t } from "@i18n";
 import { wtlogger } from "@api/logger";
 
 interface UpdaterStore {
-    autoUpdate: boolean;
-    notify: boolean;
-
     isCheckingForUpdates: boolean;
     availableUpdate: null | UpdateInfo;
 
-    setAutoUpdate: (value: boolean) => void;
-    setNotify: (value: boolean) => void;
     checkForUpdates: () => Promise<UpdateInfo | null>;
 }
 
@@ -24,14 +19,9 @@ const logger = wtlogger.createChild("UpdaterStore");
 const _updateMutex = new Mutex();
 
 export const useUpdaterStore = create<UpdaterStore>((set, get) => ({
-    autoUpdate: true,
-    notify: true,
-
     isCheckingForUpdates: false,
     availableUpdate: null,
 
-    setAutoUpdate: value => set({ autoUpdate: value, notify: false }),
-    setNotify: value => set({ notify: value }),
     checkForUpdates: async () => {
         if (get().availableUpdate) {
             return get().availableUpdate;

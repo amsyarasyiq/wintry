@@ -95,7 +95,8 @@ export default definePlugin({
                         type: "route",
                         title: () => t.wintry(),
                         IconComponent: () => <TableRow.Icon source={require("@assets/ic_wintry.png")} />,
-                        useTrailing: () => `${getVersions().bunny.shortRevision} (${getVersions().bunny.branch})`,
+                        useTrailing: () =>
+                            `${getVersions().bunny.version} (${getVersions().bunny.branch}-${getVersions().bunny.shortRevision})`,
                         screen: {
                             route: "WINTRY",
                             getComponent: () => lazy(() => import("@components/WintrySettings/pages/Wintry")),

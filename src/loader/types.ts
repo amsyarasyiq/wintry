@@ -1,6 +1,7 @@
 export interface InitConfig {
     baseUrl: string;
     forceUpdate: boolean;
+    skipUpdate: boolean;
     bundlePath: string | null;
     safeMode: boolean;
 }

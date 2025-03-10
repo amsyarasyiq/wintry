@@ -48,6 +48,7 @@ export function startDevelopmentServer(
                 const compilers = args.nocompile ? [] : [hermesc];
 
                 return Response.json({
+                    version: (await Bun.file("./package.json").json()).version,
                     paths: ["/bundle.js", "/bundle.min.js", ...compilers.map(v => `/bundle.${v.VERSION}.hbc`)],
                 });
             }

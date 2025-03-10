@@ -1,4 +1,4 @@
-import { branch, revision, remote } from "#build-info";
+import { branch, revision, remote, version } from "#build-info";
 import { NativeClientInfoModule, NativeDeviceModule } from "@native";
 import React from "react";
 import { Platform, type PlatformAndroidStatic, type PlatformIOSStatic } from "react-native";
@@ -15,6 +15,7 @@ export function getVersions() {
             revision,
             branch,
             remote,
+            version,
         },
         discord: {
             version: NativeClientInfoModule.Version,
