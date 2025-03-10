@@ -31,9 +31,11 @@ const en = {
         copy: "Copy",
     },
     updater: {
+        update_tag: "Update",
         update_available: "Update Available",
         new_version: "A new version of Wintry is available!",
         update_now: "Update Now",
+        update_and_restart: "Update and Restart",
         already_latest: "You're already on the latest version!",
         failed_to_check: "Failed to check for updates",
         error_alert: "An error occurred while checking for updates.",

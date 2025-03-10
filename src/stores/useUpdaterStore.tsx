@@ -4,9 +4,11 @@ import { create } from "zustand";
 import { showAlert } from "@api/alerts";
 import ErrorCard from "@components/ErrorCard";
 import { showToast } from "@api/toasts";
-import { Mutex, noop } from "es-toolkit";
+import { Mutex, delay, noop } from "es-toolkit";
 import { t } from "@i18n";
 import { wtlogger } from "@api/logger";
+import { loaderPayload } from "@loader";
+import { BundleUpdaterModule } from "@native";
 
 interface UpdaterStore {
     isCheckingForUpdates: boolean;
@@ -42,6 +44,35 @@ export const useUpdaterStore = create<UpdaterStore>((set, get) => ({
     },
 }));
 
+export async function initCheckForUpdates() {
+    if (!loaderPayload.loader.initConfig.skipUpdate) {
+        return; // Loader already has done this job
+    }
+
+    const { checkForUpdates } = useUpdaterStore.getState();
+
+    try {
+        const updateAvailable = await checkForUpdates();
+        if (updateAvailable) {
+            showUpdateAvailableToast(updateAvailable);
+        }
+    } catch (e) {
+        logger.error`Failed to check for updates: ${e}`;
+        showUpdateErrorToast(e);
+    }
+}
+
+export function showUpdateAvailableToast(updateInfo: UpdateInfo) {
+    showToast({
+        content: t.updater.new_version(),
+        options: {
+            onPress: () => {
+                showUpdateAvailableAlert(updateInfo);
+            },
+        },
+    });
+}
+
 export function showUpdateAvailableAlert(updateInfo: UpdateInfo) {
     showAlert({
         key: "update-available",
@@ -55,10 +86,12 @@ export function showUpdateAvailableAlert(updateInfo: UpdateInfo) {
             ),
             actions: [
                 {
-                    text: t.updater.update_now(),
+                    text: t.updater.update_and_restart(),
                     onPress: async () => {
                         try {
                             await UpdaterModule.fetchBundle(updateInfo.url, updateInfo.revision);
+                            await delay(500); // Just in case
+                            BundleUpdaterModule.reload();
                         } catch (e) {
                             logger.error`Failed to fetch bundle: ${e}`;
                             showUpdateErrorToast(e);

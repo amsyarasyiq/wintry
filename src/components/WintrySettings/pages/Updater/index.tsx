@@ -13,11 +13,28 @@ import {
     useUpdaterStore,
 } from "@stores/useUpdaterStore";
 import { useInitConfigStore } from "@stores/useInitConfigStore";
+import { useEffect } from "react";
 
 export default function UpdaterPage() {
     const { bunny } = getVersions();
     const { isCheckingForUpdates, checkForUpdates } = useUpdaterStore();
     const { config } = useInitConfigStore();
+
+    const check = async () => {
+        try {
+            const updateAvailable = await checkForUpdates();
+            if (updateAvailable) {
+                showUpdateAvailableAlert(updateAvailable);
+            } else {
+                showAlreadyUpdatedToast();
+            }
+        } catch (e) {
+            showUpdateErrorAlert(e);
+        }
+    };
+
+    // biome-ignore lint/correctness/useExhaustiveDependencies: idc
+    useEffect(() => void check(), []);
 
     return (
         <PageWrapper scrollable={true} containerStyle={{ paddingTop: 16, gap: 12 }}>
@@ -26,7 +43,7 @@ export default function UpdaterPage() {
                     label={t.wintry()}
                     icon={<TableRow.Icon source={require("@assets/ic_wintry.png")} />}
                     trailing={
-                        <TableRow.TrailingText text={`${bunny.version} (${bunny.branch}-${bunny.shortRevision})`} />
+                        <TableRow.TrailingText text={`${bunny.version}-${bunny.shortRevision} (${bunny.branch})`} />
                     }
                 />
                 <TableRow
@@ -38,18 +55,7 @@ export default function UpdaterPage() {
             <View style={{ flexShrink: 1, alignSelf: "flex-end" }}>
                 <Button
                     text={t.settings.updater.checkForUpdates()}
-                    onPress={async () => {
-                        try {
-                            const updateAvailable = await checkForUpdates();
-                            if (updateAvailable) {
-                                showUpdateAvailableAlert(updateAvailable);
-                            } else {
-                                showAlreadyUpdatedToast();
-                            }
-                        } catch (e) {
-                            showUpdateErrorAlert(e);
-                        }
-                    }}
+                    onPress={check}
                     icon={findAssetId("DownloadIcon")}
                     disabled={isCheckingForUpdates}
                     loading={isCheckingForUpdates}

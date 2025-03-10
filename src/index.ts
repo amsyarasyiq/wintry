@@ -3,6 +3,7 @@ import reportErrorOnInitialization from "./error-reporter";
 import { wintryGlobalObject } from "./globals";
 import { initializeMetro } from "./metro/internal";
 import { initializePlugins } from "./stores/usePluginStore";
+import { initCheckForUpdates } from "@stores/useUpdaterStore";
 
 Object.freeze = Object.seal = Object;
 
@@ -12,6 +13,8 @@ export function initializeWintry() {
 
         initializeMetro();
         initializePlugins();
+
+        initCheckForUpdates();
 
         window.wintry = wintryGlobalObject();
 

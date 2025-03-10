@@ -95,6 +95,10 @@ type RootTranslation = {
 	}
 	updater: {
 		/**
+		 * U​p​d​a​t​e
+		 */
+		update_tag: string
+		/**
 		 * U​p​d​a​t​e​ ​A​v​a​i​l​a​b​l​e
 		 */
 		update_available: string
@@ -106,6 +110,10 @@ type RootTranslation = {
 		 * U​p​d​a​t​e​ ​N​o​w
 		 */
 		update_now: string
+		/**
+		 * U​p​d​a​t​e​ ​a​n​d​ ​R​e​s​t​a​r​t
+		 */
+		update_and_restart: string
 		/**
 		 * Y​o​u​'​r​e​ ​a​l​r​e​a​d​y​ ​o​n​ ​t​h​e​ ​l​a​t​e​s​t​ ​v​e​r​s​i​o​n​!
 		 */
@@ -452,6 +460,10 @@ export type TranslationFunctions = {
 	}
 	updater: {
 		/**
+		 * Update
+		 */
+		update_tag: () => LocalizedString
+		/**
 		 * Update Available
 		 */
 		update_available: () => LocalizedString
@@ -463,6 +475,10 @@ export type TranslationFunctions = {
 		 * Update Now
 		 */
 		update_now: () => LocalizedString
+		/**
+		 * Update and Restart
+		 */
+		update_and_restart: () => LocalizedString
 		/**
 		 * You're already on the latest version!
 		 */

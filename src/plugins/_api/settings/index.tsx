@@ -7,6 +7,7 @@ import {
     type SettingRendererConfig,
 } from "@api/settings";
 import { TableRow } from "@components/Discord";
+import Tag from "@components/Tag";
 import { Devs } from "@data/constants";
 import { getVersions } from "@debug/info";
 import { t } from "@i18n";
@@ -16,6 +17,7 @@ import { PuzzlePieceIcon, WrenchIcon } from "@metro/common/icons";
 import { NavigationNative } from "@metro/common/libraries";
 import { waitFor } from "@metro/internal/modules";
 import { createContextualPatcher } from "@patcher/contextual";
+import { useUpdaterStore } from "@stores/useUpdaterStore";
 import { findInReactTree } from "@utils/objects";
 import { memoize } from "es-toolkit";
 import { lazy, memo, useLayoutEffect } from "react";
@@ -95,8 +97,13 @@ export default definePlugin({
                         type: "route",
                         title: () => t.wintry(),
                         IconComponent: () => <TableRow.Icon source={require("@assets/ic_wintry.png")} />,
-                        useTrailing: () =>
-                            `${getVersions().bunny.version} (${getVersions().bunny.branch}-${getVersions().bunny.shortRevision})`,
+                        useTrailing: () => {
+                            const availableUpdate = useUpdaterStore(s => s.availableUpdate);
+                            if (availableUpdate) return <Tag text={t.updater.update_tag()} />;
+
+                            const { version, shortRevision, branch } = getVersions().bunny;
+                            return `${version}-${shortRevision} (${branch})`;
+                        },
                         screen: {
                             route: "WINTRY",
                             getComponent: () => lazy(() => import("@components/WintrySettings/pages/Wintry")),

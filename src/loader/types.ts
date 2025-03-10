@@ -25,6 +25,9 @@ interface LoaderModules {
 }
 
 export interface LoaderPayload {
+    bundle: {
+        revision: string;
+    };
     loader: {
         name: string;
         version: string;

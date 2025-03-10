@@ -175,7 +175,7 @@ if (import.meta.main) {
             {
                 paths: availablePaths,
                 version: (await Bun.file("./package.json").json()).version,
-                revision: hash.digest("hex"),
+                hash: hash.digest("hex"),
             },
             null,
             2,
