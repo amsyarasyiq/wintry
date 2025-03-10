@@ -1,10 +1,10 @@
-import { Toast, type CustomToastRendererProps } from "@api/toasts";
+import { showToast, type CustomToastProps } from "@api/toasts";
 import { RowButton, Text } from "@components/Discord";
 import PageWrapper from "@components/WintrySettings/PageWrapper";
 import { useEffect, useState, type ReactNode } from "react";
 import { View } from "react-native";
 
-function DemoToastComponent(props: CustomToastRendererProps): ReactNode {
+function DemoToastComponent(props: CustomToastProps): ReactNode {
     const [count, setCount] = useState(0);
 
     useEffect(() => {
@@ -18,9 +18,9 @@ function DemoToastComponent(props: CustomToastRendererProps): ReactNode {
     }, []);
 
     return (
-        <View style={{ gap: 8 }}>
+        <View style={{ gap: 8, paddingHorizontal: 12 }}>
             <Text variant="text-md/semibold">{count} second(s) has passed</Text>
-            {count >= 5 && <Text variant="display-md">Gaboo!</Text>}
+            {count >= 3 && <Text variant="display-md">Gaboo!</Text>}
         </View>
     );
 }
@@ -32,32 +32,21 @@ export default function ToastPlayground() {
             <RowButton
                 label="Show generic toast"
                 onPress={() => {
-                    const toast = new Toast({
-                        content: {
-                            text: "Hello, world!",
-                        },
-                        options: {
-                            duration: 3000,
-                        },
+                    showToast({
+                        id: "generic-toast-demo",
+                        text: "This is a generic toast!",
                     });
-
-                    toast.show();
                 }}
             />
             <RowButton
                 label="Show custom toast"
                 onPress={() => {
-                    const toast = new Toast({
-                        type: "custom",
-                        content: {
-                            render: DemoToastComponent,
-                        },
-                        options: {
-                            duration: 8000,
-                        },
+                    const toast = showToast({
+                        id: "custom-toast-demo",
+                        render: DemoToastComponent,
+                        duration: 8000,
+                        onPress: () => toast.hide(),
                     });
-
-                    toast.show();
                 }}
             />
         </PageWrapper>

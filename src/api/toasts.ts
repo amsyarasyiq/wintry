@@ -3,102 +3,92 @@ import type { StyleProp, ViewStyle } from "react-native";
 
 export interface ToastOptions {
     duration?: number;
-    /**
-     * @default true
-     */
     dismissible?: boolean;
-    /**
-     * @default undefined
-     */
     onDismiss?: () => void;
-    /**
-     * @default undefined
-     */
     onPress?: () => void;
-    /**
-     * @default undefined
-     */
-    onAutoClose?: () => void;
-    /**
-     * @default undefined
-     */
+    onTimeout?: () => void;
     contentContainerStyle?: StyleProp<ViewStyle>;
 }
 
-interface ToastInstanceBase {
-    id: string;
-    options?: ToastOptions;
-}
-
-export type ToastInstance = ToastInstanceBase &
-    ({ type: "generic"; content: GenericToastContent } | { type: "custom"; content: CustomToastContent });
-
-export interface CustomToastRendererProps {
-    hide: () => void;
-    update: (options: Partial<Omit<ToastInstance, "id">>) => void;
-}
-
-interface GenericToastContent {
+export interface GenericToastContent {
     text: string;
-    // icon?: React.ReactNode;
 }
 
-interface CustomToastContent {
-    wrapPressable?: boolean;
-    render: (props: CustomToastRendererProps) => React.ReactNode;
+export interface CustomToastProps {
+    controller: ToastController;
 }
 
-export type ToastContent = ToastInstance["content"];
+export interface CustomToastContent {
+    render: (props: CustomToastProps) => React.ReactNode;
+}
 
 export interface ToastConfig {
     id: string;
-    content: ToastContent;
-    options?: ToastOptions;
-    type?: ToastInstance["type"];
 }
 
-export class Toast {
-    id: string;
+export interface ToastController {
+    show: () => ToastController;
+    hide: () => ToastController;
+    update: (newOptions: Partial<Toast>) => ToastController;
+}
 
-    constructor(public config: Omit<ToastConfig, "id">) {
-        this.id = Math.random().toString(36).substring(7);
+export type ToastContent = GenericToastContent & CustomToastContent;
+export type Toast = ToastConfig & Partial<ToastContent> & ToastOptions;
 
-        this.config = {
-            ...config,
-            options: {
-                duration: 5000,
-                dismissible: true,
-                ...config.options,
-            },
-        };
+/**
+ * Show a toast notification
+ * @param text Simple text toast (most common use case)
+ * @param options Additional options
+ * @returns Toast control object with hide and update methods
+ */
+export function showToast(text: string): ToastController;
+
+/**
+ * Show a toast with custom content
+ * @param content Toast content (either text object or custom renderer)
+ * @param options Additional options
+ * @returns Toast control object with hide and update methods
+ */
+export function showToast(content: Toast): ToastController;
+
+export function showToast(configOrText: string | Toast): ToastController {
+    let id: string;
+
+    // Parse the content
+    let toast: Toast;
+
+    if (typeof configOrText === "string") {
+        id = configOrText; // TODO: Hash the text to generate an ID
+        toast = { id: configOrText, text: configOrText };
+    } else {
+        id = configOrText.id;
+        toast = configOrText;
     }
 
-    show() {
+    // Show the toast
+    const show = () =>
         useToastStore.getState().showToast({
-            id: this.id,
-            ...this.config,
+            duration: 5000,
+            dismissible: true,
+            ...(useToastStore.getState().getToast(id) ?? toast),
         });
-    }
 
-    hide() {
-        useToastStore.getState().hideToast(this.id);
-    }
+    show();
 
-    update(options: Partial<Omit<ToastInstance, "id">>) {
-        useToastStore.getState().updateToast(this.id, options);
-    }
-}
+    const controller: ToastController = {
+        show: () => {
+            show();
+            return controller;
+        },
+        hide: () => {
+            useToastStore.getState().hideToast(id);
+            return controller;
+        },
+        update: (newConfig: Partial<Toast>) => {
+            useToastStore.getState().updateToast(id, newConfig);
+            return controller;
+        },
+    };
 
-export function showToast(
-    config: Omit<ToastConfig, "id" | "content"> & {
-        content: string | GenericToastContent | CustomToastContent;
-    },
-) {
-    if (typeof config.content === "string") {
-        config.content = { text: config.content } as GenericToastContent;
-    }
-
-    const toast = new Toast(config as ToastConfig);
-    toast.show();
-    return toast;
+    return controller;
 }

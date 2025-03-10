@@ -13,9 +13,10 @@ import { View, useWindowDimensions } from "react-native";
 import { createStyles } from "@components/utils/styles";
 import { tokens } from "@metro/common/libraries";
 import { memo, useCallback } from "react";
-import type { ToastInstance } from "@api/toasts";
 import { useToastStore } from "@stores/useToastStore";
-import { ToastComponent } from "./ToastComponent";
+import { ToastContentRenderer } from "./ToastContentRenderer";
+import PressableScale from "@components/Discord/experimental/PressableScale";
+import type { Toast as _Toast } from "@api/toasts";
 
 const OFFSCREEN_LENGTH = 800;
 
@@ -42,11 +43,7 @@ const useStyles = createStyles(() => ({
     },
 }));
 
-export default memo(function Toast({
-    toast,
-}: {
-    toast: ToastInstance;
-}) {
+export default memo(function Toast({ toast }: { toast: _Toast }) {
     const styles = useStyles();
     const hideToast = useToastStore(s => s.hideToast);
     const { width } = useWindowDimensions();
@@ -59,7 +56,7 @@ export default memo(function Toast({
     }));
 
     const onceOnDismiss = useCallback(() => {
-        toast.options?.onDismiss?.();
+        toast.onDismiss?.();
         hideToast(toast.id);
     }, [hideToast, toast]);
 
@@ -70,7 +67,8 @@ export default memo(function Toast({
             translationX.value += event.changeX;
         })
         .onEnd(() => {
-            const willDisappear = translationX.value > width / 4 || translationX.value < -width / 4;
+            const willDisappear =
+                toast.dismissible && (translationX.value > width / 4 || translationX.value < -width / 4);
             const direction = Math.sign(translationX.value);
             const position = willDisappear ? OFFSCREEN_LENGTH * direction : 0;
 
@@ -86,6 +84,8 @@ export default memo(function Toast({
         .direction(Directions.UP)
         .onStart(event => (translationY.value = event.y))
         .onEnd(() => {
+            if (!toast.dismissible) return;
+
             translationY.value = withTiming(-OFFSCREEN_LENGTH, undefined, finished => {
                 if (finished) {
                     runOnJS(onceOnDismiss)();
@@ -97,18 +97,21 @@ export default memo(function Toast({
         spring.mass(0.35).damping(15).stiffness(350).restDisplacementThreshold(0.1).restSpeedThreshold(0.1);
 
     return (
-        <Animated.View
-            layout={LinearTransition.springify().duration(500).dampingRatio(0.5)}
-            entering={setupSpringMotion(FadeInUp.springify())}
-            exiting={setupSpringMotion(FadeOutUp.springify())}
-        >
-            <Animated.View style={[animatedStyles, styles.container]}>
-                <GestureDetector gesture={Gesture.Simultaneous(pan, fling)}>
-                    <View style={styles.contentContainer}>
-                        <ToastComponent toast={toast} />
-                    </View>
-                </GestureDetector>
+        <GestureDetector gesture={Gesture.Simultaneous(pan, fling)}>
+            <Animated.View
+                pointerEvents="box-none"
+                layout={LinearTransition.springify().duration(500).dampingRatio(0.5)}
+                entering={setupSpringMotion(FadeInUp.springify())}
+                exiting={setupSpringMotion(FadeOutUp.springify())}
+            >
+                <PressableScale pointerEvents="box-none" disabled={!toast.onPress} onPress={toast.onPress}>
+                    <Animated.View style={[animatedStyles, styles.container, toast.contentContainerStyle]}>
+                        <View style={styles.contentContainer}>
+                            <ToastContentRenderer toast={toast} />
+                        </View>
+                    </Animated.View>
+                </PressableScale>
             </Animated.View>
-        </Animated.View>
+        </GestureDetector>
     );
 });

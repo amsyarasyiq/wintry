@@ -1,40 +1,45 @@
-import type { ToastConfig, ToastInstance } from "@api/toasts";
+import type { Toast } from "@api/toasts";
 import { merge } from "es-toolkit";
 import { create } from "zustand";
 
 interface ToastStore {
-    toasts: ToastInstance[];
-    showToast(props: ToastConfig): void;
+    toasts: Toast[];
+
+    getToast(id: string): Toast | undefined;
+    showToast(props: Toast): void;
     hideToast(id: string): void;
-    updateToast(id: string, config: Partial<Omit<ToastInstance, "id">>): void;
+    updateToast(id: string, config: Partial<Toast>): void;
 }
 
-export const useToastStore = create<ToastStore>(set => {
+export const useToastStore = create<ToastStore>((set, get) => {
     const timeouts = new Map<string, Timer>();
 
     return {
         toasts: [],
-        showToast: ({ id, content, type = "generic", options = {} }: ToastConfig) =>
+        getToast: id => get().toasts.find(toast => toast.id === id),
+        showToast: (toast: Toast) =>
             set(state => {
-                const toast = { id, type, content, options } as ToastInstance;
-
-                if (timeouts.has(id)) {
-                    clearTimeout(timeouts.get(id)!);
-                    timeouts.delete(id);
+                if (state.toasts.some(t => t.id === toast.id)) {
+                    return state;
                 }
 
-                if (options.duration && options.duration > 0) {
+                if (timeouts.has(toast.id)) {
+                    clearTimeout(timeouts.get(toast.id)!);
+                    timeouts.delete(toast.id);
+                }
+
+                if (toast.duration && toast.duration > 0) {
                     const timeout = setTimeout(() => {
                         set(state => {
-                            options.onAutoClose?.();
-                            timeouts.delete(id);
+                            toast.onTimeout?.();
+                            timeouts.delete(toast.id);
                             return {
-                                toasts: state.toasts.filter(t => t.id !== id),
+                                toasts: state.toasts.filter(t => t.id !== toast.id),
                             };
                         });
-                    }, options.duration);
+                    }, toast.duration);
 
-                    timeouts.set(id, timeout);
+                    timeouts.set(toast.id, timeout);
                 }
 
                 return { toasts: [...state.toasts, toast] };
@@ -55,29 +60,29 @@ export const useToastStore = create<ToastStore>(set => {
             set(state => ({
                 toasts: state.toasts.map(toast => {
                     if (toast.id === id) {
-                        const isDurationDefined = updatedConfig.options && "duration" in updatedConfig.options;
-                        const updatedToast = merge(toast, updatedConfig);
+                        const isDurationDefined = "duration" in updatedConfig;
+                        const updatedToast = merge({ ...toast }, updatedConfig);
 
-                        if (isDurationDefined && updatedConfig.options!.duration! > 0) {
+                        if (isDurationDefined && updatedConfig.duration! > 0) {
                             if (timeouts.has(id)) {
                                 clearTimeout(timeouts.get(id)!);
                             }
 
                             const timeout = setTimeout(() => {
                                 set(state => {
-                                    toast.options?.onAutoClose?.();
+                                    toast.onTimeout?.();
                                     timeouts.delete(id);
 
                                     return {
                                         toasts: state.toasts.filter(t => t.id !== id),
                                     };
                                 });
-                            }, updatedConfig.options!.duration);
+                            }, updatedConfig.duration);
 
                             timeouts.set(id, timeout);
                         }
 
-                        return updatedToast as ToastInstance;
+                        return updatedToast as Toast;
                     }
                     return toast;
                 }),
