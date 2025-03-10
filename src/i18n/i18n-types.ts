@@ -370,6 +370,14 @@ type RootTranslation = {
 			 */
 			autoUpdateDescription: string
 			/**
+			 * N​o​t​i​f​y​ ​N​e​w​ ​U​p​d​a​t​e​s
+			 */
+			notifyNewUpdates: string
+			/**
+			 * S​h​o​w​ ​a​ ​n​o​t​i​f​i​c​a​t​i​o​n​ ​w​h​e​n​ ​a​ ​n​e​w​ ​u​p​d​a​t​e​ ​i​s​ ​a​v​a​i​l​a​b​l​e​.
+			 */
+			notifyNewUpdatesDescription: string
+			/**
 			 * C​h​e​c​k​ ​f​o​r​ ​U​p​d​a​t​e​s
 			 */
 			checkForUpdates: string
@@ -732,6 +740,14 @@ export type TranslationFunctions = {
 			 * Enable automatic bundle updates without prompts. Bundles are forcefully fetched if uncached.
 			 */
 			autoUpdateDescription: () => LocalizedString
+			/**
+			 * Notify New Updates
+			 */
+			notifyNewUpdates: () => LocalizedString
+			/**
+			 * Show a notification when a new update is available.
+			 */
+			notifyNewUpdatesDescription: () => LocalizedString
 			/**
 			 * Check for Updates
 			 */

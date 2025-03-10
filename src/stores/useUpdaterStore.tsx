@@ -4,13 +4,18 @@ import { create } from "zustand";
 import { showAlert } from "@api/alerts";
 import ErrorCard from "@components/ErrorCard";
 import { showToast } from "@api/toasts";
-import { Mutex, delay, noop } from "es-toolkit";
+import { Mutex, delay, noop, pick } from "es-toolkit";
 import { t } from "@i18n";
 import { wtlogger } from "@api/logger";
 import { loaderPayload } from "@loader";
 import { BundleUpdaterModule } from "@native";
+import { createJSONStorage, persist } from "zustand/middleware";
+import { kvStorage } from "@utils/kvStorage";
 
 interface UpdaterStore {
+    // Persisted
+    notifyOnNewUpdate: boolean;
+
     isCheckingForUpdates: boolean;
     availableUpdate: null | UpdateInfo;
 
@@ -20,40 +25,51 @@ interface UpdaterStore {
 const logger = wtlogger.createChild("UpdaterStore");
 const _updateMutex = new Mutex();
 
-export const useUpdaterStore = create<UpdaterStore>((set, get) => ({
-    isCheckingForUpdates: false,
-    availableUpdate: null,
+export const useUpdaterStore = create(
+    persist<UpdaterStore>(
+        (set, get) => ({
+            notifyOnNewUpdate: false,
+            isCheckingForUpdates: false,
+            availableUpdate: null,
 
-    checkForUpdates: async () => {
-        if (get().availableUpdate) {
-            return get().availableUpdate;
-        }
+            checkForUpdates: async () => {
+                if (get().availableUpdate) {
+                    return get().availableUpdate;
+                }
 
-        await _updateMutex.acquire();
-        set({ isCheckingForUpdates: true });
+                await _updateMutex.acquire();
+                set({ isCheckingForUpdates: true });
 
-        try {
-            const ret = await UpdaterModule.checkForUpdates();
+                try {
+                    const ret = await UpdaterModule.checkForUpdates();
 
-            set({ availableUpdate: ret });
-            return ret;
-        } finally {
-            set({ isCheckingForUpdates: false });
-            _updateMutex.release();
-        }
-    },
-}));
+                    set({ availableUpdate: ret });
+                    return ret;
+                } finally {
+                    set({ isCheckingForUpdates: false });
+                    _updateMutex.release();
+                }
+            },
+        }),
+        {
+            name: "updater-store",
+            storage: createJSONStorage(() => kvStorage),
+            // @ts-expect-error - bad types
+            partialize: s => pick(s, ["notifyOnNewUpdate"]),
+        },
+    ),
+);
 
 export async function initCheckForUpdates() {
     if (!loaderPayload.loader.initConfig.skipUpdate) {
         return; // Loader already has done this job
     }
 
-    const { checkForUpdates } = useUpdaterStore.getState();
+    const { checkForUpdates, notifyOnNewUpdate } = useUpdaterStore.getState();
 
     try {
         const updateAvailable = await checkForUpdates();
-        if (updateAvailable) {
+        if (updateAvailable && notifyOnNewUpdate) {
             showUpdateAvailableToast(updateAvailable);
         }
     } catch (e) {

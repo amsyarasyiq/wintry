@@ -124,6 +124,8 @@ const en = {
             settings: "Settings",
             autoUpdate: "Automatic Updates",
             autoUpdateDescription: "Enable automatic bundle updates without prompts. Bundles are forcefully fetched if uncached.",
+            notifyNewUpdates: "Notify New Updates",
+            notifyNewUpdatesDescription: "Show a notification when a new update is available.",
             checkForUpdates: "Check for Updates",
         }
     },

@@ -17,7 +17,7 @@ import { useEffect } from "react";
 
 export default function UpdaterPage() {
     const { bunny } = getVersions();
-    const { isCheckingForUpdates, checkForUpdates } = useUpdaterStore();
+    const { isCheckingForUpdates, notifyOnNewUpdate, checkForUpdates } = useUpdaterStore();
     const { config } = useInitConfigStore();
 
     const check = async () => {
@@ -67,6 +67,13 @@ export default function UpdaterPage() {
                     subLabel={t.settings.updater.autoUpdateDescription()}
                     value={!config.skipUpdate}
                     onValueChange={v => useInitConfigStore.setState(s => ({ config: { ...s.config, skipUpdate: !v } }))}
+                />
+                <TableSwitchRow
+                    label={t.settings.updater.notifyNewUpdates()}
+                    subLabel={t.settings.updater.notifyNewUpdatesDescription()}
+                    disabled={!config.skipUpdate}
+                    value={notifyOnNewUpdate && config.skipUpdate}
+                    onValueChange={v => useUpdaterStore.setState({ notifyOnNewUpdate: v })}
                 />
             </TableRowGroup>
         </PageWrapper>
