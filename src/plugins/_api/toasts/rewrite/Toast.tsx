@@ -22,6 +22,7 @@ const OFFSCREEN_LENGTH = 800;
 
 const useStyles = createStyles(() => ({
     container: {
+        maxWidth: "90%",
         alignSelf: "center",
         flexDirection: "row",
         justifyContent: "center",

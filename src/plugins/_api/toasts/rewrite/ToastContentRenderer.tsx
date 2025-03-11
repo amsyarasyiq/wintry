@@ -1,9 +1,26 @@
 import type { Toast } from "@api/toasts";
-import { Text } from "@components/Discord";
+import { TableRow, Text } from "@components/Discord";
 import { useToastStore } from "@stores/useToastStore";
-import { useState } from "react";
-import type { TextLayoutEventData } from "react-native";
+import { isValidElement, useState } from "react";
+import { View, type TextLayoutEventData } from "react-native";
 import { useShallow } from "zustand/shallow";
+
+function ToastIcon({ icon }: { icon: Toast["icon"] }) {
+    if (!icon) {
+        return null;
+    }
+
+    if (typeof icon === "number" || (typeof icon === "object" && "uri" in icon)) {
+        return <TableRow.Icon source={icon} />;
+    }
+
+    if (isValidElement(icon)) {
+        return icon;
+    }
+
+    const Icon = icon as React.ComponentType;
+    return <Icon />;
+}
 
 function GenericToast({ toast }: { toast: Toast }) {
     const [isMultiline, setIsMultiline] = useState(false);
@@ -13,9 +30,14 @@ function GenericToast({ toast }: { toast: Toast }) {
     };
 
     return (
-        <Text style={[isMultiline && { paddingLeft: 16 }]} variant="text-sm/semibold" onTextLayout={onTextLayout}>
-            {toast.text}
-        </Text>
+        <View style={[isMultiline && { paddingHorizontal: 12 }]}>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+                {toast.icon && <ToastIcon icon={toast.icon} />}
+                <Text variant="text-sm/semibold" onTextLayout={onTextLayout}>
+                    {toast.text}
+                </Text>
+            </View>
+        </View>
     );
 }
 

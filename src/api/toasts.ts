@@ -1,5 +1,5 @@
 import { useToastStore } from "@stores/useToastStore";
-import type { StyleProp, ViewStyle } from "react-native";
+import type { ImageSourcePropType, StyleProp, ViewStyle } from "react-native";
 
 export interface ToastOptions {
     duration?: number;
@@ -12,6 +12,7 @@ export interface ToastOptions {
 
 export interface GenericToastContent {
     text: string;
+    icon?: React.ReactNode | React.ComponentType | ImageSourcePropType;
 }
 
 export interface CustomToastProps {
