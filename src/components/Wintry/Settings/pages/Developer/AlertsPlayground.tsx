@@ -1,8 +1,8 @@
 import { dismissAlert, showAlert } from "@api/alerts";
 import { Button, Card, RowButton, Stack, Text } from "@components/Discord";
 import { AlertActionButton, AlertModal, useDismissModalCallback } from "@components/Discord/AlertModal/AlertModal";
-import { InlineCheckbox } from "@components/Wintry/WintrySettings/InlineCheckbox";
-import PageWrapper from "@components/Wintry/WintrySettings/PageWrapper";
+import { InlineCheckbox } from "@components/Wintry/Settings/InlineCheckbox";
+import PageWrapper from "@components/Wintry/Settings/PageWrapper";
 import { delay, noop } from "es-toolkit";
 import { useEffect, useState } from "react";
 

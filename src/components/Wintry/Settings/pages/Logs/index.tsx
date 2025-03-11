@@ -1,5 +1,5 @@
 import TableRowDivider from "@components/Discord/TableRow/TableRowDivider";
-import PageWrapper from "@components/Wintry/WintrySettings/PageWrapper";
+import PageWrapper from "@components/Wintry/Settings/PageWrapper";
 import { FlashList } from "@shopify/flash-list";
 import { useMemo, useState } from "react";
 import { ScrollView } from "react-native";

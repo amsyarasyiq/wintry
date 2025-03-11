@@ -1,5 +1,5 @@
 import { TableRow } from "@components/Discord";
-import PageWrapper from "@components/Wintry/WintrySettings/PageWrapper";
+import PageWrapper from "@components/Wintry/Settings/PageWrapper";
 import { tokens, useToken } from "@metro/common/libraries";
 import { FlashList } from "@shopify/flash-list";
 import { View } from "react-native";
