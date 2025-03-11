@@ -20,6 +20,9 @@ export interface CustomToastProps {
 }
 
 export interface CustomToastContent {
+    /**
+     * Avoid using states in the custom renderer, as components may be re-rendered unexpectedly multiple times
+     */
     render: (props: CustomToastProps) => React.ReactNode;
 }
 
@@ -27,14 +30,18 @@ export interface ToastConfig {
     id: string;
 }
 
+export interface ToastUtils {
+    use: <T>(selector: (toast: Toast) => T) => T;
+}
+
 export interface ToastController {
-    show: () => ToastController;
     hide: () => ToastController;
-    update: (newOptions: Partial<Toast>) => ToastController;
+    update: (newConfig: Partial<Toast>) => ToastController;
 }
 
 export type ToastContent = GenericToastContent & CustomToastContent;
-export type Toast = ToastConfig & Partial<ToastContent> & ToastOptions;
+export type ToastProps = ToastConfig & Partial<ToastContent> & ToastOptions;
+export type Toast = ToastProps & ToastUtils;
 
 /**
  * Show a toast notification
@@ -46,47 +53,47 @@ export function showToast(text: string): ToastController;
 
 /**
  * Show a toast with custom content
- * @param content Toast content (either text object or custom renderer)
- * @param options Additional options
+ * @param content Toast config
  * @returns Toast control object with hide and update methods
  */
-export function showToast(content: Toast): ToastController;
+export function showToast(content: ToastProps): ToastController;
 
-export function showToast(configOrText: string | Toast): ToastController {
+export function showToast(configOrText: string | ToastProps): ToastController {
     let id: string;
 
     // Parse the content
-    let toast: Toast;
+    let toastProps: ToastProps;
 
     if (typeof configOrText === "string") {
         id = configOrText; // TODO: Hash the text to generate an ID
-        toast = { id: configOrText, text: configOrText };
+        toastProps = { id: configOrText, text: configOrText };
     } else {
         id = configOrText.id;
-        toast = configOrText;
+        toastProps = configOrText;
     }
 
+    const toast: Toast = {
+        use: selector => useToastStore(state => selector(state.getToast(id) ?? toast)),
+        ...toastProps,
+    };
+
     // Show the toast
-    const show = () =>
-        useToastStore.getState().showToast({
+    const showToast = () =>
+        useToastStore.getState().updateToast({
             duration: 5000,
             dismissible: true,
             ...(useToastStore.getState().getToast(id) ?? toast),
         });
 
-    show();
+    showToast();
 
     const controller: ToastController = {
-        show: () => {
-            show();
-            return controller;
-        },
         hide: () => {
             useToastStore.getState().hideToast(id);
             return controller;
         },
-        update: (newConfig: Partial<Toast>) => {
-            useToastStore.getState().updateToast(id, newConfig);
+        update: newConfig => {
+            useToastStore.getState().updateToast({ ...toast, ...newConfig, id });
             return controller;
         },
     };

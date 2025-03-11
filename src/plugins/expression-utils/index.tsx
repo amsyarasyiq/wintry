@@ -75,21 +75,21 @@ export default definePlugin({
             const toastController = showToast({
                 id: "expression-utils-upload-status",
                 render: UploadStatusView,
-            }).hide();
+            }).hide(); // Initially hide the toast
 
             if (
                 (s.status !== "idle" && s.status !== p.status) ||
                 (s.recentUploadDetails && s.recentUploadDetails !== p.recentUploadDetails)
             ) {
-                toastController.show();
+                toastController.update({ duration: Number.MAX_SAFE_INTEGER });
                 if (s.status === "success" || s.status === "error") {
-                    toastController.update({ duration: 3000 }).show();
+                    toastController.update({ duration: 3000 });
                 }
             }
 
             // Post-cleanup
             if (s.status === "idle") {
-                toastController?.hide().update({ duration: Number.MAX_SAFE_INTEGER });
+                toastController.hide();
             }
         });
 

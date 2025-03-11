@@ -46,8 +46,9 @@ const useStyles = createStyles(() => ({
 
 export default memo(function Toast({ toast }: { toast: _Toast }) {
     const styles = useStyles();
-    const hideToast = useToastStore(s => s.hideToast);
     const { width } = useWindowDimensions();
+
+    const hideToast = useToastStore(s => s.hideToast);
 
     const translationX = useSharedValue(0);
     const translationY = useSharedValue(0);

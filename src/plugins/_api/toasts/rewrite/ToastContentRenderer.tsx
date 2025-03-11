@@ -1,8 +1,8 @@
-import type { Toast } from "@api/toasts";
-import { TableRow, Text } from "@components/Discord";
+import type { Toast, ToastController } from "@api/toasts";
+import { Text } from "@components/Discord";
 import { useToastStore } from "@stores/useToastStore";
 import { isValidElement, useState } from "react";
-import { View, type TextLayoutEventData } from "react-native";
+import { Image, View, type TextLayoutEventData } from "react-native";
 import { useShallow } from "zustand/shallow";
 
 function ToastIcon({ icon }: { icon: Toast["icon"] }) {
@@ -11,7 +11,7 @@ function ToastIcon({ icon }: { icon: Toast["icon"] }) {
     }
 
     if (typeof icon === "number" || (typeof icon === "object" && "uri" in icon)) {
-        return <TableRow.Icon source={icon} />;
+        return <Image style={{ width: 18, height: 18 }} resizeMode="contain" source={icon} />;
     }
 
     if (isValidElement(icon)) {
@@ -23,6 +23,7 @@ function ToastIcon({ icon }: { icon: Toast["icon"] }) {
 }
 
 function GenericToast({ toast }: { toast: Toast }) {
+    const [text, icon] = toast.use(useShallow(t => [t.text, t.icon]));
     const [isMultiline, setIsMultiline] = useState(false);
 
     const onTextLayout = ({ nativeEvent }: { nativeEvent: TextLayoutEventData }) => {
@@ -32,9 +33,9 @@ function GenericToast({ toast }: { toast: Toast }) {
     return (
         <View style={[isMultiline && { paddingHorizontal: 12 }]}>
             <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-                {toast.icon && <ToastIcon icon={toast.icon} />}
+                {icon && <ToastIcon icon={icon} />}
                 <Text variant="text-sm/semibold" onTextLayout={onTextLayout}>
-                    {toast.text}
+                    {text}
                 </Text>
             </View>
         </View>
@@ -42,27 +43,22 @@ function GenericToast({ toast }: { toast: Toast }) {
 }
 
 function CustomToast({ toast }: { toast: Toast }) {
-    const CustomComponent = toast.render!;
-    const { getToast, showToast, updateToast, hideToast } = useToastStore(
+    const CustomComponent = toast.use(t => t.render!);
+    const { getToast, updateToast, hideToast } = useToastStore(
         useShallow(state => ({
             getToast: state.getToast,
-            showToast: state.showToast,
             updateToast: state.updateToast,
             hideToast: state.hideToast,
         })),
     );
 
-    const controller = {
-        show: () => {
-            showToast(getToast(toast.id) ?? toast);
-            return controller;
-        },
+    const controller: ToastController = {
         hide: () => {
             hideToast(toast.id);
             return controller;
         },
-        update: (config: Partial<Toast>) => {
-            updateToast(toast.id, config);
+        update: config => {
+            updateToast({ ...config, id: toast.id });
             return controller;
         },
     };

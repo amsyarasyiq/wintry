@@ -1,8 +1,8 @@
-import { showToast, type CustomToastProps } from "@api/toasts";
-import { RowButton, Text } from "@components/Discord";
+import { showToast, type CustomToastProps, type ToastProps } from "@api/toasts";
+import { RowButton, TableRow, TableRowGroup, TableSwitchRow, Text, TextInput } from "@components/Discord";
 import PageWrapper from "@components/WintrySettings/PageWrapper";
 import { useEffect, useState, type ReactNode } from "react";
-import { View } from "react-native";
+import { ActivityIndicator, View, ScrollView } from "react-native";
 
 function DemoToastComponent(props: CustomToastProps): ReactNode {
     const [count, setCount] = useState(0);
@@ -26,57 +26,121 @@ function DemoToastComponent(props: CustomToastProps): ReactNode {
 }
 
 export default function ToastPlayground() {
+    const [toastConfig, setToastConfig] = useState({
+        id: "toast-demo",
+        text: "This is a toast message",
+        dismissible: true,
+        duration: 5000,
+        showIcon: false,
+        updateAfterDelay: false,
+    });
+
+    const handleShowToast = () => {
+        const options: Partial<ToastProps> = {
+            id: JSON.stringify(toastConfig),
+            text: toastConfig.text,
+            dismissible: toastConfig.dismissible,
+            duration: toastConfig.duration,
+        };
+
+        if (toastConfig.showIcon) {
+            options.icon = require("@assets/ic_wintry.png");
+        }
+
+        if (toastConfig.updateAfterDelay) {
+            setTimeout(() => {
+                toast.update({
+                    text: `${toastConfig.text} (Updated)`,
+                });
+            }, 2000);
+        }
+
+        const toast = showToast(options as ToastProps);
+    };
+
     return (
-        <PageWrapper containerStyle={{ gap: 8, padding: 8, justifyContent: "flex-end" }}>
-            <RowButton
-                label="Show generic toast"
-                onPress={() => {
-                    showToast({
-                        id: "generic-toast-demo",
-                        text: "This is a generic toast!",
-                    });
-                }}
-            />
-            <RowButton
-                label="Show generic toast with icons"
-                onPress={() => {
-                    showToast({
-                        id: "generic-toast-with-icons-demo",
-                        icon: require("@assets/ic_wintry.png"),
-                        text: "This is a generic toast, with an icon!",
-                    });
-                }}
-            />
-            <RowButton
-                label="Show undissmissible toast"
-                onPress={() => {
-                    showToast({
-                        id: "undissmissible-toast-demo",
-                        text: "This is an undissmissible toast!",
-                        dismissible: false,
-                    });
-                }}
-            />
-            <RowButton
-                label="Show longer generic toast"
-                onPress={() => {
-                    showToast({
-                        id: "longer-generic-toast-demo",
-                        text: "This is a generic toast with a longer message! It should wrap to multiple lines.",
-                    });
-                }}
-            />
-            <RowButton
-                label="Show custom toast"
-                onPress={() => {
-                    const toast = showToast({
-                        id: "custom-toast-demo",
-                        render: DemoToastComponent,
-                        duration: 8000,
-                        onPress: () => toast.hide(),
-                    });
-                }}
-            />
+        <PageWrapper>
+            <ScrollView contentContainerStyle={{ gap: 12 }} style={{ flex: 1 }}>
+                <TableRowGroup title="Configure">
+                    <TableRow
+                        label={
+                            <TextInput
+                                label="Toast Text"
+                                value={toastConfig.text}
+                                onChange={text => setToastConfig(prev => ({ ...prev, text }))}
+                                style={{ width: 150 }}
+                            />
+                        }
+                    />
+                    <TableRow
+                        label={
+                            <TextInput
+                                label="Duration (ms)"
+                                value={String(toastConfig.duration)}
+                                onChange={text =>
+                                    setToastConfig(prev => ({
+                                        ...prev,
+                                        duration: Number(text) || 5000,
+                                    }))
+                                }
+                                keyboardType="numeric"
+                                style={{ width: 150 }}
+                            />
+                        }
+                    />
+
+                    <TableSwitchRow
+                        label="Show Icon"
+                        value={toastConfig.showIcon}
+                        onValueChange={value => setToastConfig(prev => ({ ...prev, showIcon: value }))}
+                    />
+
+                    <TableSwitchRow
+                        label="Dismissible"
+                        value={toastConfig.dismissible}
+                        onValueChange={value => setToastConfig(prev => ({ ...prev, dismissible: value }))}
+                    />
+
+                    <TableSwitchRow
+                        label="Update After Delay"
+                        value={toastConfig.updateAfterDelay}
+                        onValueChange={value => setToastConfig(prev => ({ ...prev, updateAfterDelay: value }))}
+                    />
+                </TableRowGroup>
+
+                <RowButton label="Show Configured Toast" onPress={handleShowToast} />
+                <RowButton
+                    label="Show Custom Component Toast"
+                    onPress={() => {
+                        const toast = showToast({
+                            id: "custom-toast",
+                            render: DemoToastComponent,
+                            onPress: () => toast.hide(),
+                            duration: toastConfig.duration,
+                            dismissible: toastConfig.dismissible,
+                        });
+                    }}
+                />
+                <RowButton
+                    label="Loading Toast"
+                    onPress={() => {
+                        const toast = showToast({
+                            id: "loading-toast",
+                            text: "Loading...",
+                            icon: <ActivityIndicator />,
+                            dismissible: false,
+                        });
+
+                        setTimeout(() => {
+                            toast.update({
+                                text: "Loading complete!",
+                                icon: undefined,
+                                dismissible: true,
+                            });
+                        }, 2000);
+                    }}
+                />
+            </ScrollView>
         </PageWrapper>
     );
 }
