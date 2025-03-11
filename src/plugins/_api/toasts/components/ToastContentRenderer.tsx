@@ -14,7 +14,7 @@ function ToastIcon({ icon }: { icon: Toast["icon"] }) {
         return <Image style={{ width: 18, height: 18 }} resizeMode="contain" source={icon} />;
     }
 
-    if (isValidElement(icon)) {
+    if (isValidElement(icon) && typeof icon.type === "object") {
         return icon;
     }
 
