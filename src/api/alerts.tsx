@@ -62,8 +62,10 @@ export function showAlert(props: AlertProps): string {
         // Direct alert
         content = (
             <AlertModal
+                header={props.header}
                 title={props.title}
                 content={props.content}
+                extraContent={props.extraContent}
                 actions={props.actions?.map((a, i) =>
                     isValidElement(a) ? a : <AlertActionButton key={i} {...(a as AlertActionButtonProps)} />,
                 )}
