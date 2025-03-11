@@ -91,36 +91,34 @@ export function showUpdateAvailableToast(updateInfo: UpdateInfo) {
 
 export function showUpdateAvailableAlert(updateInfo: UpdateInfo) {
     showAlert({
-        key: "wt-update-available",
-        content: {
-            title: t.updater.update_available(),
-            content: t.updater.new_version(),
-            extraContent: (
-                <Card>
-                    <Text variant="text-md/medium">{updateInfo.revision || "Unknown hash"}</Text>
-                </Card>
-            ),
-            actions: [
-                {
-                    text: t.updater.update_and_restart(),
-                    onPress: async () => {
-                        try {
-                            await UpdaterModule.fetchBundle(updateInfo.url, updateInfo.revision);
-                            await delay(500); // Just in case
-                            BundleUpdaterModule.reload();
-                        } catch (e) {
-                            logger.error`Failed to fetch bundle: ${e}`;
-                            showUpdateErrorToast(e);
-                        }
-                    },
+        id: "wt-update-available",
+        title: t.updater.update_available(),
+        content: t.updater.new_version(),
+        extraContent: (
+            <Card>
+                <Text variant="text-md/medium">{updateInfo.revision || "Unknown hash"}</Text>
+            </Card>
+        ),
+        actions: [
+            {
+                text: t.updater.update_and_restart(),
+                onPress: async () => {
+                    try {
+                        await UpdaterModule.fetchBundle(updateInfo.url, updateInfo.revision);
+                        await delay(500); // Just in case
+                        BundleUpdaterModule.reload();
+                    } catch (e) {
+                        logger.error`Failed to fetch bundle: ${e}`;
+                        showUpdateErrorToast(e);
+                    }
                 },
-                {
-                    text: t.actions.nevermind(),
-                    variant: "secondary",
-                    onPress: () => {},
-                },
-            ],
-        },
+            },
+            {
+                text: t.actions.nevermind(),
+                variant: "secondary",
+                onPress: () => {},
+            },
+        ],
     });
 }
 
@@ -144,18 +142,16 @@ export function showUpdateErrorToast(error: unknown) {
 
 export function showUpdateErrorAlert(error: unknown) {
     showAlert({
-        key: "wt-update-error",
-        content: {
-            title: t.updater.failed_to_check(),
-            content: t.updater.error_alert(),
-            extraContent: <ErrorCard header={null} showStackTrace={true} error={error} />,
-            actions: [
-                {
-                    text: t.actions.dismiss(),
-                    variant: "destructive",
-                    onPress: noop,
-                },
-            ],
-        },
+        id: "wt-update-error",
+        title: t.updater.failed_to_check(),
+        content: t.updater.error_alert(),
+        extraContent: <ErrorCard header={null} showStackTrace={true} error={error} />,
+        actions: [
+            {
+                text: t.actions.dismiss(),
+                variant: "destructive",
+                onPress: noop,
+            },
+        ],
     });
 }

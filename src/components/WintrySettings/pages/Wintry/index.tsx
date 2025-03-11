@@ -74,33 +74,31 @@ export default function WintryPage() {
                             const action = enable ? "enable" : "disable";
 
                             showAlert({
-                                key: `safe-mode-${action}`,
-                                content: {
-                                    title: ts.title({ action }),
-                                    content: ts.description({ action }),
-                                    actions: [
-                                        {
-                                            text: ts.apply_and_restart(),
-                                            onPress: async () => {
-                                                toggleSafeMode(enable);
-                                                await delay(500); // Allow time for preferences to be saved
-                                                BundleUpdaterModule.reload();
-                                            },
+                                id: `safe-mode-${action}`,
+                                title: ts.title({ action }),
+                                content: ts.description({ action }),
+                                actions: [
+                                    {
+                                        text: ts.apply_and_restart(),
+                                        onPress: async () => {
+                                            toggleSafeMode(enable);
+                                            await delay(500); // Allow time for preferences to be saved
+                                            BundleUpdaterModule.reload();
                                         },
-                                        {
-                                            text: ts.apply_without_restart(),
-                                            variant: enable ? "primary" : "secondary",
-                                            onPress: async () => {
-                                                toggleSafeMode(enable);
-                                            },
+                                    },
+                                    {
+                                        text: ts.apply_without_restart(),
+                                        variant: enable ? "primary" : "secondary",
+                                        onPress: async () => {
+                                            toggleSafeMode(enable);
                                         },
-                                        {
-                                            text: t.actions.nevermind(),
-                                            variant: "secondary",
-                                            onPress: () => {},
-                                        },
-                                    ],
-                                },
+                                    },
+                                    {
+                                        text: t.actions.nevermind(),
+                                        variant: "secondary",
+                                        onPress: () => {},
+                                    },
+                                ],
                             });
                         };
 
