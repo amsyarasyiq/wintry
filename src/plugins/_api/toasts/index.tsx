@@ -3,7 +3,7 @@ import { Devs } from "@data/constants";
 import { createContextualPatcher } from "@patcher/contextual";
 import { lookup } from "@metro/api";
 import { byFilePath } from "@metro/common/filters";
-import ToastContainer from "./rewrite/ToastContainer";
+import ToastContainer from "./components/ToastContainer";
 import { useToastStore } from "@stores/useToastStore";
 const patcher = createContextualPatcher({ pluginId: meta.id });
 

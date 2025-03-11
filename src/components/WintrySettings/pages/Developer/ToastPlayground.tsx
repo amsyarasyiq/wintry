@@ -1,8 +1,11 @@
+import { wtlogger } from "@api/logger";
 import { showToast, type CustomToastProps, type ToastProps } from "@api/toasts";
 import { RowButton, TableRow, TableRowGroup, TableSwitchRow, Text, TextInput } from "@components/Discord";
 import PageWrapper from "@components/WintrySettings/PageWrapper";
 import { useEffect, useState, type ReactNode } from "react";
 import { ActivityIndicator, View, ScrollView } from "react-native";
+
+const logger = wtlogger.createChild("ToastPlayground");
 
 function DemoToastComponent(props: CustomToastProps): ReactNode {
     const [count, setCount] = useState(0);
@@ -41,6 +44,15 @@ export default function ToastPlayground() {
             text: toastConfig.text,
             dismissible: toastConfig.dismissible,
             duration: toastConfig.duration,
+            onDismiss() {
+                logger.info("Toast dismissed");
+            },
+            onPress() {
+                logger.info("Toast pressed");
+            },
+            onTimeout() {
+                logger.info("Toast timed out");
+            },
         };
 
         if (toastConfig.showIcon) {
