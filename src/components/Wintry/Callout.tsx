@@ -1,6 +1,6 @@
 import { tokens, useToken } from "@metro/common/libraries";
 import { View } from "react-native";
-import { Text } from "./Discord";
+import { Text } from "../Discord";
 import { CircleCheckIcon, CircleInformationIcon, WarningIcon } from "@metro/common/icons";
 
 type CalloutVariant = "info" | "success" | "warning" | "danger";

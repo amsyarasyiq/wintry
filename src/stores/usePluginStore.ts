@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { createJSONStorage, persist, subscribeWithSelector } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
-import { kvStorage } from "@utils/kvStorage";
+import { kvStorage } from "@loader/kvStorage";
 import type { PluginSettings, PluginState, WintryPluginInstance } from "@plugins/types";
 import { getProxyFactory, lazyValue } from "@utils/lazy";
 import { wtlogger } from "@api/logger";

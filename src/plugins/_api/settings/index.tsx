@@ -7,7 +7,7 @@ import {
     type SettingRendererConfig,
 } from "@api/settings";
 import { TableRow } from "@components/Discord";
-import Tag from "@components/Tag";
+import Tag from "@components/Wintry/Tag";
 import { Devs } from "@data/constants";
 import { getVersions } from "@debug/info";
 import { t } from "@i18n";
@@ -132,7 +132,7 @@ export default definePlugin({
                         },
                         screen: {
                             route: "WINTRY",
-                            getComponent: () => lazy(() => import("@components/WintrySettings/pages/Wintry")),
+                            getComponent: () => lazy(() => import("@components/Wintry/Settings/pages/Wintry")),
                         },
                     }),
                     registerSettingRenderer("WINTRY_PLUGINS", {
@@ -141,7 +141,7 @@ export default definePlugin({
                         IconComponent: PuzzlePieceIcon,
                         screen: {
                             route: "WINTRY_PLUGINS",
-                            getComponent: () => lazy(() => import("@components/WintrySettings/pages/Plugins")),
+                            getComponent: () => lazy(() => import("@components/Wintry/Settings/pages/Plugins")),
                         },
                     }),
                     registerSettingRenderer("WINTRY_DEVELOPER", {
@@ -150,7 +150,7 @@ export default definePlugin({
                         IconComponent: WrenchIcon,
                         screen: {
                             route: "WINTRY_DEVELOPER",
-                            getComponent: () => lazy(() => import("@components/WintrySettings/pages/Developer")),
+                            getComponent: () => lazy(() => import("@components/Wintry/Settings/pages/Developer")),
                         },
                     }),
                     // registerSettingRenderer("WINTRY_UPDATER", {

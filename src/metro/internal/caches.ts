@@ -1,4 +1,4 @@
-import { kvStorage } from "@utils/kvStorage";
+import { kvStorage } from "@loader/kvStorage";
 import { NativeClientInfoModule } from "../../native";
 import { ModuleFlags, ModulesMapInternal } from "./enums";
 import { isBadModuleExports } from "./modules";

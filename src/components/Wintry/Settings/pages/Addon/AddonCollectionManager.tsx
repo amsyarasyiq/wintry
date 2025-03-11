@@ -1,5 +1,5 @@
 import fuzzysort from "fuzzysort";
-import { useSearchQuery } from "../../../Search";
+import { useSearchQuery } from "../../../../Wintry/Search";
 import { create, type StoreApi, type UseBoundStore } from "zustand";
 import { type SortOption, type FilterOption, FilterAndSortBar } from "../../../FilterAndSortBar";
 import type { Addon } from ".";

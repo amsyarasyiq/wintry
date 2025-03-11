@@ -1,4 +1,4 @@
-import Codeblock from "@components/Codeblock";
+import Codeblock from "@components/Wintry/Codeblock";
 import { createStyles } from "@components/utils/styles";
 import { View, ActivityIndicator, Image } from "react-native";
 import Animated, { CurvedTransition } from "react-native-reanimated";

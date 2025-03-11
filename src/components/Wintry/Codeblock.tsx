@@ -1,5 +1,5 @@
 import { Platform, Text, TextInput, type StyleProp, type TextStyle } from "react-native";
-import { createStyles } from "./utils/styles";
+import { createStyles } from "../utils/styles";
 import { constants, tokens } from "@metro/common/libraries";
 
 export interface CodeblockProps {

@@ -1,4 +1,4 @@
-import Callout from "@components/Callout";
+import Callout from "@components/Wintry/Callout";
 import { t } from "@i18n";
 import { View } from "react-native";
 import PageWrapper from "../../PageWrapper";

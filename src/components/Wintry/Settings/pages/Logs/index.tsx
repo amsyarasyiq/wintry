@@ -1,9 +1,9 @@
 import TableRowDivider from "@components/Discord/TableRow/TableRowDivider";
-import PageWrapper from "@components/WintrySettings/PageWrapper";
+import PageWrapper from "@components/Wintry/Settings/PageWrapper";
 import { FlashList } from "@shopify/flash-list";
 import { useMemo, useState } from "react";
 import { ScrollView } from "react-native";
-import { InlineCheckbox } from "../../InlineCheckbox";
+import { InlineCheckbox } from "../../../InlineCheckbox";
 import { LogRow } from "./LogRow";
 import { wtlogger } from "@api/logger";
 

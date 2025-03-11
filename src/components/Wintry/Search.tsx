@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Image, View, type StyleProp, type ViewStyle } from "react-native";
 import { t } from "@i18n";
 import { findAssetId } from "@api/assets";
-import TextInput from "./Discord/TextInput/TextInput";
+import TextInput from "../Discord/TextInput/TextInput";
 
 export interface SearchProps {
     queryRef?: ReturnType<typeof useSearchQuery>;

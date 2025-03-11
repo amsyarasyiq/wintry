@@ -1,4 +1,4 @@
-import Codeblock from "@components/Codeblock";
+import Codeblock from "@components/Wintry/Codeblock";
 import { BottomSheet, Button, Stack, Text } from "@components/Discord";
 import { useToken, tokens } from "@metro/common/libraries";
 import { View } from "react-native";

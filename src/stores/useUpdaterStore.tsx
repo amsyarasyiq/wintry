@@ -2,7 +2,7 @@ import { Card, Text } from "@components/Discord";
 import UpdaterModule, { type UpdateInfo } from "@loader/modules/UpdaterModule";
 import { create } from "zustand";
 import { showAlert } from "@api/alerts";
-import ErrorCard from "@components/ErrorCard";
+import ErrorCard from "@components/Wintry/ErrorCard";
 import { showToast } from "@api/toasts";
 import { Mutex, delay, noop, pick } from "es-toolkit";
 import { t } from "@i18n";
@@ -10,7 +10,7 @@ import { wtlogger } from "@api/logger";
 import { loaderPayload } from "@loader";
 import { BundleUpdaterModule } from "@native";
 import { createJSONStorage, persist } from "zustand/middleware";
-import { kvStorage } from "@utils/kvStorage";
+import { kvStorage } from "@loader/kvStorage";
 
 interface UpdaterStore {
     // Persisted

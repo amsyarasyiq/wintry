@@ -1,10 +1,10 @@
 import { t } from "@i18n";
 import { isValidElement, type ReactNode } from "react";
-import Button from "./Discord/Button/Button";
-import { BottomSheet, Card, Stack, Text } from "./Discord";
-import TwinButtons from "./Discord/experimental/TwinButtons";
+import Button from "../Discord/Button/Button";
+import { BottomSheet, Card, Stack, Text } from "../Discord";
+import TwinButtons from "../Discord/experimental/TwinButtons";
 import Codeblock from "./Codeblock";
-import { showSheet } from "./utils/sheets";
+import { showSheet } from "../utils/sheets";
 import { ScrollView } from "react-native";
 
 export const INDEX_BUNDLE_FILE: string = window.HermesInternal.getFunctionLocation(window.__r).fileName;
