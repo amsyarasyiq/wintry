@@ -6,13 +6,13 @@ import { useEffect } from "react";
 import { Fragment } from "react/jsx-runtime";
 import { useEmojiAdderStore } from "./stores/useEmojiAdderStore";
 import type { EmojiNode } from "./types";
-import { Toast } from "@api/toasts";
 import UploadStatusView from "./components/UploadStatusView";
 import StealButtons from "./components/StealButtons";
 import { openMediaModal } from "./utils/openMediaModal";
 import { openEmojiActionSheet } from "./utils/openEmojiActionSheet";
 import { CustomEmojiContent, MessageReactionsContent } from "./common";
 import PressableScale from "@components/Discord/experimental/PressableScale";
+import { showToast } from "@api/toasts";
 
 const patcher = createContextualPatcher({ pluginId: meta.id });
 
@@ -71,32 +71,25 @@ export default definePlugin({
     start() {
         patcher.reset();
 
-        const toast = new Toast({
-            type: "custom",
-            content: {
-                render: UploadStatusView,
-            },
-            options: {
-                duration: Number.MAX_SAFE_INTEGER,
-            },
-        });
-
         useEmojiAdderStore.subscribe((s, p) => {
+            const toastController = showToast({
+                id: "expression-utils-upload-status",
+                render: UploadStatusView,
+            }).hide(); // Initially hide the toast
+
             if (
                 (s.status !== "idle" && s.status !== p.status) ||
                 (s.recentUploadDetails && s.recentUploadDetails !== p.recentUploadDetails)
             ) {
-                toast.show();
-
+                toastController.update({ duration: Number.MAX_SAFE_INTEGER });
                 if (s.status === "success" || s.status === "error") {
-                    toast.update({ options: { duration: 5000 } });
+                    toastController.update({ duration: 3000 });
                 }
             }
 
             // Post-cleanup
             if (s.status === "idle") {
-                toast.hide();
-                toast.update({ options: { duration: Number.MAX_SAFE_INTEGER } });
+                toastController.hide();
             }
         });
 

@@ -80,18 +80,18 @@ export async function initCheckForUpdates() {
 
 export function showUpdateAvailableToast(updateInfo: UpdateInfo) {
     showToast({
-        content: t.updater.new_version(),
-        options: {
-            onPress: () => {
-                showUpdateAvailableAlert(updateInfo);
-            },
+        id: "wt-update-available",
+        text: t.updater.new_version(),
+        duration: 8000,
+        onPress: () => {
+            showUpdateAvailableAlert(updateInfo);
         },
     });
 }
 
 export function showUpdateAvailableAlert(updateInfo: UpdateInfo) {
     showAlert({
-        key: "update-available",
+        key: "wt-update-available",
         content: {
             title: t.updater.update_available(),
             content: t.updater.new_version(),
@@ -126,25 +126,25 @@ export function showUpdateAvailableAlert(updateInfo: UpdateInfo) {
 
 export function showAlreadyUpdatedToast() {
     showToast({
-        content: t.updater.already_latest(),
+        id: "wt-already-updated",
+        text: t.updater.already_latest(),
     });
 }
 
 // TODO: Show more proper
 export function showUpdateErrorToast(error: unknown) {
     showToast({
-        content: t.updater.failed_to_check(),
-        options: {
-            onPress: () => {
-                showUpdateErrorAlert(error);
-            },
+        id: "wt-update-error",
+        text: t.updater.failed_to_check(),
+        onPress: () => {
+            showUpdateErrorAlert(error);
         },
     });
 }
 
 export function showUpdateErrorAlert(error: unknown) {
     showAlert({
-        key: "update-error",
+        key: "wt-update-error",
         content: {
             title: t.updater.failed_to_check(),
             content: t.updater.error_alert(),

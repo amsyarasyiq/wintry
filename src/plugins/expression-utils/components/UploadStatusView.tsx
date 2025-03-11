@@ -25,8 +25,8 @@ const useStyles = createStyles(() => ({
         tintColor: tokens.colors.TEXT_DANGER,
     },
     container: {
-        paddingVertical: 12,
-        paddingHorizontal: 24,
+        paddingVertical: 8,
+        paddingHorizontal: 16,
         justifyContent: "center",
         alignItems: "center",
     },

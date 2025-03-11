@@ -8,12 +8,14 @@ export async function copyToClipboard(text: string, { toast = true } = {}) {
         await clipboard.setString(text);
         if (toast)
             showToast({
-                content: "Copied to clipboard",
+                id: "wt-copied",
+                text: "Copied to clipboard",
             });
     } catch {
         if (toast)
             showToast({
-                content: "Failed to copy to clipboard",
+                id: "wt-failed-to-copy",
+                text: "Failed to copy to clipboard",
             });
     }
 }
