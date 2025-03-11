@@ -1,5 +1,5 @@
 import { TableRow, TableRowGroup } from "@components/Discord";
-import PageWrapper from "@components/WintrySettings/PageWrapper";
+import PageWrapper from "@components/Wintry/WintrySettings/PageWrapper";
 import { NavigationNative } from "@metro/common/libraries";
 import { lazy } from "react";
 

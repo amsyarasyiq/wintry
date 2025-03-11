@@ -1,5 +1,5 @@
 import Callout from "@components/Callout";
-import PageWrapper from "@components/WintrySettings/PageWrapper";
+import PageWrapper from "@components/Wintry/WintrySettings/PageWrapper";
 
 export default function CalloutPlayground() {
     return (
