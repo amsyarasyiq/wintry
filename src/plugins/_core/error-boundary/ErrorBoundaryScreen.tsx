@@ -1,4 +1,4 @@
-import Codeblock from "@components/Codeblock";
+import Codeblock from "@components/Wintry/Codeblock";
 import { createStyles } from "@components/utils/styles";
 import { t } from "@i18n";
 import { BundleUpdaterModule } from "@native";

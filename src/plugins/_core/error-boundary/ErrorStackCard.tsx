@@ -1,4 +1,4 @@
-import { INDEX_BUNDLE_FILE } from "@components/ErrorCard";
+import { INDEX_BUNDLE_FILE } from "@components/Wintry/ErrorCard";
 import parseErrorStack, { type StackFrame } from "@utils/errors/parseErrorStack";
 import { useState } from "react";
 import { Pressable, View } from "react-native";

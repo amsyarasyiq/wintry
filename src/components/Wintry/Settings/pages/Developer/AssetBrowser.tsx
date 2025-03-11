@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { type Asset, getAssets } from "@api/assets";
 import { Image, View, useWindowDimensions } from "react-native";
 import { showSheet } from "@components/utils/sheets";
-import Search, { useSearchQuery } from "@components/Search";
+import Search, { useSearchQuery } from "@components/Wintry/Search";
 import PageWrapper from "@components/Wintry/Settings/PageWrapper";
 import { FlashList } from "@shopify/flash-list";
 import { Stack, TableRow, TableRowGroup } from "@components/Discord";

@@ -7,7 +7,7 @@ import {
     type SettingRendererConfig,
 } from "@api/settings";
 import { TableRow } from "@components/Discord";
-import Tag from "@components/Tag";
+import Tag from "@components/Wintry/Tag";
 import { Devs } from "@data/constants";
 import { getVersions } from "@debug/info";
 import { t } from "@i18n";
