@@ -10,7 +10,7 @@ import { wtlogger } from "@api/logger";
 import { loaderPayload } from "@loader";
 import { BundleUpdaterModule } from "@native";
 import { createJSONStorage, persist } from "zustand/middleware";
-import { kvStorage } from "@utils/kvStorage";
+import { kvStorage } from "@loader/kvStorage";
 
 interface UpdaterStore {
     // Persisted

@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
-import { kvStorage } from "@utils/kvStorage";
+import { kvStorage } from "@loader/kvStorage";
 
 // biome-ignore lint/suspicious/noEmptyInterface: This is an actual interface, it's just empty
 interface PrefsStore {}
