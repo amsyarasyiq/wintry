@@ -10,10 +10,25 @@ function getPropLazy(prop: string) {
 }
 
 export interface AlertModalProps {
+    /**
+     * The header of the modal. This is placed above the title.
+     */
     header?: ReactElement;
+    /**
+     * The title of the modal.
+     */
     title?: string;
+    /**
+     * The content of the modal accepts a string. To render a content, preferably use `extraContent`.
+     */
     content: string;
+    /**
+     * Extra content to display below the main content.
+     */
     extraContent?: ReactNode;
+    /**
+     * The actions to display at the bottom of the modal.
+     */
     actions?: ReactElement<AlertActionButtonProps>[];
 }
 
@@ -31,6 +46,11 @@ export interface AlertActionButtonProps extends ButtonProps {
     onPress: () => unknown | Promise<unknown>;
 }
 
+/**
+ * A button that is used in the `AlertModal` component.
+ * Unlike the `Button` component, this component will dismiss the modal when pressed.
+ * If the `onPress` function returns a Promise, the button will show a loading indicator.
+ */
 export const AlertActionButton = getPropLazy("AlertActionButton") as React.FC<AlertActionButtonProps>;
 
 interface AlertActionsProps {
