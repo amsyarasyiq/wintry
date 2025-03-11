@@ -44,9 +44,8 @@ function GenericToast({ toast }: { toast: Toast }) {
 
 function CustomToast({ toast }: { toast: Toast }) {
     const CustomComponent = toast.use(t => t.render!);
-    const { getToast, updateToast, hideToast } = useToastStore(
+    const { updateToast, hideToast } = useToastStore(
         useShallow(state => ({
-            getToast: state.getToast,
             updateToast: state.updateToast,
             hideToast: state.hideToast,
         })),
