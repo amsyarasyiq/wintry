@@ -8,108 +8,87 @@ import {
     type AlertActionButtonProps,
     type AlertModalProps,
 } from "@components/Discord/AlertModal/AlertModal";
-import { uniqueId } from "es-toolkit/compat";
 
 const logger = wtlogger.createChild("Alerts");
 const AlertStore = lookupByProps("openAlert", "useAlertStore").asLazy();
 
-type DirectAlertContentProps = Omit<AlertModalProps, "actions"> & {
-    actions?: AlertActionButtonProps[];
-};
-
-interface AlertConfig {
-    key?: string;
-
-    content?: JSX.Element | DirectAlertContentProps;
-    Component?: React.ComponentType;
-
+interface AlertPropsBase {
+    id: string;
     dismissable?: boolean;
     onDismiss?: () => void;
 }
 
-const componentKeyMap = new WeakMap<React.ComponentType | JSX.Element, string>();
+type DirectAlertProps = Omit<AlertModalProps, "actions"> & {
+    actions?: AlertActionButtonProps[] | ReactNode[];
+    id: string;
+};
 
-function retrieveComponentKey(nodeOrComponent: React.ComponentType | JSX.Element): string {
-    if (componentKeyMap.has(nodeOrComponent)) {
-        return componentKeyMap.get(nodeOrComponent)!;
-    }
-
-    const key = uniqueId("wt-alert-");
-    componentKeyMap.set(nodeOrComponent, key);
-
-    logger.info(`Generated key for alert: ${key}`);
-    return key;
+interface CustomAlertProps {
+    Component: React.ComponentType<any>;
 }
 
-function ModalWrapper({ children, config }: { children: ReactNode; config: AlertConfig }) {
-    useEffect(() => {
-        if (config.dismissable === false) {
-            const backHandler = BackHandler.addEventListener("hardwareBackPress", () => {
-                logger.info("Alert is not dismissable, ignoring back press");
-                return true;
-            });
+export type AlertProps = AlertPropsBase & (DirectAlertProps | CustomAlertProps);
 
+function AlertModalWrapper({ children, dismissable }: { children: ReactNode; dismissable?: boolean }) {
+    useEffect(() => {
+        if (dismissable === false) {
+            const backHandler = BackHandler.addEventListener("hardwareBackPress", () => true);
             return () => backHandler.remove();
         }
-    }, [config.dismissable]);
+    }, [dismissable]);
 
-    // Only wrap in Pressable if non-dismissable
-    if (config.dismissable === false) {
-        return (
-            <Pressable
-                style={{
-                    position: "absolute",
-                    width: "100%",
-                    height: "100%",
-                    justifyContent: "center",
-                    alignItems: "center",
-                }}
-            >
-                {children}
-            </Pressable>
-        );
-    }
-
-    return children;
+    return dismissable === false ? (
+        <Pressable
+            style={{
+                position: "absolute",
+                width: "100%",
+                height: "100%",
+                justifyContent: "center",
+                alignItems: "center",
+            }}
+        >
+            {children}
+        </Pressable>
+    ) : (
+        children
+    );
 }
 
-export function showAlert(config: AlertConfig): string;
-export function showAlert(Component: React.ComponentType, onDismiss?: () => void): string;
-export function showAlert(configOrComponent: AlertConfig | React.ComponentType, onDismissOrUndefined?: () => void) {
-    const config: AlertConfig =
-        typeof configOrComponent === "function"
-            ? {
-                  Component: configOrComponent,
-                  onDismiss: onDismissOrUndefined,
-              }
-            : configOrComponent;
+export function showAlert(props: AlertProps): string {
+    // Create content
+    let content: JSX.Element;
 
-    if (__DEV__ && config.Component && config.content) {
-        throw new Error("Cannot provide both Component and content at the same time");
-    }
-
-    const { onDismiss, Component, content: node } = config;
-    let content = node || (Component ? <Component /> : null);
-    if (!content) throw new Error("No content provided for alert");
-
-    if (!isValidElement(content)) {
-        if (!config.key) throw new Error("Key must be provided for direct content");
-
-        const props = content as DirectAlertContentProps;
-
+    if ("content" in props) {
+        // Direct alert
         content = (
-            <ModalWrapper config={config}>
-                <AlertModal {...props} actions={props.actions?.map((a, i) => <AlertActionButton key={i} {...a} />)} />
-            </ModalWrapper>
+            <AlertModal
+                header={props.header}
+                title={props.title}
+                content={props.content}
+                extraContent={props.extraContent}
+                actions={props.actions?.map((a, i) =>
+                    isValidElement(a) ? a : <AlertActionButton key={i} {...(a as AlertActionButtonProps)} />,
+                )}
+            />
         );
+    } else if ("Component" in props) {
+        // Custom alert
+        content = <props.Component />;
+    } else {
+        throw new Error("Invalid alert props");
     }
 
-    const key = config.key || retrieveComponentKey(Component ?? content);
+    logger.info(`Showing alert: ${props.id}`);
+    // Open alert with required ID
+    AlertStore.openAlert(
+        props.id,
+        <AlertModalWrapper dismissable={props.dismissable}>{content}</AlertModalWrapper>,
+        props.onDismiss,
+    );
 
-    AlertStore.openAlert(key, <ModalWrapper config={config}>{content}</ModalWrapper>, onDismiss);
-    return key;
+    return props.id;
 }
 
-export function dismissAlert(key: string): void {
-    AlertStore.dismissAlert(key);
+export function dismissAlert(id: string): void {
+    AlertStore.dismissAlert(id);
 }

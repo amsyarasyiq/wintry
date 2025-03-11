@@ -1,11 +1,10 @@
 import { dismissAlert, showAlert } from "@api/alerts";
-import { Card, RowButton, Stack, Text } from "@components/Discord";
+import { Button, Card, RowButton, Stack, Text } from "@components/Discord";
 import { AlertActionButton, AlertModal, useDismissModalCallback } from "@components/Discord/AlertModal/AlertModal";
 import { InlineCheckbox } from "@components/WintrySettings/InlineCheckbox";
 import PageWrapper from "@components/WintrySettings/PageWrapper";
-import { delay } from "es-toolkit";
+import { delay, noop } from "es-toolkit";
 import { useEffect, useState } from "react";
-import { View } from "react-native";
 
 function DemoAlert() {
     const [understood, setUnderstood] = useState(false);
@@ -81,18 +80,21 @@ function CountdownDemoAlert() {
 
 export default function AlertsPlayground() {
     return (
-        <PageWrapper containerStyle={{ gap: 12 }}>
-            <View style={{ height: "60%" }} />
+        <PageWrapper containerStyle={{ gap: 12, justifyContent: "flex-end" }}>
             <RowButton
                 label="Show alert"
                 onPress={() => {
-                    showAlert(DemoAlert);
+                    showAlert({
+                        id: "demo-alert",
+                        Component: DemoAlert,
+                    });
                 }}
             />
             <RowButton
                 label="Show non-dismissable alert"
                 onPress={() => {
                     showAlert({
+                        id: "non-dismissable-demo-alert",
                         Component: DemoAlert,
                         dismissable: false,
                     });
@@ -102,8 +104,24 @@ export default function AlertsPlayground() {
                 label="Show countdown alert"
                 onPress={() => {
                     showAlert({
+                        id: "countdown-demo-alert",
                         Component: CountdownDemoAlert,
                         dismissable: false,
+                    });
+                }}
+            />
+            <RowButton
+                label="Show alert with custom buttons"
+                onPress={() => {
+                    showAlert({
+                        id: "custom-buttons-demo",
+                        title: "Custom Buttons Alert",
+                        content:
+                            "This alert has custom buttons. The buttons below will not dismiss the alert or show a loading indicator when the 'onPress' returns a Promise, unlike AlertActionButton does.",
+                        actions: [
+                            <Button key="1" text="Button 1" onPress={noop} />,
+                            <Button key="2" text="Button 2" onPress={noop} />,
+                        ],
                     });
                 }}
             />
@@ -111,18 +129,16 @@ export default function AlertsPlayground() {
                 label="Show direct content alert"
                 onPress={() => {
                     showAlert({
-                        key: "direct-content-demo",
-                        content: {
-                            title: "Direct Content Alert",
-                            content: "This alert uses direct content instead of a component.",
-                            actions: [
-                                {
-                                    text: "Dismiss Alert",
-                                    variant: "destructive",
-                                    onPress: () => dismissAlert("direct-content-demo"),
-                                },
-                            ],
-                        },
+                        id: "direct-content-demo",
+                        title: "Direct Content Alert",
+                        content: "This alert uses direct content instead of a component.",
+                        actions: [
+                            {
+                                text: "Dismiss Alert",
+                                variant: "destructive",
+                                onPress: () => dismissAlert("direct-content-demo"),
+                            },
+                        ],
                     });
                 }}
             />
