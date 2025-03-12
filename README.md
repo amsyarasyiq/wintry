@@ -1,5 +1,5 @@
 > [!IMPORTANT]  
-> **This project is a work in progress!** While you are free to use this mod, expect frequent changes, potential bugs, and incomplete features. Technical support is limited. Use at your own discretion.
+> **This project is a work in progress!** Technical support is limited. While you are free to use this mod, expect potential bugs and incomplete features. Use at your own discretion.
 
 # **wintry**
 Yet another Discord mobile mod, inspired by Vencord.
@@ -27,15 +27,20 @@ Currently, the only available loader is **WintryXposed**, which injects through 
 
 ## FAQs
 
-### Why does this project exists? 
+<details>
+  <summary>
+	  <b>What's the motive of this project?</b>
+  </summary>
+
 Wintry is an attempt to bring back the proof-of-concept version of Pyoncord while staying true to its goal of being something different. It takes inspiration from existing projects especially from Vencord but follows its own direction.  
 
-**Wintry's goal can be summarized as:**  
+Wintry's goal can be summarized as:
 - **Bunny**, without the Vendetta part  
 - **Vencord**, but mobile  
 - **Pyoncord v2**  
 
-### **So, what is "different" this time?**
+> So, what exactly is 'different' this time?
+
 Pyoncord's ultimate goal was to achieve **lazy Metro module acquisition/patching** for performance benefits. After discovering a way to achieve similar benefits while retaining the existing mod's infrastructure, Pyoncord reached its conclusion, and Bunny took over.
 
 However, while developing Pyoncord, there were several other goals besides implementing the lazy module system, such as:  
@@ -44,22 +49,45 @@ However, while developing Pyoncord, there were several other goals besides imple
 
 These goals were fundamentally incompatible with the existing infrastructure, so starting from the ground up was necessary.  
 
-### Is Wintry a good replacement?  
-Depends. If you value plugin stability over variety, Wintry may be a good replacement for you. Wintry prioritizes maintaining a consistent and secure experience, meaning there may be fewer plugins available compared to other client mods, but they will be more stable and reliable.
+</details>
 
-### Will Wintry ever support third-party plugins?  
-**Maybe.** Wintry will stay first-party focused, so even if it ever supports third-party plugins, the experience won’t be the same as with other third-party-focused client mods. Discovering and installing third-party plugins will be more difficult, and Wintry will not provide technical support for them. This feature, if introduced, would exist primarily for advanced users.
+<details>
+  <summary>
+	  <b>Is Wintry a good replacement?</b>
+  </summary>
 
-### Why does Wintry prioritize first-party plugins?  
+Depends. If you value plugin stability over variety, Wintry may be a good replacement for you. Wintry is first-party focused, meaning there may be fewer plugins available compared to other client mods, but they will be more stable and reliable.
+</details>
+
+<details>
+  <summary>
+	  <b>Will Wintry ever support third-party plugins?</b>
+  </summary>
+
+**Maybe.** However, Wintry will stay first-party focused, so even if it ever supports third-party plugins, the experience won’t be the same as with other third-party-focused client mods. Discovering and installing third-party plugins will be more difficult, and Wintry will not provide technical support for them. This feature, if introduced, would exist primarily for advanced users.
+
+</details>
+
+<details>
+  <summary>
+	  <b>Why does Wintry prioritize first-party plugins?</b>
+  </summary>
+
 Wintry prioritizes first-party plugins to ensure security, compatibility, and stability. Third-party plugins can introduce risks such as security vulnerabilities, performance issues, and inconsistencies in the user experience. By focusing on first-party development, Wintry can maintain a more controlled and reliable environment.
 
 There are definitely drawbacks to this idea, such as introducing bloat since all plugins are built-in whether you like it or not, or having less plugin variety since all plugins need to be vetted for quality.
+</details>
 
-### If third-party plugins are allowed in the future, what restrictions will there be?  
+<details>
+  <summary>
+	  <b>If third-party plugins are allowed in the future, what restrictions will there be?</b>
+  </summary>
+
 If Wintry ever supports third-party plugins, users will be able to install whatever they want, but they must acknowledge that:  
 - Wintry will not provide technical support for third-party plugins.  
 - Users must manually discover, install and manage their third-party plugins.  
 - No guarantees will be made regarding security, stability, or compatibility. 
+</details>
 
 ## Related & Notices
 
@@ -70,7 +98,7 @@ If some parts of Wintry tick you off for some reason, there are other alternativ
 - [**Unbound**](https://github.com/unbound-mod/)  
 
 ### **License**  
-Wintry is generally licensed under the ([**GNU General Public License v3 (GPL-3)**](http://www.gnu.org/copyleft/gpl.html). Some parts of the codebase may have different licenses.
+Wintry is generally licensed under the [**GNU General Public License v3 (GPL-3)**](http://www.gnu.org/copyleft/gpl.html). Some parts of the codebase may have different licenses.
 
 ### **Disclaimer**  
 Using **any** Discord client mod, including Wintry, is against Discord's **Terms of Service**. However, there have been no reports of Discord enforcing this rule unless there is actual **API abuse**, which Wintry opposes. Using Wintry should be as safe as using other client mods, if not safer.
