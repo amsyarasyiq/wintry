@@ -15,21 +15,22 @@ export default definePlugin({
     authors: [Devs.Pylix],
     required: true,
 
-    start() {
-        patcher.reuse();
+    patches: [
+        {
+            target: byFilePath("modules/toast/native/ToastContainer.tsx"),
+            patch(module, patcher) {
+                patcher.after(module, "type", (_, res) => {
+                    const toasts = useToastStore(s => s.toasts);
+                    if (!toasts.length) return res;
 
-        patcher.after(_ToastContainer, "type", (_, res) => {
-            const toasts = useToastStore(s => s.toasts);
-            if (!toasts.length) return res;
-
-            return (
-                <>
-                    {res}
-                    <ToastContainer />
-                </>
-            );
-        });
-    },
-
-    cleanup() {},
+                    return (
+                        <>
+                            {res}
+                            <ToastContainer />
+                        </>
+                    );
+                });
+            },
+        },
+    ],
 });

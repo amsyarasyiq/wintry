@@ -15,7 +15,6 @@ import { lookup } from "@metro";
 import { byName, byProps } from "@metro/common/filters";
 import { PuzzlePieceIcon, WrenchIcon } from "@metro/common/icons";
 import { NavigationNative } from "@metro/common/libraries";
-import { waitFor } from "@metro/internal/modules";
 import { createContextualPatcher } from "@patcher/contextual";
 import { useUpdaterStore } from "@stores/useUpdaterStore";
 import { findInReactTree } from "@utils/objects";
@@ -40,56 +39,67 @@ export default definePlugin({
     authors: [Devs.Pylix],
     required: true,
 
-    start() {
-        waitFor(byProps(["SETTING_RENDERER_CONFIG"]), SettingConstants => {
-            const origRendererConfig = SettingConstants.SETTING_RENDERER_CONFIG as SettingRendererConfig;
+    patches: [
+        {
+            target: byProps(["SETTING_RENDERER_CONFIG"]),
+            patch(module, patcher) {
+                const origRendererConfig = module.SETTING_RENDERER_CONFIG as SettingRendererConfig;
 
-            Object.defineProperty(SettingConstants, "SETTING_RENDERER_CONFIG", {
-                enumerable: true,
-                configurable: true,
-                get: () => ({
-                    ...origRendererConfig,
-                    ..._registeredSettingItems,
-                }),
-                set: value => {
-                    Object.defineProperty(SettingConstants, "SETTING_RENDERER_CONFIG", {
-                        writable: true,
-                        value,
-                    });
-                },
-            });
+                Object.defineProperty(module, "SETTING_RENDERER_CONFIG", {
+                    enumerable: true,
+                    configurable: true,
+                    get: () => ({
+                        ...origRendererConfig,
+                        ..._registeredSettingItems,
+                    }),
+                    set: value => {
+                        Object.defineProperty(module, "SETTING_RENDERER_CONFIG", {
+                            writable: true,
+                            value,
+                        });
+                    },
+                });
 
-            patcher.addDisposer(() => {
-                SettingConstants.SETTING_RENDERER_CONFIG = origRendererConfig;
-            });
-        });
-
-        patcher.after(SettingsOverviewScreen, "default", (_, ret) => {
-            const { props } = findInReactTree(ret, i => i.props?.sections);
-            if (!props) {
-                logger.warn("Failed to find settings sections in SettingsOverviewScreen");
-                return;
-            }
-
-            if (!settings.get().onTop) {
-                try {
-                    const accountSectionIndex = props.sections.findIndex((i: any) => i.settings.includes("ACCOUNT"));
-                    if (accountSectionIndex !== -1) {
-                        props.sections = [
-                            ...props.sections.slice(0, accountSectionIndex + 1),
-                            ..._registeredSettingSections,
-                            ...props.sections.slice(accountSectionIndex + 1),
-                        ];
+                patcher.addDisposer(() => {
+                    module.SETTING_RENDERER_CONFIG = origRendererConfig;
+                });
+            },
+        },
+        {
+            target: byName("SettingsOverviewScreen", { returnEsmDefault: false }),
+            patch(module, patcher) {
+                patcher.after(module, "default", (_, ret) => {
+                    const { props } = findInReactTree(ret, i => i.props?.sections);
+                    if (!props) {
+                        logger.warn("Failed to find settings sections in SettingsOverviewScreen");
                         return;
                     }
-                } catch (e) {
-                    logger.warn`Failed to insert settings sections next to account section: ${e}`;
-                }
-            }
 
-            props.sections = [..._registeredSettingSections, ...props.sections];
-        });
+                    if (!settings.get().onTop) {
+                        try {
+                            const accountSectionIndex = props.sections.findIndex((i: any) =>
+                                i.settings.includes("ACCOUNT"),
+                            );
+                            if (accountSectionIndex !== -1) {
+                                props.sections = [
+                                    ...props.sections.slice(0, accountSectionIndex + 1),
+                                    ..._registeredSettingSections,
+                                    ...props.sections.slice(accountSectionIndex + 1),
+                                ];
+                                return;
+                            }
+                        } catch (e) {
+                            logger.warn`Failed to insert settings sections next to account section: ${e}`;
+                        }
+                    }
 
+                    props.sections = [..._registeredSettingSections, ...props.sections];
+                });
+            },
+        },
+    ],
+
+    start() {
         setImmediate(() => {
             // Hack that allows pushing custom pages without having to register the setting renderer
             // by passing the component through the route params
