@@ -86,3 +86,13 @@ To develop Wintry, you need [**Bun**](https://bun.sh/) (v1.2.3+) installed.
 
 Now, your client should load the bundle built by the server. You can verify this by checking the revision value in the **About** page.
 
+## Updating i18n Files
+> [!NOTE]
+> At the moment, i18n is not fully implemented. You can only add strings in the base file, which is `en`.
+
+To add new strings, update `src/i18n/en/index.ts`.
+
+Please run the i18n watcher so the i18n types are up-to-date:
+```bash
+bun run typesafe-i18n
+```
