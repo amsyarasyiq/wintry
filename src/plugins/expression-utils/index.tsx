@@ -69,7 +69,7 @@ export default definePlugin({
     authors: [Devs.Pylix],
 
     start() {
-        patcher.reset();
+        patcher.reuse();
 
         useEmojiAdderStore.subscribe((s, p) => {
             const toastController = showToast({

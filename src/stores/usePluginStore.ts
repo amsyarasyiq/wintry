@@ -6,6 +6,9 @@ import type { PluginSettings, PluginState, WintryPluginInstance } from "@plugins
 import { getProxyFactory, lazyValue } from "@utils/lazy";
 import { wtlogger } from "@api/logger";
 import { isSafeModeEnabled } from "@loader";
+import { waitFor } from "@metro/internal/modules";
+import { invariant } from "es-toolkit";
+import { getContextualPatcher } from "@plugins/utils";
 
 const logger = wtlogger.createChild("PluginStore");
 const PLUGINS = lazyValue(() => require("#wt-plugins").default, { hint: "object" }) as Record<
@@ -40,20 +43,33 @@ function startPlugin(draft: PluginStore, id: string) {
         return;
     }
 
-    const start = () => {
-        logger.debug(`Starting plugin '${plugin.$id}'`);
+    logger.debug(`Starting plugin '${plugin.$id}'`);
 
-        try {
-            draft.states[id].running = true;
-            plugin.start?.();
-        } catch (e) {
-            logger.error`Failed to start ${plugin.$id}: ${e}`;
-            return;
+    try {
+        if (plugin.patches) {
+            const pluginPatcherContext = getContextualPatcher(id);
+            invariant(pluginPatcherContext, `Patcher context for ${plugin.$id} not found`);
+
+            pluginPatcherContext.reuse();
+
+            for (const pluginPatch of plugin.patches) {
+                if (pluginPatch.predicate?.() === false) {
+                    logger.debug(`Skipping patch for ${plugin.$id}`);
+                    continue;
+                }
+
+                logger.debug(`Applying patch for ${plugin.$id}`);
+                waitFor(pluginPatch.target, module => {
+                    pluginPatch.patch(module, pluginPatcherContext);
+                });
+            }
         }
-    };
 
-    if (plugin.start) {
-        start();
+        draft.states[id].running = true;
+        plugin.start?.();
+    } catch (e) {
+        logger.error`Failed to start ${plugin.$id}: ${e}`;
+        return;
     }
 
     return;
@@ -77,6 +93,12 @@ function cleanupPlugin(draft: PluginStore, id: string) {
         logger.info(`Cleaning up plugin ${plugin.$id}`);
 
         try {
+            if (plugin.patches) {
+                const pluginPatcherContext = getContextualPatcher(id);
+                invariant(pluginPatcherContext, `Patcher context for ${plugin.$id} not found`);
+                pluginPatcherContext.dispose();
+            }
+
             plugin.cleanup();
         } catch (e) {
             logger.error(`Failed to cleanup ${plugin.$id}: ${e}`);

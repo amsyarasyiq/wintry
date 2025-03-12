@@ -1,6 +1,8 @@
 import type { SetRequired } from "type-fest";
 import type { Dev } from "@data/constants";
 import type usePluginStore from "@stores/usePluginStore";
+import type { Filter } from "@metro/common/filters";
+import type { ContextualPatcher } from "@patcher/contextual";
 
 export interface PluginState {
     running: boolean;
@@ -9,6 +11,12 @@ export interface PluginState {
 export interface PluginSettings {
     enabled: boolean;
     [key: string]: any;
+}
+
+export interface PluginPatch {
+    target: Filter<any>;
+    predicate?: () => boolean;
+    patch: (module: any, patcher: ContextualPatcher) => void;
 }
 
 export interface WintryPluginDefinition<D extends DefinedOptions<O>, O extends OptionDefinitions> {
@@ -37,6 +45,8 @@ export interface WintryPluginDefinition<D extends DefinedOptions<O>, O extends O
      * @returns non-false if the plugin is available to be started.
      */
     readonly isAvailable?: () => boolean;
+
+    readonly patches?: PluginPatch[];
 
     /**
      * This is called once the index module is loaded and you can force lookup modules from here.

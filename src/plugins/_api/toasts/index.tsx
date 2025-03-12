@@ -16,7 +16,7 @@ export default definePlugin({
     required: true,
 
     start() {
-        patcher.reset();
+        patcher.reuse();
 
         patcher.after(_ToastContainer, "type", (_, res) => {
             const toasts = useToastStore(s => s.toasts);

@@ -43,7 +43,7 @@ export default definePlugin({
                     }
                 },
                 wipe() {
-                    patcher.reset();
+                    patcher.reuse();
                 },
             },
         });

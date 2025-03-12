@@ -9,6 +9,7 @@ import type {
     WintryPluginDefinition,
     WintryPluginInstance,
 } from "./types";
+import { createContextualPatcher } from "@patcher/contextual";
 
 type WithThis<T, This> = {
     [P in keyof T]: T[P] extends (...args: infer A) => infer R ? (this: This, ...args: A) => R : T[P];
@@ -17,13 +18,21 @@ type WithThis<T, This> = {
 // Allows defining a plugin without the state property and allow extra properties
 export type LooseWintryPlugin<P> = WithThis<P, WintryPluginInstance>;
 
+const patcherRegistry = new Map<string, ReturnType<typeof createContextualPatcher>>();
 const settingsDefRegistry = new Map<string, DefinedOptions<OptionDefinitions>>();
+
+export function getContextualPatcher(id: string) {
+    if (patcherRegistry.has(id)) return patcherRegistry.get(id)!;
+    const patcher = createContextualPatcher({ pluginId: id });
+    patcherRegistry.set(id, patcher);
+    return patcher;
+}
 
 export function registerPlugin<
     P extends WintryPluginDefinition<D, O>,
     D extends DefinedOptions<O>,
     O extends OptionDefinitions,
->(id: string, plugin: LooseWintryPlugin<P>): (relativePath: string) => P {
+>(id: string, plugin: WintryPluginInstance<O>): (relativePath: string) => P {
     const pluginState: PluginState = { running: false };
     const pluginSettings: PluginSettings = toDefaulted(usePluginStore.getState().settings[id] ?? {}, {
         enabled: Boolean(plugin.preenabled === true || plugin.required || false),
@@ -52,7 +61,6 @@ export function registerPlugin<
             get: () => usePluginStore.getState().settings[id],
         },
         $isToggleable: {
-            // @ts-expect-error - TS went insane
             value: () => !plugin.required && plugin.isAvailable?.() !== false,
         },
     });
