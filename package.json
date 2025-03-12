@@ -1,5 +1,12 @@
 {
 	"name": "wintry-mod",
+	"private": true,
+	"author": {
+		"name": "wtcord",
+		"url": "https://github.com/wtcord"
+	},
+	"type": "module",
+	"version": "0.0.1",
 	"dependencies": {
 		"@babel/core": "^7.26.7",
 		"@gullerya/object-observer": "^6.1.3",
@@ -46,10 +53,5 @@
 		"typesafe-i18n": "typesafe-i18n",
 		"i18n:export": "bun run scripts/i18n",
 		"release": "bun run scripts/release"
-	},
-	"type": "module",
-	"patchedDependencies": {
-		"react-native-customizable-toast@0.2.1": "patches/react-native-customizable-toast@0.2.1.patch"
-	},
-	"version": "0.0.1"
+	}
 }
