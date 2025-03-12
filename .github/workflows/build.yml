@@ -1,0 +1,41 @@
+name: Build and release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Version tag (e.g. 0.1.1)
+        required: true
+
+jobs:
+    build:
+        name: Build and release
+        runs-on: ubuntu-latest
+
+        steps:
+          - name: Checkout
+            uses: actions/checkout@v4
+
+          - name: Setup Node.js
+            uses: actions/setup-node@v4
+            with:
+              node-version: 22
+          
+          - name: Setup Bun
+            uses: oven-sh/setup-bun@v2
+
+          - name: Install dependencies
+            run: bun install
+
+          - name: Build bundle
+            run: bun run build --deploy --minify
+          
+          - name: Release
+            env:
+              GH_TOKEN: ${{ github.token }}
+            run:
+              gh release create v${{ github.event.inputs.version }} 
+                -t v${{ github.event.inputs.version }} 
+                --latest
+                --generate-notes
+                ./dist/*
