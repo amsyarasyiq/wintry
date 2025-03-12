@@ -1,5 +1,5 @@
 import { Card, Text } from "@components/Discord";
-import Tag from "@components/Tag";
+import Tag from "@components/Wintry/Tag";
 import { View, type StyleProp, type ViewStyle } from "react-native";
 
 interface InfoCardProps {

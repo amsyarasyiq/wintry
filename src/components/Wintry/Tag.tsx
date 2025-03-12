@@ -1,5 +1,5 @@
 import { View } from "react-native";
-import { Text } from "./Discord";
+import { Text } from "../Discord";
 import { tokens, useToken } from "@metro/common/libraries";
 
 interface TagProps {
