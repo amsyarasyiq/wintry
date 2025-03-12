@@ -89,21 +89,19 @@ function cleanupPlugin(draft: PluginStore, id: string) {
         return;
     }
 
-    if (plugin.cleanup) {
-        logger.info(`Cleaning up plugin ${plugin.$id}`);
+    logger.info(`Cleaning up plugin ${plugin.$id}`);
 
-        try {
-            if (plugin.patches) {
-                const pluginPatcherContext = getContextualPatcher(id);
-                invariant(pluginPatcherContext, `Patcher context for ${plugin.$id} not found`);
-                pluginPatcherContext.dispose();
-            }
-
-            plugin.cleanup();
-        } catch (e) {
-            logger.error(`Failed to cleanup ${plugin.$id}: ${e}`);
-            return;
+    try {
+        if (plugin.patches) {
+            const pluginPatcherContext = getContextualPatcher(id);
+            invariant(pluginPatcherContext, `Patcher context for ${plugin.$id} not found`);
+            pluginPatcherContext.dispose();
         }
+
+        plugin.cleanup?.();
+    } catch (e) {
+        logger.error(`Failed to cleanup ${plugin.$id}: ${e}`);
+        return;
     }
 
     draft.states[id].running = false;
