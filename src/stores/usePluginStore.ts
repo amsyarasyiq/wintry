@@ -94,7 +94,7 @@ function applyPluginPatches(id: string, plugin: WintryPluginInstance) {
                 { fireImmediately: true },
             );
 
-            pluginPatcherContext.addDisposer(unsub);
+            pluginPatcherContext.attachDisposer(unsub);
         } else {
             if (!pluginPatch.predicate || pluginPatch.predicate()) apply();
         }

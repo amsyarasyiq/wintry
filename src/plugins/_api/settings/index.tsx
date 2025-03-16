@@ -56,7 +56,7 @@ export default definePlugin({
                     },
                 });
 
-                patcher.addDisposer(() => {
+                patcher.attachDisposer(() => {
                     module.SETTING_RENDERER_CONFIG = origRendererConfig;
                 });
             },

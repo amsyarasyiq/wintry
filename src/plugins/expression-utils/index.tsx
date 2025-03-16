@@ -114,7 +114,7 @@ export default definePlugin({
     ],
 
     start() {
-        patcher.addDisposer(
+        patcher.attachDisposer(
             useEmojiAdderStore.subscribe((s, p) => {
                 const toastController = showToast({
                     id: "expression-utils-upload-status",

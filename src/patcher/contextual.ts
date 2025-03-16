@@ -27,7 +27,7 @@ export interface ContextualPatcher {
      * The callback will be called immediately if the context is already disposed
      * @param cbs Callbacks to call when the context is disposed
      */
-    addDisposer(...cbs: Array<() => void | boolean>): void;
+    attachDisposer(...cbs: Array<() => void | boolean>): void;
 
     dispose(): void;
     reuse(): void;
@@ -42,9 +42,10 @@ interface ContextualPatcherOptions {
 export function createContextualPatcher({ id }: ContextualPatcherOptions): ContextualPatcher {
     const unpatches: (() => void)[] = [];
 
-    function shimDisposableFn<F extends DisposableFn>(unpatches: (() => void)[], f: F): F {
+    function shimDisposableFn<F extends DisposableFn>(f: F): F {
         const base = ((...props: Parameters<F>) => {
             if (contextualPatcher.disposed) return () => true;
+
             const up = f(...props);
             unpatches.push(up);
             return up;
@@ -52,7 +53,7 @@ export function createContextualPatcher({ id }: ContextualPatcherOptions): Conte
 
         for (const key in f)
             if (typeof f[key] === "function") {
-                (base as any)[key] = shimDisposableFn(unpatches, f[key] as DisposableFn);
+                (base as any)[key] = shimDisposableFn(f[key] as DisposableFn);
             }
 
         return base;
@@ -63,15 +64,15 @@ export function createContextualPatcher({ id }: ContextualPatcherOptions): Conte
 
         children: [],
 
-        before: shimDisposableFn(unpatches, patchers.before),
-        instead: shimDisposableFn(unpatches, patchers.instead),
-        after: shimDisposableFn(unpatches, patchers.after),
+        before: shimDisposableFn(patchers.before),
+        instead: shimDisposableFn(patchers.instead),
+        after: shimDisposableFn(patchers.after),
 
         detached: patchers, // TODO: Still retain context
 
         disposed: false,
 
-        addDisposer(...cbs: Array<() => void | boolean>) {
+        attachDisposer(...cbs: Array<() => void | boolean>) {
             if (contextualPatcher.disposed) {
                 // Call all callbacks immediately
                 for (const cb of cbs) {
