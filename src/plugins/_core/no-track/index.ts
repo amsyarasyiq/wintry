@@ -11,12 +11,14 @@ export default definePlugin({
 
     patches: [
         {
+            id: "no-sentry",
             target: byProps(["initSentry"]),
             patch(module, patcher) {
                 patcher.instead(module, "initSentry", () => undefined);
             },
         },
         {
+            id: "no-tracker",
             target: byProps(["track", "trackMaker"]),
             patch(module, patcher) {
                 patcher.instead(module, "track", () => Promise.resolve());

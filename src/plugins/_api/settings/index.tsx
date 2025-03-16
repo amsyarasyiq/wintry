@@ -36,6 +36,7 @@ export default definePlugin({
 
     patches: [
         {
+            id: "add-renderer",
             target: byProps(["SETTING_RENDERER_CONFIG"]),
             patch(module, patcher) {
                 const origRendererConfig = module.SETTING_RENDERER_CONFIG as SettingRendererConfig;
@@ -61,6 +62,7 @@ export default definePlugin({
             },
         },
         {
+            id: "overview-screen",
             target: byName("SettingsOverviewScreen", { returnEsmDefault: false }),
             patch(module, patcher) {
                 patcher.after(module, "default", (_, ret) => {

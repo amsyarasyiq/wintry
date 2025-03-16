@@ -21,6 +21,7 @@ export default definePlugin({
 
     patches: [
         {
+            id: "is-staff-env",
             target: byProps(["isStaffEnv"]),
             patch(module, patcher) {
                 patcher.instead(module, "isStaffEnv", ([user]) => {

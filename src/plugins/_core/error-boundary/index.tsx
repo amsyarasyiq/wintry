@@ -12,6 +12,7 @@ export default definePlugin({
 
     patches: [
         {
+            id: "error-boundary",
             target: byName("ErrorBoundary"),
             patch(module, patcher) {
                 patcher.after(module.prototype, "render", function (this: any) {
