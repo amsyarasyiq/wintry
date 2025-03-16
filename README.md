@@ -2,7 +2,7 @@
 > **This project is a work in progress!** Technical support is limited. While you are free to use this mod, expect potential bugs and incomplete features. Use at your own discretion.
 
 # **wintry**
-Yet another Discord mobile mod, inspired by Vencord.
+Make your Discord cooler, literally.
 
 ## Features
 - Built-in plugins:
@@ -88,7 +88,7 @@ There are definitely drawbacks to this idea, such as introducing bloat since all
 If Wintry ever supports third-party plugins, users will be able to install whatever they want, but they must acknowledge that:  
 - Wintry will not provide technical support for third-party plugins.  
 - Users must manually discover, install and manage their third-party plugins.  
-- No guarantees will be made regarding security, stability, or compatibility. 
+- No guarantees will be made regarding security, stability, or compatibility.
 </details>
 
 ## Related & Notices
