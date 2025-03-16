@@ -9,21 +9,38 @@ import type {
     WintryPluginDefinition,
     WintryPluginInstance,
 } from "./types";
+import { createContextualPatcher, type ContextualPatcher } from "@patcher/contextual";
 
-type WithThis<T, This> = {
-    [P in keyof T]: T[P] extends (...args: infer A) => infer R ? (this: This, ...args: A) => R : T[P];
-};
-
-// Allows defining a plugin without the state property and allow extra properties
-export type LooseWintryPlugin<P> = WithThis<P, WintryPluginInstance>;
-
+const patcherRegistry = new Map<string, ContextualPatcher>();
 const settingsDefRegistry = new Map<string, DefinedOptions<OptionDefinitions>>();
+
+/**
+ * Returns a contextual patcher for the given plugin ID.
+ * @param create If there's no existing patcher, a new one will be created.
+ */
+export function getContextualPatcher(id: string): ContextualPatcher;
+export function getContextualPatcher(id: string, create: false): ContextualPatcher | undefined;
+export function getContextualPatcher(id: string, create = true): ContextualPatcher | undefined {
+    if (patcherRegistry.has(id)) return patcherRegistry.get(id)!;
+    if (!create) return undefined;
+
+    const patcher = createContextualPatcher({ id });
+    patcherRegistry.set(id, patcher);
+    return patcher;
+}
+
+/**
+ * Returns the settings definition for the given plugin ID. If the plugin ID is not registered, returns `undefined`.
+ */
+export function getPluginSettings(id: string) {
+    return settingsDefRegistry.get(id);
+}
 
 export function registerPlugin<
     P extends WintryPluginDefinition<D, O>,
     D extends DefinedOptions<O>,
     O extends OptionDefinitions,
->(id: string, plugin: LooseWintryPlugin<P>): (relativePath: string) => P {
+>(id: string, plugin: WintryPluginInstance<O>): (relativePath: string) => P {
     const pluginState: PluginState = { running: false };
     const pluginSettings: PluginSettings = toDefaulted(usePluginStore.getState().settings[id] ?? {}, {
         enabled: Boolean(plugin.preenabled === true || plugin.required || false),
@@ -52,7 +69,6 @@ export function registerPlugin<
             get: () => usePluginStore.getState().settings[id],
         },
         $isToggleable: {
-            // @ts-expect-error - TS went insane
             value: () => !plugin.required && plugin.isAvailable?.() !== false,
         },
     });
@@ -136,10 +152,6 @@ export function registerPluginSettings<Def extends OptionDefinitions>(id: string
     settingsDefRegistry.set(id, definition);
 
     return definition;
-}
-
-export function getPluginSettings(id: string): OptionDefinitions {
-    return settingsDefRegistry.get(id)?.definition as OptionDefinitions;
 }
 
 export function isPluginInternal(plugin: WintryPluginInstance) {

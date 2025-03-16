@@ -1,5 +1,6 @@
 import { definePlugin, definePluginSettings } from "#plugin-context";
 import { Devs } from "@data/constants";
+import { byProps } from "@metro/common/filters";
 
 const settings = definePluginSettings({
     bunnyName: {
@@ -70,12 +71,32 @@ const settings = definePluginSettings({
     },
 });
 
+if (__DEV__) {
+    window.sampleMethod = () => {
+        return "this method is unpatched";
+    };
+}
+
 export default definePlugin({
     name: "Dummy",
-    description: "Does literally nothing! Used for showcasing plugin settings.",
+    description: "Does literally nothing! Used for showcasing plugin APIs.",
     authors: [Devs.Pylix],
 
-    isAvailable: () => false,
+    isAvailable: () => __DEV__,
+
+    patches: [
+        {
+            id: "sample-patch",
+            predicate: () => settings.get().winterCoat === true,
+            target: byProps(["toString"]), // This matches almost all modules lol
+            patch(_, patcher) {
+                patcher.after(window, "sampleMethod", () => {
+                    return "this method is patched";
+                });
+            },
+        },
+    ],
+
     start() {
         // console.log({
         //     settings

@@ -1,6 +1,9 @@
 import type { SetRequired } from "type-fest";
 import type { Dev } from "@data/constants";
 import type usePluginStore from "@stores/usePluginStore";
+import type { Filter } from "@metro/common/filters";
+import type { ContextualPatcher } from "@patcher/contextual";
+import type { WithThis } from "@utils/types";
 
 export interface PluginState {
     running: boolean;
@@ -9,6 +12,13 @@ export interface PluginState {
 export interface PluginSettings {
     enabled: boolean;
     [key: string]: any;
+}
+
+export interface PluginPatch {
+    id?: string;
+    target: Filter<any>;
+    predicate?: () => boolean;
+    patch: (module: any, patcher: ContextualPatcher) => void;
 }
 
 export interface WintryPluginDefinition<D extends DefinedOptions<O>, O extends OptionDefinitions> {
@@ -38,6 +48,8 @@ export interface WintryPluginDefinition<D extends DefinedOptions<O>, O extends O
      */
     readonly isAvailable?: () => boolean;
 
+    readonly patches?: PluginPatch[];
+
     /**
      * This is called once the index module is loaded and you can force lookup modules from here.
      */
@@ -65,6 +77,8 @@ export type WintryPluginInstance<
     O extends OptionDefinitions = OptionDefinitions,
     D extends DefinedOptions<O> = DefinedOptions<O>,
 > = SetRequired<WintryPluginDefinition<D, O>, `$${RequiredRuntimePropertyKey}`>;
+
+export type LooseWintryPlugin<P> = WithThis<P, WintryPluginInstance>;
 
 export type OptionDefinitions = Record<string, OptionDefinition>;
 export type OptionDefinition =

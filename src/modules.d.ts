@@ -18,6 +18,7 @@ declare module "#plugin-context" {
         definePlugin,
         definePluginSettings,
         logger,
+        patcher,
     }: ReturnType<typeof import("./plugins/shared").getPluginContext>;
 
     import * as _default from "#plugin-context";

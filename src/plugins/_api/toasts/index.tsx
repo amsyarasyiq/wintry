@@ -1,13 +1,8 @@
-import { definePlugin, meta } from "#plugin-context";
+import { definePlugin } from "#plugin-context";
 import { Devs } from "@data/constants";
-import { createContextualPatcher } from "@patcher/contextual";
-import { lookup } from "@metro/api";
 import { byFilePath } from "@metro/common/filters";
 import ToastContainer from "./components/ToastContainer";
 import { useToastStore } from "@stores/useToastStore";
-const patcher = createContextualPatcher({ pluginId: meta.id });
-
-const _ToastContainer = lookup(byFilePath("modules/toast/native/ToastContainer.tsx")).asLazy();
 
 export default definePlugin({
     name: "Toasts",
@@ -15,21 +10,23 @@ export default definePlugin({
     authors: [Devs.Pylix],
     required: true,
 
-    start() {
-        patcher.reset();
+    patches: [
+        {
+            id: "add-toast-container",
+            target: byFilePath("modules/toast/native/ToastContainer.tsx"),
+            patch(module, patcher) {
+                patcher.after(module, "type", (_, res) => {
+                    const toasts = useToastStore(s => s.toasts);
+                    if (!toasts.length) return res;
 
-        patcher.after(_ToastContainer, "type", (_, res) => {
-            const toasts = useToastStore(s => s.toasts);
-            if (!toasts.length) return res;
-
-            return (
-                <>
-                    {res}
-                    <ToastContainer />
-                </>
-            );
-        });
-    },
-
-    cleanup() {},
+                    return (
+                        <>
+                            {res}
+                            <ToastContainer />
+                        </>
+                    );
+                });
+            },
+        },
+    ],
 });

@@ -6,6 +6,8 @@ import type { PluginSettings, PluginState, WintryPluginInstance } from "@plugins
 import { getProxyFactory, lazyValue } from "@utils/lazy";
 import { wtlogger } from "@api/logger";
 import { isSafeModeEnabled } from "@loader";
+import { waitFor } from "@metro/internal/modules";
+import { getContextualPatcher, getPluginSettings } from "@plugins/utils";
 
 const logger = wtlogger.createChild("PluginStore");
 const PLUGINS = lazyValue(() => require("#wt-plugins").default, { hint: "object" }) as Record<
@@ -40,23 +42,63 @@ function startPlugin(draft: PluginStore, id: string) {
         return;
     }
 
-    const start = () => {
-        logger.debug(`Starting plugin '${plugin.$id}'`);
+    logger.debug(`Starting plugin '${plugin.$id}'`);
 
-        try {
-            draft.states[id].running = true;
-            plugin.start?.();
-        } catch (e) {
-            logger.error`Failed to start ${plugin.$id}: ${e}`;
-            return;
-        }
-    };
+    try {
+        applyPluginPatches(id, plugin);
 
-    if (plugin.start) {
-        start();
+        draft.states[id].running = true;
+        plugin.start?.();
+    } catch (e) {
+        logger.error`Failed to start ${plugin.$id}: ${e}`;
+        return;
     }
 
     return;
+}
+
+function applyPluginPatches(id: string, plugin: WintryPluginInstance) {
+    if (!plugin.patches) return;
+
+    const pluginPatcherContext = getContextualPatcher(id);
+    pluginPatcherContext.reuse();
+
+    for (const pluginPatch of plugin.patches) {
+        const patcher = pluginPatcherContext.createChild({
+            id: pluginPatch.id ?? pluginPatch.target.key,
+        });
+
+        const apply = () => {
+            logger.debug(`Applying ${patcher.id} patch`);
+
+            patcher.reuse();
+            waitFor(pluginPatch.target, module => {
+                pluginPatch.patch(module, patcher);
+            });
+        };
+
+        const settings = getPluginSettings(id);
+
+        if (settings && pluginPatch.predicate) {
+            const { predicate } = pluginPatch;
+            const unsub = settings.subscribe(
+                () => predicate(),
+                () => {
+                    if (predicate()) {
+                        apply();
+                    } else {
+                        logger.debug(`Disposing ${patcher.id} patch`);
+                        patcher.dispose();
+                    }
+                },
+                { fireImmediately: true },
+            );
+
+            pluginPatcherContext.attachDisposer(unsub);
+        } else {
+            if (!pluginPatch.predicate || pluginPatch.predicate()) apply();
+        }
+    }
 }
 
 function cleanupPlugin(draft: PluginStore, id: string) {
@@ -73,15 +115,19 @@ function cleanupPlugin(draft: PluginStore, id: string) {
         return;
     }
 
-    if (plugin.cleanup) {
-        logger.info(`Cleaning up plugin ${plugin.$id}`);
+    logger.info(`Cleaning up plugin ${plugin.$id}`);
 
-        try {
-            plugin.cleanup();
-        } catch (e) {
-            logger.error(`Failed to cleanup ${plugin.$id}: ${e}`);
-            return;
+    try {
+        const patcher = getContextualPatcher(id, false);
+        if (patcher) {
+            patcher.dispose();
+            patcher.children.length = 0;
         }
+
+        plugin.cleanup?.();
+    } catch (e) {
+        logger.error(`Failed to cleanup ${plugin.$id}: ${e}`);
+        return;
     }
 
     draft.states[id].running = false;

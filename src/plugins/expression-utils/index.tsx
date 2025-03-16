@@ -1,6 +1,5 @@
-import { definePlugin, logger, meta } from "#plugin-context";
+import { definePlugin, logger, patcher } from "#plugin-context";
 import { Devs } from "@data/constants";
-import { createContextualPatcher } from "@patcher/contextual";
 import { findInReactTree } from "@utils/objects";
 import { useEffect } from "react";
 import { Fragment } from "react/jsx-runtime";
@@ -10,11 +9,9 @@ import UploadStatusView from "./components/UploadStatusView";
 import StealButtons from "./components/StealButtons";
 import { openMediaModal } from "./utils/openMediaModal";
 import { openEmojiActionSheet } from "./utils/openEmojiActionSheet";
-import { CustomEmojiContent, MessageReactionsContent } from "./common";
 import PressableScale from "@components/Discord/experimental/PressableScale";
 import { showToast } from "@api/toasts";
-
-const patcher = createContextualPatcher({ pluginId: meta.id });
+import { byFilePath } from "@metro/common/filters";
 
 function addStealButton(emojiNode: EmojiNode, element: any) {
     const insertAtIndex = (container: unknown[], index: number, paddingTop: number) => {
@@ -68,68 +65,77 @@ export default definePlugin({
     description: "Adds more emotes and stickers utilities such as cloning or copying links.",
     authors: [Devs.Pylix],
 
+    patches: [
+        {
+            id: "emoji-sheet",
+            target: byFilePath("modules/messages/native/emoji/CustomEmojiContent.tsx", { returnEsmDefault: false }),
+            patch(module, patcher) {
+                patcher.after(module, "default", ([{ emojiNode }]: any, res) => {
+                    if (!emojiNode) return;
+
+                    addStealButton(emojiNode, res);
+                    makeEmojiIconPressable(emojiNode, res);
+                });
+            },
+        },
+        {
+            id: "reaction-sheet",
+            target: byFilePath("modules/reactions/native/MessageReactionsContent.tsx", { returnEsmDefault: false }),
+            patch(module, patcher) {
+                patcher.after(module, "MessageReactionsContent", (_, { props }) => {
+                    const unpatchReactionsHeader = patcher.detached.after(props.header, "type", (_, res) => {
+                        // Unpatch on unmount
+                        useEffect(() => unpatchReactionsHeader as () => void, []);
+
+                        try {
+                            const tabsRow = res.props.children[0];
+                            const { tabs, onSelect } = tabsRow.props;
+
+                            // Wrap the tabs in a TouchableOpacity so we can add a long press handler
+                            tabsRow.props.tabs = tabs.map((tab: any, i: number) => (
+                                <PressableScale
+                                    key={i}
+                                    onPress={() => onSelect(tab.props.index)}
+                                    onLongPress={() => {
+                                        const { emoji } = tab.props.reaction;
+                                        openEmojiActionSheet(emoji);
+                                    }}
+                                >
+                                    {tab}
+                                </PressableScale>
+                            ));
+                        } catch (e) {
+                            logger.error`Failed to patch reaction header: ${e}`;
+                        }
+                    });
+                });
+            },
+        },
+    ],
+
     start() {
-        patcher.reset();
+        patcher.attachDisposer(
+            useEmojiAdderStore.subscribe((s, p) => {
+                const toastController = showToast({
+                    id: "expression-utils-upload-status",
+                    render: UploadStatusView,
+                }).hide(); // Initially hide the toast
 
-        useEmojiAdderStore.subscribe((s, p) => {
-            const toastController = showToast({
-                id: "expression-utils-upload-status",
-                render: UploadStatusView,
-            }).hide(); // Initially hide the toast
-
-            if (
-                (s.status !== "idle" && s.status !== p.status) ||
-                (s.recentUploadDetails && s.recentUploadDetails !== p.recentUploadDetails)
-            ) {
-                toastController.update({ duration: Number.MAX_SAFE_INTEGER });
-                if (s.status === "success" || s.status === "error") {
-                    toastController.update({ duration: 3000 });
+                if (
+                    (s.status !== "idle" && s.status !== p.status) ||
+                    (s.recentUploadDetails && s.recentUploadDetails !== p.recentUploadDetails)
+                ) {
+                    toastController.update({ duration: Number.MAX_SAFE_INTEGER });
+                    if (s.status === "success" || s.status === "error") {
+                        toastController.update({ duration: 3000 });
+                    }
                 }
-            }
 
-            // Post-cleanup
-            if (s.status === "idle") {
-                toastController.hide();
-            }
-        });
-
-        patcher.after(CustomEmojiContent, "default", ([{ emojiNode }]: any, res) => {
-            if (!emojiNode) return;
-
-            addStealButton(emojiNode, res);
-            makeEmojiIconPressable(emojiNode, res);
-        });
-
-        patcher.after(MessageReactionsContent, "MessageReactionsContent", (_, { props }) => {
-            const unpatchReactionsHeader = patcher.detached.after(props.header, "type", (_, res) => {
-                // Unpatch on unmount
-                useEffect(() => unpatchReactionsHeader as () => void, []);
-
-                try {
-                    const tabsRow = res.props.children[0];
-                    const { tabs, onSelect } = tabsRow.props;
-
-                    // Wrap the tabs in a TouchableOpacity so we can add a long press handler
-                    tabsRow.props.tabs = tabs.map((tab: any, i: number) => (
-                        <PressableScale
-                            key={i}
-                            onPress={() => onSelect(tab.props.index)}
-                            onLongPress={() => {
-                                const { emoji } = tab.props.reaction;
-                                openEmojiActionSheet(emoji);
-                            }}
-                        >
-                            {tab}
-                        </PressableScale>
-                    ));
-                } catch (e) {
-                    logger.error`Failed to patch reaction header: ${e}`;
+                // Post-cleanup
+                if (s.status === "idle") {
+                    toastController.hide();
                 }
-            });
-        });
-    },
-
-    cleanup() {
-        patcher.dispose();
+            }),
+        );
     },
 });
