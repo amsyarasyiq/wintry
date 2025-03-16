@@ -15,6 +15,7 @@ export interface PluginSettings {
 }
 
 export interface PluginPatch {
+    id?: string;
     target: Filter<any>;
     predicate?: () => boolean;
     patch: (module: any, patcher: ContextualPatcher) => void;

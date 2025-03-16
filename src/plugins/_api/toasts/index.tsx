@@ -12,6 +12,7 @@ export default definePlugin({
 
     patches: [
         {
+            id: "add-toast-container",
             target: byFilePath("modules/toast/native/ToastContainer.tsx"),
             patch(module, patcher) {
                 patcher.after(module, "type", (_, res) => {

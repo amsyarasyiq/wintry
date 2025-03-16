@@ -53,14 +53,19 @@ function startPlugin(draft: PluginStore, id: string) {
             pluginPatcherContext.reuse();
 
             for (const pluginPatch of plugin.patches) {
+                let patcher = pluginPatcherContext;
+                if (pluginPatch.id) {
+                    patcher = pluginPatcherContext.createChild({ id: pluginPatch.id });
+                }
+
                 if (pluginPatch.predicate?.() === false) {
-                    logger.debug(`Skipping patch for ${plugin.$id}`);
+                    logger.debug(`Skipping ${patcher.id} patch due to predicate`);
                     continue;
                 }
 
-                logger.debug(`Applying patch for ${plugin.$id}`);
+                logger.debug(`Applying ${patcher.id} patch`);
                 waitFor(pluginPatch.target, module => {
-                    pluginPatch.patch(module, pluginPatcherContext);
+                    pluginPatch.patch(module, patcher);
                 });
             }
         }

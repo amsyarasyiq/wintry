@@ -67,6 +67,7 @@ export default definePlugin({
 
     patches: [
         {
+            id: "emoji-sheet",
             target: byFilePath("modules/messages/native/emoji/CustomEmojiContent.tsx", { returnEsmDefault: false }),
             patch(module, patcher) {
                 patcher.after(module, "default", ([{ emojiNode }]: any, res) => {
@@ -78,6 +79,7 @@ export default definePlugin({
             },
         },
         {
+            id: "reaction-sheet",
             target: byFilePath("modules/reactions/native/MessageReactionsContent.tsx", { returnEsmDefault: false }),
             patch(module, patcher) {
                 patcher.after(module, "MessageReactionsContent", (_, { props }) => {
