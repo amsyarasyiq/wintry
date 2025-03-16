@@ -15,10 +15,15 @@ const patcherRegistry = new Map<string, ContextualPatcher>();
 const settingsDefRegistry = new Map<string, DefinedOptions<OptionDefinitions>>();
 
 /**
- * Returns a contextual patcher for the given plugin ID. If there's no existing patcher, a new one will be created.
+ * Returns a contextual patcher for the given plugin ID.
+ * @param create If there's no existing patcher, a new one will be created.
  */
-export function getContextualPatcher(id: string) {
+export function getContextualPatcher(id: string): ContextualPatcher;
+export function getContextualPatcher(id: string, create: false): ContextualPatcher | undefined;
+export function getContextualPatcher(id: string, create = true): ContextualPatcher | undefined {
     if (patcherRegistry.has(id)) return patcherRegistry.get(id)!;
+    if (!create) return undefined;
+
     const patcher = createContextualPatcher({ id });
     patcherRegistry.set(id, patcher);
     return patcher;
@@ -27,8 +32,8 @@ export function getContextualPatcher(id: string) {
 /**
  * Returns the settings definition for the given plugin ID. If the plugin ID is not registered, returns `undefined`.
  */
-export function getPluginSettings(id: string): OptionDefinitions {
-    return settingsDefRegistry.get(id)?.definition as OptionDefinitions;
+export function getPluginSettings(id: string) {
+    return settingsDefRegistry.get(id);
 }
 
 export function registerPlugin<

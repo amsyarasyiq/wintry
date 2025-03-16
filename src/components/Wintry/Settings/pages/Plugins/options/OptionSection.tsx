@@ -6,7 +6,7 @@ import { View } from "react-native";
 import { OptionDefRow } from "./OptionDefRow";
 
 function getGroupedOptions(plugin: WintryPluginInstance) {
-    const options = Object.entries(getPluginSettings(plugin.$id) || {});
+    const options = Object.entries(getPluginSettings(plugin.$id)?.definition ?? {});
 
     const groupableMap = [["string", "boolean", "slider"]];
     const groupable = groupableMap.flat();
