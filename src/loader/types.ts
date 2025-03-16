@@ -34,6 +34,5 @@ export interface LoaderPayload {
         initConfig: InitConfig;
         constants: LoaderConstants;
         modules: LoaderModules;
-        preload: Record<string, string>;
     };
 }

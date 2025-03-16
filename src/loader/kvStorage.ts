@@ -1,11 +1,23 @@
 import { debounce } from "es-toolkit";
 import { writeFile } from "@api/fs";
-import { loaderPayload } from "@loader";
 
-const state: { [key in string]?: string } = JSON.parse(loaderPayload.loader.preload?.["kv.json"] ?? "{}");
+const state: { [key in string]?: string } = (window.s = {});
+
+const KV_FOLDER = "kv";
+const KV_PREFIX = "__wt_kv/";
+
+// Load all KV from global object
+for (const key in window) {
+    if (key.startsWith(KV_PREFIX)) {
+        state[key.slice(KV_PREFIX.length)] = window[key];
+        delete window[key];
+    }
+}
 
 const saveState = debounce(() => {
-    writeFile("preload/kv.json", JSON.stringify(state));
+    for (const key in state) {
+        writeFile(`${KV_FOLDER}/${key}`, state[key]!);
+    }
 }, 500);
 
 function getItem(key: string) {
