@@ -13,7 +13,7 @@ Yet another Discord mobile mod, inspired by Vencord.
 	- ...many more coming down the road!
 
 ## **Platform Support**
-At the moment, Wintry is built for and only supported on **Android**. Supporting **iOS** is theoretically possible, but we would need a maintainer with experience in iOS tweaks. Supporting would require:  
+At the moment, Wintry is built for and only supported on **Android**. Supporting iOS is theoretically possible, but we would need a maintainer with experience in iOS tweaks. Supporting would require:  
 - Developing a **loader tweak**  
 - Adapting the **JS** side to support iOS-specific stuff  
 - Thorough testing
@@ -23,8 +23,10 @@ If you're interested in maintaining the iOS support, feel free to reach out.
 ## **Installation**
 To install Wintry, a **loader** is required to inject and provide native functionality to Wintry. Wintry **does not** support loading from an existing mod's loader (Bunny's, Enmity's, etc).  
 
-Currently, the only available loader is **WintryXposed**, which injects through the **Xposed** framework. For non-rooted devices, you can use [LSPatch](https://github.com/JingMatrix/LSPatch) to embed the Xposed module into a Discord APK.  
+Currently, the only available loader is [**WintryXposed**](https://github.com/wtcord/xposed), which injects through the **Xposed** framework. For non-rooted devices, you can use [LSPatch](https://github.com/JingMatrix/LSPatch) to embed the Xposed module into a Discord APK.  
 
+## Contributing
+We welcome contributions from the community! Whether you're fixing bugs, adding new features, or improving documentation, your help is greatly appreciated. Please make sure to review our [contributing guidelines](./CONTRIBUTING.md) before getting started.
 ## FAQs
 
 <details>
