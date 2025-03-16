@@ -9,16 +9,26 @@ import type {
     WintryPluginDefinition,
     WintryPluginInstance,
 } from "./types";
-import { createContextualPatcher } from "@patcher/contextual";
+import { createContextualPatcher, type ContextualPatcher } from "@patcher/contextual";
 
-const patcherRegistry = new Map<string, ReturnType<typeof createContextualPatcher>>();
+const patcherRegistry = new Map<string, ContextualPatcher>();
 const settingsDefRegistry = new Map<string, DefinedOptions<OptionDefinitions>>();
 
+/**
+ * Returns a contextual patcher for the given plugin ID. If there's no existing patcher, a new one will be created.
+ */
 export function getContextualPatcher(id: string) {
     if (patcherRegistry.has(id)) return patcherRegistry.get(id)!;
-    const patcher = createContextualPatcher({ pluginId: id });
+    const patcher = createContextualPatcher({ id });
     patcherRegistry.set(id, patcher);
     return patcher;
+}
+
+/**
+ * Returns the settings definition for the given plugin ID. If the plugin ID is not registered, returns `undefined`.
+ */
+export function getPluginSettings(id: string): OptionDefinitions {
+    return settingsDefRegistry.get(id)?.definition as OptionDefinitions;
 }
 
 export function registerPlugin<
@@ -137,10 +147,6 @@ export function registerPluginSettings<Def extends OptionDefinitions>(id: string
     settingsDefRegistry.set(id, definition);
 
     return definition;
-}
-
-export function getPluginSettings(id: string): OptionDefinitions {
-    return settingsDefRegistry.get(id)?.definition as OptionDefinitions;
 }
 
 export function isPluginInternal(plugin: WintryPluginInstance) {

@@ -1,6 +1,5 @@
-import { definePlugin, logger, meta } from "#plugin-context";
+import { definePlugin, logger, patcher } from "#plugin-context";
 import { Devs } from "@data/constants";
-import { createContextualPatcher } from "@patcher/contextual";
 import { findInReactTree } from "@utils/objects";
 import { useEffect } from "react";
 import { Fragment } from "react/jsx-runtime";
@@ -10,12 +9,9 @@ import UploadStatusView from "./components/UploadStatusView";
 import StealButtons from "./components/StealButtons";
 import { openMediaModal } from "./utils/openMediaModal";
 import { openEmojiActionSheet } from "./utils/openEmojiActionSheet";
-import {} from "./common";
 import PressableScale from "@components/Discord/experimental/PressableScale";
 import { showToast } from "@api/toasts";
 import { byFilePath } from "@metro/common/filters";
-
-const patcher = createContextualPatcher({ pluginId: meta.id });
 
 function addStealButton(emojiNode: EmojiNode, element: any) {
     const insertAtIndex = (container: unknown[], index: number, paddingTop: number) => {

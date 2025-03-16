@@ -4,9 +4,26 @@ import * as patchers from "./index";
 
 type DisposableFn = (...props: any[]) => () => unknown;
 
-export type ContextualPatcher = ReturnType<typeof createContextualPatcher>;
+export interface ContextualPatcher {
+    id: string;
 
-export function createContextualPatcher({ pluginId }: { pluginId: string }) {
+    before: typeof patchers.before;
+    instead: typeof patchers.instead;
+    after: typeof patchers.after;
+
+    detached: typeof patchers;
+
+    addDisposer(...cbs: Array<() => void | boolean>): void;
+
+    dispose(): void;
+    reuse(): void;
+}
+
+interface ContextualPatcherOptions {
+    id: string;
+}
+
+export function createContextualPatcher({ id }: ContextualPatcherOptions): ContextualPatcher {
     let disposed = false;
     const unpatches: (() => void)[] = [];
 
@@ -27,7 +44,7 @@ export function createContextualPatcher({ pluginId }: { pluginId: string }) {
     }
 
     return {
-        pluginId: pluginId,
+        id,
 
         before: shimDisposableFn(unpatches, patchers.before),
         instead: shimDisposableFn(unpatches, patchers.instead),

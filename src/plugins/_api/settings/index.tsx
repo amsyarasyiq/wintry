@@ -1,4 +1,4 @@
-import { definePlugin, definePluginSettings, logger, meta } from "#plugin-context";
+import { definePlugin, definePluginSettings, logger } from "#plugin-context";
 import {
     _registeredSettingItems,
     _registeredSettingSections,
@@ -11,18 +11,13 @@ import Tag from "@components/Wintry/Tag";
 import { Devs } from "@data/constants";
 import { getVersions } from "@debug/info";
 import { t } from "@i18n";
-import { lookup } from "@metro";
 import { byName, byProps } from "@metro/common/filters";
 import { PuzzlePieceIcon, WrenchIcon } from "@metro/common/icons";
 import { NavigationNative } from "@metro/common/libraries";
-import { createContextualPatcher } from "@patcher/contextual";
 import { useUpdaterStore } from "@stores/useUpdaterStore";
 import { findInReactTree } from "@utils/objects";
 import { memoize } from "es-toolkit";
 import { lazy, memo, useLayoutEffect } from "react";
-
-const SettingsOverviewScreen = lookup(byName("SettingsOverviewScreen", { returnEsmDefault: false })).asLazy();
-const patcher = createContextualPatcher({ pluginId: meta.id });
 
 const settings = definePluginSettings({
     onTop: {

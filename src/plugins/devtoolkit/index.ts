@@ -1,13 +1,10 @@
-import { definePlugin, logger, meta } from "#plugin-context";
+import { definePlugin, logger, patcher } from "#plugin-context";
 import { Devs } from "@data/constants";
 import { lookup } from "@metro";
 import { lookupByName, lookupByProps } from "@metro/common/wrappers";
 import { SingleMetroModule } from "@metro/module";
-import { createContextualPatcher } from "@patcher/contextual";
 import { inspect } from "node-inspect-extracted";
 import { establishWebSocketConnection } from "./repl-client";
-
-const patcher = createContextualPatcher({ pluginId: meta.id });
 
 export default definePlugin({
     name: "DevToolkit",

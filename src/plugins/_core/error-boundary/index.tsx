@@ -1,11 +1,8 @@
-import { definePlugin, logger, meta } from "#plugin-context";
+import { definePlugin, logger, patcher } from "#plugin-context";
 import { Devs } from "@data/constants";
 import { byName } from "@metro/common/filters";
-import { createContextualPatcher } from "@patcher/contextual";
 import { ErrorBoundaryScreen } from "./ErrorBoundaryScreen";
 import { lookupByProps } from "@metro/common/wrappers";
-
-const patcher = createContextualPatcher({ pluginId: meta.id });
 
 export default definePlugin({
     name: "ErrorBoundary",
