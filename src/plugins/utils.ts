@@ -11,13 +11,6 @@ import type {
 } from "./types";
 import { createContextualPatcher } from "@patcher/contextual";
 
-type WithThis<T, This> = {
-    [P in keyof T]: T[P] extends (...args: infer A) => infer R ? (this: This, ...args: A) => R : T[P];
-};
-
-// Allows defining a plugin without the state property and allow extra properties
-export type LooseWintryPlugin<P> = WithThis<P, WintryPluginInstance>;
-
 const patcherRegistry = new Map<string, ReturnType<typeof createContextualPatcher>>();
 const settingsDefRegistry = new Map<string, DefinedOptions<OptionDefinitions>>();
 

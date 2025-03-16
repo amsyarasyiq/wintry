@@ -3,6 +3,7 @@ import type { Dev } from "@data/constants";
 import type usePluginStore from "@stores/usePluginStore";
 import type { Filter } from "@metro/common/filters";
 import type { ContextualPatcher } from "@patcher/contextual";
+import type { WithThis } from "@utils/types";
 
 export interface PluginState {
     running: boolean;
@@ -75,6 +76,8 @@ export type WintryPluginInstance<
     O extends OptionDefinitions = OptionDefinitions,
     D extends DefinedOptions<O> = DefinedOptions<O>,
 > = SetRequired<WintryPluginDefinition<D, O>, `$${RequiredRuntimePropertyKey}`>;
+
+export type LooseWintryPlugin<P> = WithThis<P, WintryPluginInstance>;
 
 export type OptionDefinitions = Record<string, OptionDefinition>;
 export type OptionDefinition =

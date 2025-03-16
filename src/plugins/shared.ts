@@ -1,6 +1,7 @@
 import { wtlogger, type BasicLogger } from "@api/logger";
 import type { DefinedOptions, OptionDefinitions, WintryPluginDefinition, WintryPluginInstance } from "./types";
-import { registerPluginSettings, registerPlugin, type LooseWintryPlugin, getContextualPatcher } from "./utils";
+import { registerPluginSettings, registerPlugin, getContextualPatcher } from "./utils";
+import type { LooseWintryPlugin } from "./types";
 import type { ContextualPatcher } from "@patcher/contextual";
 
 interface PluginContextMeta {
