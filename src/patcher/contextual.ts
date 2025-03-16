@@ -20,7 +20,11 @@ export interface ContextualPatcher {
      */
     detached: typeof patchers;
 
+    /**
+     * Whether the context has been disposed. If true, all patchers will be no-ops
+     */
     disposed: boolean;
+
     /**
      * Add a disposer to the context, which will be called when the context is disposed
      *
@@ -29,9 +33,19 @@ export interface ContextualPatcher {
      */
     attachDisposer(...cbs: Array<() => void | boolean>): void;
 
+    /**
+     * Dispose the context and all its children
+     */
     dispose(): void;
+
+    /**
+     * Disposes the context and all its children, then reuses the context
+     */
     reuse(): void;
 
+    /**
+     * Create a child context
+     */
     createChild(options: ContextualPatcherOptions): ContextualPatcher;
 }
 
