@@ -42,9 +42,11 @@ export class SingleMetroModule<A, R, O> {
         });
     }
 
-    asLazy(cb?: typeof this._lazyCallback): R {
+    asLazy(cb?: typeof this._lazyCallback): R extends object ? R : any {
         if (cb) this._lazyCallback = cb;
         this._lazy ??= new LazyModuleContext(this);
+
+        // @ts-expect-error
         return this._lazy.proxy();
     }
 }

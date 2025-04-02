@@ -53,6 +53,15 @@ export const bySingularProp = createModuleFilter(
     }),
 ) as Filter<BySingularProp>;
 
+type ByWritableProp = <T extends string>(prop: T) => ModuleFilter<T, AnyRecord & Record<T, any>, InteropOption>;
+
+export const byWriteableProp = createModuleFilter(
+    withInteropOptions<string>({
+        filter: ([prop, m]) => m[prop] && Object.getOwnPropertyDescriptor(m, prop)?.writable,
+        stringify: arg => `byMutableProp(${arg})`,
+    }),
+) as Filter<ByWritableProp>;
+
 // type ByDisplayName = <T extends string>(
 //     displayName: T,
 //     options?: InteropOption,

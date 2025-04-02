@@ -40,6 +40,9 @@
 					"level": "off"
 				}
 			},
+			"complexity": {
+				"noForEach": "off"
+			},
 			"suspicious": {
 				"noAssignInExpressions": {
 					"level": "off"

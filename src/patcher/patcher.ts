@@ -35,7 +35,7 @@ export function getPatchFunc<T extends PatchType>(patchType: T) {
     >(
         funcParent: P,
         funcName: N,
-        callback: CallbackTypes<P[N]>[T],
+        callback: CallbackTypes<P[N] extends (...args: any[]) => any ? P[N] : any>[T],
         oneTime = false,
     ) => {
         const origFunc = funcParent[funcName];

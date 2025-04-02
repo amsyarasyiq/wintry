@@ -1,4 +1,4 @@
-function getNativeModule<T = any>(...names: string[]): T {
+export function getNativeModule<T = any>(...names: string[]): T {
     const moduleProxy = window.nativeModuleProxy;
     const module = names.find(name => moduleProxy[name] !== null)!;
     return moduleProxy[module];
