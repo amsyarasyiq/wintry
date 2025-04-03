@@ -201,13 +201,6 @@ export const MOCHA_THEME: WintryTheme = {
         },
     },
     asAddonMetadata(): AddonMetadata {
-        return {
-            id: this.id,
-            name: this.display.name,
-            description: this.display.description,
-            authors: this.display.authors.map(author => ({
-                name: author.name,
-            })),
-        };
+        throw new Error("Function not implemented.");
     },
 };

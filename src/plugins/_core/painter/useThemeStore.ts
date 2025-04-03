@@ -7,6 +7,7 @@ import { lookupByProps } from "@metro/common/wrappers";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { kvStorage } from "@loader/kvStorage";
 import { memoize } from "es-toolkit";
+import { ROSIE_PINK_THEME } from "./example_theme_1";
 
 const logger = wtlogger.createChild("useThemeStore");
 const formDividerModule = lookupByProps("DIVIDER_COLORS");
@@ -82,29 +83,29 @@ export const useThemeStore = create(
         (set, get) => ({
             appliedTheme: null,
             currentRef: null,
-            themes: [MOCHA_THEME],
+            themes: [MOCHA_THEME, ROSIE_PINK_THEME],
             setThemeRef: (id: string | null) => {
-                if (id == null) {
-                    set({ appliedTheme: null, currentRef: null });
-                    return;
+                set({ appliedTheme: null, currentRef: null });
+
+                if (id != null) {
+                    const theme = get().themes.find(t => t.id === id);
+                    if (!theme) throw new Error(`Theme is not installed: ${id}`);
+
+                    set({
+                        appliedTheme: id,
+                        currentRef: {
+                            key: `wt-theme-${_inc++}`,
+                            color: parseColorManifest(theme),
+                        },
+                    });
                 }
-
-                const theme = get().themes.find(t => t.id === id);
-                if (!theme) throw new Error(`Theme is not installed: ${id}`);
-
-                set({
-                    appliedTheme: id,
-                    currentRef: {
-                        key: `wt-theme-${_inc++}`,
-                        color: parseColorManifest(theme),
-                    },
-                });
             },
         }),
         {
             name: "theme-store",
+            version: 2,
             storage: createJSONStorage(() => kvStorage),
-            onRehydrateStorage(state) {
+            onRehydrateStorage() {
                 return state => {
                     if (state && state.themes.length !== 0) {
                         for (const theme of state.themes) {
