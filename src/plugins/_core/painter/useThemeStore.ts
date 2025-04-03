@@ -6,6 +6,7 @@ import { MOCHA_THEME } from "./example_theme";
 import { lookupByProps } from "@metro/common/wrappers";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { kvStorage } from "@loader/kvStorage";
+import { memoize } from "es-toolkit";
 
 const logger = wtlogger.createChild("useThemeStore");
 const formDividerModule = lookupByProps("DIVIDER_COLORS");
@@ -103,6 +104,20 @@ export const useThemeStore = create(
         {
             name: "theme-store",
             storage: createJSONStorage(() => kvStorage),
+            onRehydrateStorage(state) {
+                return state => {
+                    if (state && state.themes.length !== 0) {
+                        for (const theme of state.themes) {
+                            theme.asAddonMetadata = memoize(() => ({
+                                id: theme.id,
+                                name: theme.display.name,
+                                description: theme.display.description,
+                                authors: theme.display.authors,
+                            }));
+                        }
+                    }
+                };
+            },
             partialize: s => ({
                 ...s,
                 currentRef: null,

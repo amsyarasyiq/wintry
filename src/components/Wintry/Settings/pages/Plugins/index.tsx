@@ -6,15 +6,14 @@ import type { WintryPluginInstance } from "@plugins/types";
 import usePluginStore from "@stores/usePluginStore";
 import { showSheet } from "@components/utils/sheets";
 
-// TODO: since this is top level defined, we can't do i18n here. adapt this to be able to use i18n
 const pluginCollectionManager = createAddonCollectionManager({
-    data: Object.values(PLUGINS),
+    data: () => Object.values(PLUGINS),
     defaultFilterOptions: ["HIDE_INTERNAL", "HIDE_UNAVAILABLE"],
     defaultSortOption: "A-Z",
     sortOptions: [
         {
             key: "A-Z",
-            label: "A-Z",
+            label: () => "A-Z",
             compareFn: (a, b) => {
                 const aInternal = isPluginInternal(a);
                 const bInternal = isPluginInternal(b);
@@ -24,7 +23,7 @@ const pluginCollectionManager = createAddonCollectionManager({
         },
         {
             key: "Z-A",
-            label: "Z-A",
+            label: () => "Z-A",
             compareFn: (a, b) => {
                 const aInternal = isPluginInternal(a);
                 const bInternal = isPluginInternal(b);
@@ -36,12 +35,14 @@ const pluginCollectionManager = createAddonCollectionManager({
     filterOptions: [
         {
             key: "HIDE_INTERNAL",
-            label: "Hide internal plugins",
+            // TODO: I18n
+            label: () => "Hide internal plugins",
             filterFn: a => !isPluginInternal(a),
         },
         {
             key: "HIDE_UNAVAILABLE",
-            label: "Hide unavailable plugins",
+            // TODO: I18n
+            label: () => "Hide unavailable plugins",
             filterFn: a => a.isAvailable?.() !== false,
         },
     ],

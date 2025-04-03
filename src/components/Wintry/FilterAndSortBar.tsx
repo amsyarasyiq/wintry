@@ -6,13 +6,13 @@ import Search, { type useSearchQuery } from "./Search";
 
 export interface SortOption<T, K extends string> {
     key: K;
-    label: string;
+    label: () => string;
     compareFn: (a: T, b: T) => number;
 }
 
 export interface FilterOption<T, K extends string> {
     key: K;
-    label: string;
+    label: () => string;
     filterFn: (item: T) => boolean;
 }
 
@@ -43,7 +43,7 @@ export function FilterAndSortBar<T, SK extends string, FK extends string>({
 
             <ContextMenu
                 items={sortOptions.map(option => ({
-                    label: option.label,
+                    label: option.label(),
                     iconSource: currentSortOption === option.key ? findAssetId("CheckmarkSmallBoldIcon") : undefined,
                     action: () => onSortChange(option.key),
                 }))}
@@ -53,7 +53,7 @@ export function FilterAndSortBar<T, SK extends string, FK extends string>({
 
             <ContextMenu
                 items={filterOptions.map(option => ({
-                    label: option.label,
+                    label: option.label(),
                     iconSource: currentFilterOptions.includes(option.key)
                         ? findAssetId("CheckmarkSmallBoldIcon")
                         : undefined,
