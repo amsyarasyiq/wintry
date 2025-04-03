@@ -10,12 +10,14 @@ import { isSafeModeEnabled } from "@loader";
 
 const ItemSeparator = () => <View style={{ height: 8 }} />;
 
-export interface Addon {
-    $id: string;
+export interface AddonMetadata {
+    id: string;
     name: string;
     description: string;
     authors: { name: string }[];
 }
+
+export type Addon = { asAddonMetadata(): AddonMetadata };
 
 export interface AddonPageProps<T extends Addon> {
     useCanHandleAddon: (id: string) => boolean;
@@ -35,7 +37,7 @@ export default function AddonPage<T extends Addon>(props: AddonPageProps<T>) {
                 data={results}
                 itemMinWidth={244}
                 estimatedItemSize={150}
-                keyExtractor={i => i.obj.$id}
+                keyExtractor={i => i.obj.asAddonMetadata().id}
                 renderItem={({ item: result }) => (
                     <HighlightProvider result={result} searchTerms={props.collectionManager.searchTerms}>
                         <AddonCard<T> addon={result.obj} pageProps={props} />

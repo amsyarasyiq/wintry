@@ -7,7 +7,7 @@ import usePluginStore from "@stores/usePluginStore";
 import { showSheet } from "@components/utils/sheets";
 
 // TODO: since this is top level defined, we can't do i18n here. adapt this to be able to use i18n
-const pluginFilterSystem = createAddonCollectionManager({
+const pluginCollectionManager = createAddonCollectionManager({
     data: Object.values(PLUGINS),
     defaultFilterOptions: ["HIDE_INTERNAL", "HIDE_UNAVAILABLE"],
     defaultSortOption: "A-Z",
@@ -50,7 +50,7 @@ const pluginFilterSystem = createAddonCollectionManager({
 export default function PluginsPage() {
     return (
         <AddonPage<WintryPluginInstance>
-            collectionManager={pluginFilterSystem}
+            collectionManager={pluginCollectionManager}
             onPressInfo={plugin => {
                 showSheet("PluginSheetComponent", import("./PluginSheetComponent"), { plugin });
             }}

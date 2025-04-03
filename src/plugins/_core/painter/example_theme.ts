@@ -1,3 +1,4 @@
+import type { AddonMetadata } from "@components/Wintry/Settings/pages/Addon";
 import type { WintryTheme } from "./types";
 
 export const MOCHA_THEME: WintryTheme = {
@@ -198,5 +199,15 @@ export const MOCHA_THEME: WintryTheme = {
                 WHITE_500: "#221E2A",
             },
         },
+    },
+    asAddonMetadata(): AddonMetadata {
+        return {
+            id: this.id,
+            name: this.display.name,
+            description: this.display.description,
+            authors: this.display.authors.map(author => ({
+                name: author.name,
+            })),
+        };
     },
 };

@@ -11,6 +11,7 @@ export const ArrowSmallLeftIcon = getIcon("ArrowSmallLeftIcon");
 export const ActivitiesIcon = getIcon("ActivitiesIcon");
 export const WrenchIcon = getIcon("WrenchIcon");
 export const DownloadIcon = getIcon("DownloadIcon");
+export const PaintPaletteIcon = getIcon("PaintPaletteIcon");
 export const PuzzlePieceIcon = getIcon("PuzzlePieceIcon");
 export const CircleInformationIcon = getIcon("CircleInformationIcon");
 export const CircleCheckIcon = getIcon("CircleCheckIcon");

@@ -1,3 +1,5 @@
+import type { AddonMetadata } from "@components/Wintry/Settings/pages/Addon";
+
 /**
  * Represents the structure of a theme object.
  */
@@ -21,6 +23,12 @@ export interface WintryTheme {
      * Contains the main styling properties of the theme, such as colors, background, icons, and fonts.
      */
     main: ThemeMain;
+
+    /**
+     * Returns the theme in AddonMetadata format. This property is set during runtime.
+     * It is not part of the theme definition and should not be included in the theme object.
+     */
+    asAddonMetadata(): AddonMetadata;
 }
 
 interface ThemeDisplay {

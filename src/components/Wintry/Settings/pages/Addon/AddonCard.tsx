@@ -22,7 +22,7 @@ function CardHeader<T extends Addon>({ addon }: { addon: T }) {
 }
 
 function CardDevs<T extends Addon>({ addon }: { addon: T }) {
-    if (!addon.authors) return null;
+    if (!addon.asAddonMetadata().authors) return null;
 
     const DevText = useHighlightedSearchTerm(2);
 
@@ -56,8 +56,8 @@ function CardActions<T extends Addon>({ addon, pageProps }: AddonCardProps<T>) {
 }
 
 function CardSwitch<T extends Addon>({ addon, pageProps }: AddonCardProps<T>) {
-    const canToggle = pageProps.useCanHandleAddon(addon.$id);
-    const [enabled, setEnabled] = pageProps.useToggler(addon.$id);
+    const canToggle = pageProps.useCanHandleAddon(addon.asAddonMetadata().id);
+    const [enabled, setEnabled] = pageProps.useToggler(addon.asAddonMetadata().id);
 
     return (
         <View>
@@ -74,7 +74,7 @@ function CardSwitch<T extends Addon>({ addon, pageProps }: AddonCardProps<T>) {
 
 export default function AddonCard<T extends Addon>(props: AddonCardProps<T>) {
     const { pageProps, addon } = props;
-    const handleable = pageProps.useCanHandleAddon(addon.$id);
+    const handleable = pageProps.useCanHandleAddon(addon.asAddonMetadata().id);
 
     return (
         <Card

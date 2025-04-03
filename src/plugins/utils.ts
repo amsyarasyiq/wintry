@@ -1,4 +1,4 @@
-import { toDefaulted } from "es-toolkit/compat";
+import { memoize, toDefaulted } from "es-toolkit/compat";
 import usePluginStore from "@stores/usePluginStore";
 import type {
     DefinedOptions,
@@ -70,6 +70,14 @@ export function registerPlugin<
         },
         $isToggleable: {
             value: () => !plugin.required && plugin.isAvailable?.() !== false,
+        },
+        asAddonMetadata: {
+            value: memoize(() => ({
+                id: id,
+                name: plugin.name,
+                description: plugin.description,
+                authors: plugin.authors,
+            })),
         },
     });
 

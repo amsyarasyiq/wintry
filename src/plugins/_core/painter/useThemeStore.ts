@@ -1,4 +1,4 @@
-import { createStore } from "zustand";
+import { create } from "zustand";
 import type { WintryTheme } from "./types";
 import { parseColorManifest } from "./parser";
 import { wtlogger } from "@api/logger";
@@ -35,7 +35,7 @@ export function getCurrentRef() {
 // TODO: For debugging only, remove once done
 window.applyTheme = applyTheme;
 
-export function applyTheme(id: string | null, update = true) {
+export function applyTheme(id: string | null, update: boolean) {
     useThemeStore.getState().setThemeRef(id);
     const ref = getCurrentRef();
 
@@ -76,7 +76,7 @@ export function applyTheme(id: string | null, update = true) {
     }
 }
 
-export const useThemeStore = createStore(
+export const useThemeStore = create(
     persist<ThemeStore>(
         (set, get) => ({
             appliedTheme: null,

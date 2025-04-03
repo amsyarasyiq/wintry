@@ -38,9 +38,13 @@ export function createAddonCollectionManager<T extends Addon, SK extends string,
     ...props
 }: AddonCollectionManagerBuilderProps<T, SK, FK>): AddonCollectionManager<T, SK, FK> {
     const searchTerms: ((a: T) => string)[] = [
-        v => v.name,
-        v => v.description,
-        v => v.authors.map(a => a.name).join(", "),
+        v => v.asAddonMetadata().name,
+        v => v.asAddonMetadata().description,
+        v =>
+            v
+                .asAddonMetadata()
+                .authors.map(a => a.name)
+                .join(", "),
         ...(props.searchTerms ?? []),
     ];
 

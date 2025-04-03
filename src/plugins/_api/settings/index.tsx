@@ -12,7 +12,7 @@ import { Devs } from "@data/constants";
 import { getVersions } from "@debug/info";
 import { t } from "@i18n";
 import { byName, byProps } from "@metro/common/filters";
-import { PuzzlePieceIcon, WrenchIcon } from "@metro/common/icons";
+import { PaintPaletteIcon, PuzzlePieceIcon, WrenchIcon } from "@metro/common/icons";
 import { NavigationNative } from "@metro/common/libraries";
 import { useUpdaterStore } from "@stores/useUpdaterStore";
 import { findInReactTree } from "@utils/objects";
@@ -149,6 +149,15 @@ export default definePlugin({
                         screen: {
                             route: "WINTRY_PLUGINS",
                             getComponent: () => lazy(() => import("@components/Wintry/Settings/pages/Plugins")),
+                        },
+                    }),
+                    registerSettingRenderer("WINTRY_THEMES", {
+                        type: "route",
+                        title: () => t.settings.sections.themes(),
+                        IconComponent: PaintPaletteIcon,
+                        screen: {
+                            route: "WINTRY_THEMES",
+                            getComponent: () => lazy(() => import("@components/Wintry/Settings/pages/Themes")),
                         },
                     }),
                     registerSettingRenderer("WINTRY_DEVELOPER", {

@@ -4,6 +4,7 @@ import type usePluginStore from "@stores/usePluginStore";
 import type { Filter } from "@metro/common/filters";
 import type { ContextualPatcher } from "@patcher/contextual";
 import type { WithThis } from "@utils/types";
+import type { AddonMetadata } from "@components/Wintry/Settings/pages/Addon";
 
 export interface PluginState {
     running: boolean;
@@ -72,11 +73,15 @@ export interface WintryPluginDefinition<D extends DefinedOptions<O>, O extends O
 
 type RequiredRuntimePropertyKey = "id" | "state" | "path" | "isToggleable";
 
+interface InternalRuntimeMethods {
+    asAddonMetadata(): AddonMetadata;
+}
+
 // Allows defining a plugin without the state property and allow extra properties
 export type WintryPluginInstance<
     O extends OptionDefinitions = OptionDefinitions,
     D extends DefinedOptions<O> = DefinedOptions<O>,
-> = SetRequired<WintryPluginDefinition<D, O>, `$${RequiredRuntimePropertyKey}`>;
+> = SetRequired<WintryPluginDefinition<D, O>, `$${RequiredRuntimePropertyKey}`> & InternalRuntimeMethods;
 
 export type LooseWintryPlugin<P> = WithThis<P, WintryPluginInstance>;
 
