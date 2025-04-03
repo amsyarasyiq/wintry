@@ -69,7 +69,7 @@ export function applyTheme(id: string | null, update = true) {
         const manifest = id != null && useThemeStore.getState().themes.find(t => t.id === id);
 
         // biome-ignore lint/complexity/useOptionalChain: ?. won't filter out falsys
-        const base = (manifest && manifest.main.base) || "darker";
+        const base = ref?.color.reference || (manifest && manifest.main.base) || "darker";
 
         UserSettingsActionCreators.setShouldSyncAppearanceSettings(false);
         UserSettingsActionCreators.updateTheme(ref ? ref.key : base);
