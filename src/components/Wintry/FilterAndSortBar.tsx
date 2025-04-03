@@ -41,27 +41,32 @@ export function FilterAndSortBar<T, SK extends string, FK extends string>({
         <View style={[{ flexDirection: "row", gap: 8 }, style]}>
             <Search style={{ flexGrow: 1 }} isRound={true} queryRef={queryRef} />
 
-            <ContextMenu
-                items={sortOptions.map(option => ({
-                    label: option.label(),
-                    iconSource: currentSortOption === option.key ? findAssetId("CheckmarkSmallBoldIcon") : undefined,
-                    action: () => onSortChange(option.key),
-                }))}
-            >
-                {props => <IconButton {...props} variant="tertiary" icon={findAssetId("ArrowsUpDownIcon")} />}
-            </ContextMenu>
+            {sortOptions.length > 0 && (
+                <ContextMenu
+                    items={sortOptions.map(option => ({
+                        label: option.label(),
+                        iconSource:
+                            currentSortOption === option.key ? findAssetId("CheckmarkSmallBoldIcon") : undefined,
+                        action: () => onSortChange(option.key),
+                    }))}
+                >
+                    {props => <IconButton {...props} variant="tertiary" icon={findAssetId("ArrowsUpDownIcon")} />}
+                </ContextMenu>
+            )}
 
-            <ContextMenu
-                items={filterOptions.map(option => ({
-                    label: option.label(),
-                    iconSource: currentFilterOptions.includes(option.key)
-                        ? findAssetId("CheckmarkSmallBoldIcon")
-                        : undefined,
-                    action: () => onFilterChange(option.key),
-                }))}
-            >
-                {props => <IconButton {...props} variant="tertiary" icon={findAssetId("FiltersHorizontalIcon")} />}
-            </ContextMenu>
+            {filterOptions.length > 0 && (
+                <ContextMenu
+                    items={filterOptions.map(option => ({
+                        label: option.label(),
+                        iconSource: currentFilterOptions.includes(option.key)
+                            ? findAssetId("CheckmarkSmallBoldIcon")
+                            : undefined,
+                        action: () => onFilterChange(option.key),
+                    }))}
+                >
+                    {props => <IconButton {...props} variant="tertiary" icon={findAssetId("FiltersHorizontalIcon")} />}
+                </ContextMenu>
+            )}
         </View>
     );
 }

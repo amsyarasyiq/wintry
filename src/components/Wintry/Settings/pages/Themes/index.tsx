@@ -3,7 +3,7 @@ import AddonPage from "../Addon";
 import { createAddonCollectionManager } from "../Addon/AddonCollectionManager";
 import { applyTheme, useThemeStore } from "@plugins/_core/painter/useThemeStore";
 
-const themeCollectionManager = createAddonCollectionManager({
+const themeCollectionManager = createAddonCollectionManager<WintryTheme, "A-Z" | "Z-A", string>({
     data: () => useThemeStore.getState().themes,
     defaultFilterOptions: [],
     defaultSortOption: "A-Z",
