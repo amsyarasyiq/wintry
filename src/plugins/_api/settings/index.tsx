@@ -157,7 +157,7 @@ export default definePlugin({
                         IconComponent: PaintPaletteIcon,
                         screen: {
                             route: "WINTRY_THEMES",
-                            getComponent: () => lazy(() => import("@components/Wintry/Settings/pages/Themes")),
+                            getComponent: () => require("@components/Wintry/Settings/pages/Themes").default,
                         },
                     }),
                     registerSettingRenderer("WINTRY_DEVELOPER", {
