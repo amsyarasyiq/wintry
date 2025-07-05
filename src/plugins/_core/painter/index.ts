@@ -11,8 +11,8 @@ export default definePlugin({
     authors: [Devs.Pylix],
     required: true,
     start() {
-        waitFor(byProps(["SemanticColor"]), () => {
-            patchDefinitionAndResolver();
+        waitFor(byProps(["SemanticColor"]), tokensModule => {
+            patchDefinitionAndResolver(tokensModule);
             patchSelectivelySyncedUserSettingsStore();
         });
     },
