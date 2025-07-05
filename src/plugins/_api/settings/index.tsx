@@ -17,7 +17,7 @@ import { NavigationNative } from "@metro/common/libraries";
 import { useUpdaterStore } from "@stores/useUpdaterStore";
 import { findInReactTree } from "@utils/objects";
 import { memoize } from "es-toolkit";
-import { lazy, memo, useLayoutEffect } from "react";
+import { memo, useLayoutEffect } from "react";
 
 const settings = definePluginSettings({
     onTop: {
@@ -139,7 +139,7 @@ export default definePlugin({
                         },
                         screen: {
                             route: "WINTRY",
-                            getComponent: () => lazy(() => import("@components/Wintry/Settings/pages/Wintry")),
+                            getComponent: () => require("@components/Wintry/Settings/pages/Wintry").default,
                         },
                     }),
                     registerSettingRenderer("WINTRY_PLUGINS", {
@@ -148,7 +148,7 @@ export default definePlugin({
                         IconComponent: PuzzlePieceIcon,
                         screen: {
                             route: "WINTRY_PLUGINS",
-                            getComponent: () => lazy(() => import("@components/Wintry/Settings/pages/Plugins")),
+                            getComponent: () => require("@components/Wintry/Settings/pages/Plugins").default,
                         },
                     }),
                     registerSettingRenderer("WINTRY_DEVELOPER", {
@@ -157,7 +157,7 @@ export default definePlugin({
                         IconComponent: WrenchIcon,
                         screen: {
                             route: "WINTRY_DEVELOPER",
-                            getComponent: () => lazy(() => import("@components/Wintry/Settings/pages/Developer")),
+                            getComponent: () => require("@components/Wintry/Settings/pages/Developer").default,
                         },
                     }),
                     // registerSettingRenderer("WINTRY_UPDATER", {

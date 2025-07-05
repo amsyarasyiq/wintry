@@ -1,4 +1,3 @@
-import { lazy } from "react";
 import { t } from "@i18n";
 import { findAssetId } from "@api/assets";
 import { TableRow, TableRowGroup, TableSwitchRow, Text, TextInput } from "@components/Discord";
@@ -64,7 +63,7 @@ export default function DeveloperPage() {
                     onPress={() =>
                         navigation.push("WINTRY_CUSTOM_PAGE", {
                             title: tSections.tools.asset_browser.label(),
-                            render: lazy(() => import("./AssetBrowser")),
+                            render: require("./AssetBrowser").default,
                         })
                     }
                 />
@@ -75,7 +74,7 @@ export default function DeveloperPage() {
                     onPress={() =>
                         navigation.push("WINTRY_CUSTOM_PAGE", {
                             title: "Token Browser",
-                            render: lazy(() => import("./TokenBrowser")),
+                            render: require("./TokenBrowser").default,
                         })
                     }
                 />
@@ -88,7 +87,7 @@ export default function DeveloperPage() {
                     onPress={() =>
                         navigation.push("WINTRY_CUSTOM_PAGE", {
                             title: "Toast Playground",
-                            render: lazy(() => import("./ToastPlayground")),
+                            render: require("./ToastPlayground").default,
                         })
                     }
                 />
@@ -99,7 +98,7 @@ export default function DeveloperPage() {
                     onPress={() =>
                         navigation.push("WINTRY_CUSTOM_PAGE", {
                             title: "Callouts Playground",
-                            render: lazy(() => import("./CalloutPlayground")),
+                            render: require("./CalloutPlayground").default,
                         })
                     }
                 />
@@ -110,7 +109,7 @@ export default function DeveloperPage() {
                     onPress={() =>
                         navigation.push("WINTRY_CUSTOM_PAGE", {
                             title: "Alerts Playground",
-                            render: lazy(() => import("./AlertsPlayground")),
+                            render: require("./AlertsPlayground").default,
                         })
                     }
                 />

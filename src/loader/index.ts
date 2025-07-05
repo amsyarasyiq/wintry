@@ -1,3 +1,4 @@
+import { ImageLoader } from "@native";
 import type { LoaderPayload } from "./types";
 
 type InteropReturn = Promise<{ ret: string } | { err: string } | { cancelled: true; reason: string }>;
@@ -17,8 +18,7 @@ export async function callFunction(module: string, functionName: string, args: u
         throw new Error(`Function ${module}.${functionName} is not registered`);
     }
 
-    const { queryCache } = window.nativeModuleProxy.ImageLoader;
-    const promise: InteropReturn = queryCache([
+    const promise: InteropReturn = ImageLoader.queryCache([
         "__wintry_bridge",
         JSON.stringify({ m: module, f: functionName, a: args }),
     ]);
