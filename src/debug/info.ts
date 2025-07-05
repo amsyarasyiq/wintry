@@ -18,8 +18,8 @@ export function getVersions() {
             version,
         },
         discord: {
-            version: NativeClientInfoModule.Version,
-            build: NativeClientInfoModule.Build,
+            version: NativeClientInfoModule.getConstants().Version,
+            build: NativeClientInfoModule.getConstants().Build,
         },
         hermes: {
             buildType: hermesProps.Build,

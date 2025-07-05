@@ -1,7 +1,6 @@
 import { TableRow, TableRowGroup } from "@components/Discord";
 import PageWrapper from "@components/Wintry/Settings/PageWrapper";
 import { NavigationNative } from "@metro/common/libraries";
-import { lazy } from "react";
 
 export default function TokenBrowser() {
     const navigation = NavigationNative.useNavigation();
@@ -15,7 +14,7 @@ export default function TokenBrowser() {
                     onPress={() => {
                         navigation.push("WINTRY_CUSTOM_PAGE", {
                             title: "Colors",
-                            render: lazy(() => import("./Colors")),
+                            render: require("./Colors").default,
                         });
                     }}
                 />
