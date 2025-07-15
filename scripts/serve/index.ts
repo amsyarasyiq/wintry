@@ -5,7 +5,7 @@ import logger from "../logger";
 
 import * as c from "ansi-colors";
 import { networkInterfaces } from "os";
-import * as hermesc from "hermes-compiler";
+import { getHermesBytecodeVersion } from "../build/utils/hermesc";
 
 function getHostAddresses(): string[] {
     const hostAddresses: string[] = [];
@@ -45,11 +45,11 @@ export function startDevelopmentServer(
             const hbcVersion = parseHbcBundlePath(pathname) || Number.NaN;
 
             if (pathname === "/info.json") {
-                const compilers = args.nocompile ? [] : [hermesc];
+                const compilers = args.nocompile ? [] : [await getHermesBytecodeVersion()];
 
                 return Response.json({
                     version: (await Bun.file("./package.json").json()).version,
-                    paths: ["/bundle.js", "/bundle.min.js", ...compilers.map(v => `/bundle.${v.VERSION}.hbc`)],
+                    paths: ["/bundle.js", "/bundle.min.js", ...compilers.map(v => `/bundle.${v}.hbc`)],
                 });
             }
 

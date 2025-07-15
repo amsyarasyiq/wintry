@@ -5,9 +5,9 @@ import { bold, greenBright, yellowBright } from "ansi-colors";
 import { $, file } from "bun";
 import logger from "../logger";
 import crypto from "node:crypto";
-import * as hermesc from "hermes-compiler";
 import { writeFile } from "node:fs/promises";
 import * as c from "ansi-colors";
+import { compileWithHermesc, getHermesBytecodeVersion } from "./utils/hermesc";
 
 export interface WintryBuildContext {
     contextCreated: number;
@@ -85,9 +85,11 @@ async function buildBundle(buildContext: WintryBuildContext, silent = false, ski
     buildContext.outputPath = outputPath;
     buildContext.timeTaken = buildContext.lastBuildTime - beginTime;
 
-    buildContext.bytecodePath = {
-        [hermesc.VERSION]: await compileToBytecode(outputPath, hermesc.VERSION),
-    };
+    buildContext.bytecodePath = {};
+
+    // Get the actual bytecode version from hermesc
+    const actualBytecodeVersion = await getHermesBytecodeVersion();
+    buildContext.bytecodePath[actualBytecodeVersion] = await compileToBytecode(outputPath, actualBytecodeVersion);
 
     if (!silent) logger(greenBright(`Bundle built in ${bold(`${buildContext.timeTaken.toFixed(2)}ms`)}`));
     buildingContext = undefined;
@@ -96,20 +98,30 @@ async function buildBundle(buildContext: WintryBuildContext, silent = false, ski
 }
 
 async function compileToBytecode(target: string, hbcVersion: number) {
-    if (hbcVersion <= 0 || hermesc.VERSION !== hbcVersion) {
-        throw new Error(`Unsupported version: ${hbcVersion} !== ${hermesc.VERSION}`);
+    if (hbcVersion <= 0) {
+        throw new Error(`Invalid bytecode version: ${hbcVersion}`);
     }
 
     const startTime = performance.now();
 
     const file = Bun.file(target);
-    const bundleBuffer = Buffer.from(await file.arrayBuffer());
-    const { bytecode } = hermesc.compile(bundleBuffer, { sourceURL: "wintry" });
     const hbcPath = file.name!.replace(/\.js$/, `.${hbcVersion}.hbc`);
+
+    await compileWithHermesc(file, hbcPath, {
+        flags: [
+            args.deploy ? "-O" : "-Og",
+            args.deploy ? "-g3" : "-g0",
+            "-reuse-prop-cache",
+            "-optimized-eval",
+            "-strict",
+            "-finline",
+            "-fno-static-builtins",
+            // "-funsafe-intrinsics", - Enable Recognize and lower Asm.js/Wasm unsafe compiler intrinsics.
+        ],
+    });
 
     logger(c.dim("Bundle compilation took:"), `${(performance.now() - startTime).toFixed(2)}ms`);
 
-    await writeFile(hbcPath, bytecode);
     return hbcPath;
 }
 
@@ -131,7 +143,8 @@ if (import.meta.main) {
         hash.update(await file(buildContext.outputPath!).text());
 
         if (!args.nocompile) {
-            const bytecodePath = await compileToBytecode(buildContext.outputPath!, hermesc.VERSION);
+            const bytecodeVersion = await getHermesBytecodeVersion();
+            const bytecodePath = await compileToBytecode(buildContext.outputPath!, bytecodeVersion);
             logger(`${c.green("Compiled bytecode")}: ${bytecodePath}`);
 
             availablePaths.push(bytecodePath);
@@ -154,7 +167,8 @@ if (import.meta.main) {
             hash.update(await file(minifiedBuildContext.outputPath!).text());
 
             if (!args.nocompile) {
-                const bytecodePath = await compileToBytecode(minifiedBuildContext.outputPath!, hermesc.VERSION);
+                const bytecodeVersion = await getHermesBytecodeVersion();
+                const bytecodePath = await compileToBytecode(minifiedBuildContext.outputPath!, bytecodeVersion);
                 logger(`${c.green("Compiled minified bytecode")}: ${bytecodePath}`);
 
                 availablePaths.push(bytecodePath);
