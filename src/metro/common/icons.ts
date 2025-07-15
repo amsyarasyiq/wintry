@@ -5,6 +5,7 @@ function getIcon(name: string): React.ComponentType<Record<string, unknown>> {
     return lazyValue(() => lookupByProps(name).load()[name]);
 }
 
+export const MagnifyingGlassIcon = getIcon("MagnifyingGlassIcon");
 export const CirclePlusIcon = getIcon("CirclePlusIcon");
 export const CircleMinusIcon = getIcon("CircleMinusIcon");
 export const ArrowSmallLeftIcon = getIcon("ArrowSmallLeftIcon");

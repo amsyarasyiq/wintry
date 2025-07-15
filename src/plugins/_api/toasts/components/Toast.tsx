@@ -1,12 +1,12 @@
 import Animated, {
+    type ComplexAnimationBuilder,
     useSharedValue,
     useAnimatedStyle,
     withTiming,
-    FadeInUp,
-    FadeOutUp,
-    type ComplexAnimationBuilder,
     runOnJS,
     LinearTransition,
+    SlideOutUp,
+    SlideInUp,
 } from "react-native-reanimated";
 import { Gesture, GestureDetector, Directions } from "react-native-gesture-handler";
 import { View, useWindowDimensions } from "react-native";
@@ -96,18 +96,23 @@ export default memo(function Toast({ toast }: { toast: _Toast }) {
         });
 
     const setupSpringMotion = (spring: ComplexAnimationBuilder) =>
-        spring.mass(0.35).damping(15).stiffness(350).restDisplacementThreshold(0.1).restSpeedThreshold(0.1);
+        spring.mass(0.2).damping(15).stiffness(350).restDisplacementThreshold(0.1).restSpeedThreshold(0.1);
 
     return (
         <GestureDetector gesture={Gesture.Simultaneous(pan, fling)}>
             <Animated.View
                 pointerEvents="box-none"
-                layout={LinearTransition.springify().duration(500).dampingRatio(0.5)}
-                entering={setupSpringMotion(FadeInUp.springify())}
-                exiting={setupSpringMotion(FadeOutUp.springify())}
+                layout={LinearTransition.springify(500).dampingRatio(0.5)}
+                // FadeInUp and FadeOutUp would be preferable here, but after Discord upgraded to Fabric Native Components,
+                // they appear to cause no animation at all.
+                entering={setupSpringMotion(SlideInUp.springify())}
+                exiting={setupSpringMotion(SlideOutUp.springify())}
             >
                 <PressableScale pointerEvents="box-none" disabled={!toast.onPress} onPress={toast.onPress}>
-                    <Animated.View style={[animatedStyles, styles.container, toast.contentContainerStyle]}>
+                    <Animated.View
+                        layout={LinearTransition.springify(500).dampingRatio(0.5)}
+                        style={[animatedStyles, styles.container, toast.contentContainerStyle]}
+                    >
                         <View style={styles.contentContainer}>
                             <ToastContentRenderer toast={toast} />
                         </View>
