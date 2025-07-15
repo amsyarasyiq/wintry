@@ -36,10 +36,7 @@ export async function getEsbuildConfig({ deploy = false, minify = false }): Prom
             "const-and-let": false,
         },
         banner: {
-            js: [
-                "var WINTRY_START_TIME = nativePerformanceNow();",
-                "var window = typeof globalThis !== 'undefined' ? globalThis : this;",
-            ].join(" "),
+            js: ["var WINTRY_START_TIME = nativePerformanceNow();", "var window = this;"].join(" "),
         },
         footer: {
             js: "//# sourceURL=wintry",
@@ -55,8 +52,6 @@ export async function getEsbuildConfig({ deploy = false, minify = false }): Prom
             "#metro-deps#": "./shims/depsModule",
             "react/jsx-runtime": "./shims/jsxRuntime",
             "no-expose": "./shims/emptyModule",
-
-            "react-native-customizable-toast": "./node_modules/react-native-customizable-toast/src/index.ts",
         },
         plugins: [
             globalsPlugin(
