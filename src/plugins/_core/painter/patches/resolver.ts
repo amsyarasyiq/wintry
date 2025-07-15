@@ -4,6 +4,7 @@ import { patcher } from "#plugin-context";
 import { chroma } from "@metro/common/libraries";
 import { byWriteableProp } from "@metro/common/filters";
 import { lookup } from "@metro";
+import { hasInitialThemeStateBeenRestored } from "./stores";
 
 const isThemeModule = lookup(byWriteableProp("isThemeDark")).asLazy();
 
@@ -16,6 +17,7 @@ export default function patchDefinitionAndResolver(tokensModule: any) {
             configurable: true,
             enumerable: true,
             get: () => {
+                if (!hasInitialThemeStateBeenRestored) return origRaw[key];
                 const ret = getCurrentRef()?.color.raw[key];
                 return ret || origRaw[key];
             },

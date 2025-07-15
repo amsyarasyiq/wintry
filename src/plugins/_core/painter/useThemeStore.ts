@@ -1,15 +1,15 @@
-import { create } from "zustand";
-import type { WintryTheme } from "./types";
-import { parseColorManifest } from "./parser";
 import { wtlogger } from "@api/logger";
-import { MOCHA_THEME } from "./example_theme";
-import { lookupByProps } from "@metro/common/wrappers";
-import { createJSONStorage, persist } from "zustand/middleware";
 import { kvStorage } from "@loader/kvStorage";
+import { lookupByProps } from "@metro/common/wrappers";
 import { memoize } from "es-toolkit";
+import { create } from "zustand";
+import { createJSONStorage, persist } from "zustand/middleware";
+import { MOCHA_THEME } from "./example_theme";
 import { ROSIE_PINK_THEME } from "./example_theme_1";
+import { parseColorManifest } from "./parser";
+import type { WintryTheme } from "./types";
 
-const logger = wtlogger.createChild("useThemeStore");
+const logger = wtlogger.createChild("ThemeStore");
 const formDividerModule = lookupByProps("DIVIDER_COLORS");
 
 const tokenRefModule = lookupByProps("SemanticColor");
@@ -28,7 +28,7 @@ interface ThemeRefState {
     color: ReturnType<typeof parseColorManifest>;
 }
 
-let _inc = 0;
+let _inc = 4;
 
 export function getCurrentRef() {
     return useThemeStore.getState().currentRef;
@@ -126,6 +126,3 @@ export const useThemeStore = create(
         },
     ),
 );
-
-// Apply our custom theme on startup
-applyTheme(useThemeStore.getState().appliedTheme, false);
