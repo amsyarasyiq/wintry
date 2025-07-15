@@ -15,7 +15,7 @@ export interface TextInputProps extends Omit<RNTextInputProps, "onChange" | "onC
     isRound?: boolean;
     label?: string;
 
-    leadingIcon?: React.FC;
+    leadingIcon?: React.ComponentType<Record<string, unknown>>;
     leadingPressableProps?: PressableProps;
     leadingText?: string;
 
@@ -25,7 +25,7 @@ export interface TextInputProps extends Omit<RNTextInputProps, "onChange" | "onC
     state?: "error" | "default";
     style?: StyleProp<TextStyle>;
 
-    trailingIcon?: React.FC;
+    trailingIcon?: React.ComponentType<Record<string, unknown>>;
     trailingPressableProps?: PressableProps;
     trailingText?: string;
 }
