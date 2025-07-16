@@ -1,32 +1,39 @@
-> [!IMPORTANT]  
-> **This project is a work in progress!** Technical support is limited. While you are free to use this mod, expect potential bugs and incomplete features. Use at your own discretion.
+<div align="center">
+	<img height="150" alt="Wintry logo" src="https://github.com/user-attachments/assets/a177d9a0-10bf-43d4-be13-0fe196eda726" />
+	<p align="center">A Discord mod built with simplicity and a seamless experience in mind.</p>
 
-# **wintry**
-Make your Discord cooler, literally.
+[![Version](https://img.shields.io/github/package-json/v/amsyarasyiq/wintry?logo=github)](https://github.com/amsyarasyiq/wintry/releases/latest)
+[![Discord](https://img.shields.io/discord/1394286025026572310?logo=discord&logoColor=white&color=5865F2)](https://discord.gg/ybPB5tgD)
+[![Code Size](https://img.shields.io/github/languages/code-size/amsyarasyiq/wintry?color=blue)](https://github.com/amsyarasyiq/wintry)
+[![License](https://img.shields.io/github/license/amsyarasyiq/wintry?color=007ec6)](https://github.com/amsyarasyiq/wintry/blob/main/LICENSE)
+
+</div>
+
+---
+
+> [!IMPORTANT]
+> ### A quick heads-up on project status
+> Wintry is a personal passion project. Since I'm no longer an active Discord user, development is sporadic and driven by my personal interest rather than a proper fixed roadmap. The project isn't abandoned, but for now, it's best treated as a perpetual work-in-progress. Progress is slow, and updates only happen whenever inspiration strikes.
 
 ## Features
-- Built-in plugins:
-	- Experiments - you probably know what this is
-	- ExpressionUtils - a.k.a. EmoteCloner
-	- ChatBubbles - you never have seen this before
-	- NoTrack - out-of-the-box
-	- ...many more coming down the road!
+Wintry enhances your Discord experience through a powerful, first-party plugin system. Key plugins include:
 
-## **Platform Support**
-At the moment, Wintry is built for and only supported on **Android**. Supporting iOS is theoretically possible, but we would need a maintainer with experience in iOS tweaks. Supporting would require:  
-- Developing a **loader tweak**  
-- Adapting the **JS** side to support iOS-specific stuff  
-- Thorough testing
+- Experiments - Unlocks hidden and experimental Discord features.
+- ExpressionUtils - Easily clone, copy links for your favorite emotes.
+- ChatBubbles - Add chat-style bubbles to your messages in conversations.
+- NoTrack - Disables Discord's built-in analytics and tracking for improved privacy.
+- ...many more coming down the road!
 
-If you're interested in maintaining the iOS support, feel free to reach out.  
+## Installation
 
-## **Installation**
-To install Wintry, a **loader** is required to inject and provide native functionality to Wintry. Wintry **does not** support loading from an existing mod's loader (Bunny's, Enmity's, etc).  
+The recommended way to install Wintry on Android is with the [**Wintry Manager**](https://github.com/wtcord/wt-manager).
 
-Currently, the only available loader is [**WintryXposed**](https://github.com/wtcord/xposed), which injects through the **Xposed** framework. For non-rooted devices, you can use [LSPatch](https://github.com/JingMatrix/LSPatch) to embed the Xposed module into a Discord APK.  
+> [!NOTE]
+> Wintry is currently built for and officially supported only on **Android**. Supporting iOS is theoretically possible, but the project lacks a dedicated maintainer for it.
 
 ## Contributing
 We welcome contributions from the community! Whether you're fixing bugs, adding new features, or improving documentation, your help is greatly appreciated. Please make sure to review our [contributing guidelines](./CONTRIBUTING.md) before getting started.
+
 ## FAQs
 
 <details>
@@ -34,12 +41,7 @@ We welcome contributions from the community! Whether you're fixing bugs, adding 
 	  <b>What's the motive of this project?</b>
   </summary>
 
-Wintry is an attempt to bring back the proof-of-concept version of Pyoncord while staying true to its goal of being something different. It takes inspiration from existing projects especially from Vencord but follows its own direction.  
-
-Wintry's goal can be summarized as:
-- **Bunny**, without the Vendetta part  
-- **Vencord**, but mobile  
-- **Pyoncord v2**  
+Wintry is an attempt to bring back the proof-of-concept version of Pyoncord while staying true to its goal of being something different. It takes inspiration from existing projects especially from Vencord but follows its own direction.   
 
 > So, what exactly is 'different' this time?
 
@@ -91,17 +93,12 @@ If Wintry ever supports third-party plugins, users will be able to install whate
 - No guarantees will be made regarding security, stability, or compatibility.
 </details>
 
-## Related & Notices
+## Notices
 
-### **Similar Projects**
-If some parts of Wintry tick you off for some reason, there are other alternatives you can check out:
-- [**Bunny**](https://github.com/bunny-mod/Bunny) *(ancestor)*  
-- [**Revenge**](https://github.com/revenge-mod/)  
-- [**Unbound**](https://github.com/unbound-mod/)  
+### License
 
-### **License**  
-Wintry is generally licensed under the [**GNU General Public License v3 (GPL-3)**](http://www.gnu.org/copyleft/gpl.html). Some parts of the codebase may have different licenses.
+Wintry is primarily licensed under the [**GNU General Public License v3 (GPL-3)**](http://www.gnu.org/copyleft/gpl.html). Please note that some components may be subject to different licenses; refer to the source files for full details.
 
 ### **Disclaimer**  
-Using **any** Discord client mod, including Wintry, is against Discord's **Terms of Service**. However, there have been no reports of Discord enforcing this rule unless there is actual **API abuse**, which Wintry opposes. Using Wintry should be as safe as using other client mods, if not safer.
+Using *any* Discord client mod, including Wintry, is against Discord's Terms of Service. However, there have been no reports of Discord enforcing this rule unless there is actual API abuse, which Wintry opposes. Using Wintry should be as safe as using other client mods, if not safer.
 
