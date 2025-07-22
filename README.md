@@ -3,7 +3,7 @@
 	<p align="center">A Discord mod built with simplicity and a seamless experience in mind.</p>
 
 [![Version](https://img.shields.io/github/package-json/v/amsyarasyiq/wintry?logo=github)](https://github.com/amsyarasyiq/wintry/releases/latest)
-[![Discord](https://img.shields.io/discord/1394286025026572310?logo=discord&logoColor=white&color=5865F2)](https://discord.gg/ybPB5tgD)
+[![Discord](https://img.shields.io/discord/1394286025026572310?logo=discord&logoColor=white&color=5865F2)](https://discord.gg/ATrscNAMpE)
 [![Code Size](https://img.shields.io/github/languages/code-size/amsyarasyiq/wintry?color=blue)](https://github.com/amsyarasyiq/wintry)
 [![License](https://img.shields.io/github/license/amsyarasyiq/wintry?color=007ec6)](https://github.com/amsyarasyiq/wintry/blob/main/LICENSE)
 
@@ -12,8 +12,10 @@
 ---
 
 > [!IMPORTANT]
-> ### A quick heads-up on project status
-> Wintry is a personal passion project. Since I'm no longer an active Discord user, development is sporadic and driven by my personal interest rather than a proper fixed roadmap. The project isn't abandoned, but for now, it's best treated as a perpetual work-in-progress. Progress is slow, and updates only happen whenever inspiration strikes.
+> ### Experimental Project Notice
+> Wintry is an experimental and in-progress project. Development is sporadic, and many features are incomplete or subject to change at any time.
+> 
+> While forks of this project may exist, please note that some may integrate unstable or unfinished features. See [Forks](#forks) notice for more information.
 
 ## Features
 Wintry enhances your Discord experience through a powerful, first-party plugin system. Key plugins include:
@@ -95,10 +97,14 @@ If Wintry ever supports third-party plugins, users will be able to install whate
 
 ## Notices
 
+### Forks
+This project is open source and may be forked under its license. While forking is permitted, some forks includes experimental and unfinished features taken from development branches of Wintry, attach donation links, and rebrand the project with little deviation from the original.
+
+Such forks may appear active or refined, but often rely heavily on in-progress code and surface-level edits. They are not affiliated with this project and do not represent its goals, development philosophy, or standards. Please evaluate forks carefully.
+
 ### License
 
 Wintry is primarily licensed under the [**GNU General Public License v3 (GPL-3)**](http://www.gnu.org/copyleft/gpl.html). Please note that some components may be subject to different licenses; refer to the source files for full details.
 
 ### **Disclaimer**  
 Using *any* Discord client mod, including Wintry, is against Discord's Terms of Service. However, there have been no reports of Discord enforcing this rule unless there is actual API abuse, which Wintry opposes. Using Wintry should be as safe as using other client mods, if not safer.
-
