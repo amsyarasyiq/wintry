@@ -1,7 +1,5 @@
-import { lookupByProps } from "@metro/common/wrappers";
-
-let urlModule = lookupByProps("openURL", "openDeeplink").asLazy(m => (urlModule = m));
+import { Linking } from "react-native";
 
 export function openURL(url: string) {
-    urlModule.openURL(url);
+    Linking.openURL(url);
 }

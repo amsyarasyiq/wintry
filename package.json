@@ -6,7 +6,7 @@
 		"url": "https://github.com/wtcord"
 	},
 	"type": "module",
-	"version": "0.1.2",
+	"version": "0.1.3",
 	"dependencies": {
 		"@babel/core": "^7.26.7",
 		"@gullerya/object-observer": "^6.1.3",
@@ -38,7 +38,6 @@
 		"chalk": "^5.4.1",
 		"esbuild": "^0.24.2",
 		"esbuild-plugin-globals": "^0.2.0",
-		"hermes-compiler": "https://github.com/wtcord/hermes-compiler#builds",
 		"image-size": "^1.2.0",
 		"release-it": "^18.1.2",
 		"type-fest": "^4.31.0",
