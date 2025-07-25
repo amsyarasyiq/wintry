@@ -14,8 +14,8 @@
 > [!IMPORTANT]
 > ### Experimental Project Notice
 > Wintry is an experimental and in-progress project. Development is sporadic, and many features are incomplete or subject to change at any time.
-> 
-> While forks of this project may exist, please note that some may integrate unstable or unfinished features. See [Forks](#forks) notice for more information.
+>
+> While forks of this project may exist, we recommend reading the [Forks](#forks) section to better understand the project's stance on forking.
 
 ## Features
 Wintry enhances your Discord experience through a powerful, first-party plugin system. Key plugins include:
@@ -98,9 +98,9 @@ If Wintry ever supports third-party plugins, users will be able to install whate
 ## Notices
 
 ### Forks
-This project is open source and may be forked under its license. While forking is permitted, some forks includes experimental and unfinished features taken from development branches of Wintry, attach donation links, and rebrand the project with little deviation from the original.
+This project is open source and may be forked in accordance with its license. If you intend to fork Wintry, we kindly ask that it be done primarily with the goal of contributing back to this repository.
 
-Such forks may appear active or refined, but often rely heavily on in-progress code and surface-level edits. They are not affiliated with this project and do not represent its goals, development philosophy, or standards. Please evaluate forks carefully.
+While personal experiments and contributions are welcome, forks intended for public distribution that closely follow Wintry’s codebase are discouraged until the project has reached a stable status, or is officially discontinued.
 
 ### License
 
