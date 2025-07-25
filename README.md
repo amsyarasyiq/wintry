@@ -100,7 +100,7 @@ If Wintry ever supports third-party plugins, users will be able to install whate
 ### Forks
 This project is open source and may be forked in accordance with its license. If you intend to fork Wintry, we kindly ask that it be done primarily with the goal of contributing back to this repository.
 
-While personal experiments and contributions are welcome, forks intended for public distribution that closely follow Wintry’s codebase are discouraged until the project has reached a stable status, or is officially discontinued.
+While personal experiments and contributions are welcome, rebranded distributions that closely follow Wintry’s codebase are discouraged until the project has reached a stable status, or is officially discontinued.
 
 ### License
 
