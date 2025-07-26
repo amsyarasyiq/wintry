@@ -1,6 +1,6 @@
 export function getNativeModule<T = any>(...names: string[]): T {
     for (const name of names) {
-        const module = global.__turboModuleProxy(name);
+        const module = global.__turboModuleProxy?.(name);
         if (module) return module as T;
 
         const legacyModule = global.nativeModuleProxy?.[name];
