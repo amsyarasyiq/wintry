@@ -85,7 +85,7 @@ function applyPluginFluxInterceptors(
 
         pluginPatcherContext.attachDisposer(() => {
             unintercept();
-            logger.debug(`Intercepted from flux event '${eventName}' for plugin '${id}'`);
+            logger.debug(`Unintercepted from flux event '${eventName}' for plugin '${id}'`);
         });
     }
 }
