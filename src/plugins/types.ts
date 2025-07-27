@@ -4,6 +4,7 @@ import type usePluginStore from "@stores/usePluginStore";
 import type { Filter } from "@metro/common/filters";
 import type { ContextualPatcher } from "@patcher/contextual";
 import type { WithThis } from "@utils/types";
+import type { FluxIntercept } from "@api/flux";
 
 export interface PluginState {
     running: boolean;
@@ -49,6 +50,8 @@ export interface WintryPluginDefinition<D extends DefinedOptions<O>, O extends O
     readonly isAvailable?: () => boolean;
 
     readonly patches?: PluginPatch[];
+
+    readonly flux?: Record<string, FluxIntercept>;
 
     /**
      * This is called once the index module is loaded and you can force lookup modules from here.

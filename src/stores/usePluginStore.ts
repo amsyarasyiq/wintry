@@ -8,6 +8,8 @@ import { wtlogger } from "@api/logger";
 import { isSafeModeEnabled } from "@loader";
 import { waitFor } from "@metro/internal/modules";
 import { getContextualPatcher, getPluginSettings } from "@plugins/utils";
+import { interceptFluxEvent, type FluxEvent } from "@api/flux";
+import type { ContextualPatcher } from "@patcher/contextual";
 
 const logger = wtlogger.createChild("PluginStore");
 const PLUGINS = lazyValue(() => require("#wt-plugins").default, { hint: "object" }) as Record<
@@ -45,7 +47,12 @@ function startPlugin(draft: PluginStore, id: string) {
     logger.debug(`Starting plugin '${plugin.$id}'`);
 
     try {
-        applyPluginPatches(id, plugin);
+        // Reset our patches context
+        const pluginPatcherContext = getContextualPatcher(id);
+        pluginPatcherContext.reuse();
+
+        applyPluginPatches(id, plugin, pluginPatcherContext);
+        applyPluginFluxInterceptors(id, plugin, pluginPatcherContext);
 
         draft.states[id].running = true;
         plugin.start?.();
@@ -57,11 +64,34 @@ function startPlugin(draft: PluginStore, id: string) {
     return;
 }
 
-function applyPluginPatches(id: string, plugin: WintryPluginInstance) {
-    if (!plugin.patches) return;
+function applyPluginFluxInterceptors(
+    id: string,
+    plugin: WintryPluginInstance,
+    pluginPatcherContext: ContextualPatcher,
+) {
+    if (!plugin.flux) return;
 
-    const pluginPatcherContext = getContextualPatcher(id);
-    pluginPatcherContext.reuse();
+    for (const [eventName, cb] of Object.entries(plugin.flux)) {
+        const unintercept = interceptFluxEvent((event: FluxEvent) => {
+            try {
+                if (event.type !== eventName) return;
+                return cb(event);
+            } catch (e) {
+                logger.error`${id}: Error while handling ${event.type}: ${e}`;
+            }
+        });
+
+        logger.debug(`Intercepted flux event '${eventName}' for plugin '${id}'`);
+
+        pluginPatcherContext.attachDisposer(() => {
+            unintercept();
+            logger.debug(`Intercepted from flux event '${eventName}' for plugin '${id}'`);
+        });
+    }
+}
+
+function applyPluginPatches(id: string, plugin: WintryPluginInstance, pluginPatcherContext: ContextualPatcher) {
+    if (!plugin.patches) return;
 
     for (const pluginPatch of plugin.patches) {
         const patcher = pluginPatcherContext.createChild({
