@@ -42,7 +42,9 @@ export function injectFluxInterceptor(FluxDispatcher: FluxDispatcherWithIntercep
     };
 
     (FluxDispatcher._interceptors ??= []).unshift(cb);
-    return () => FluxDispatcher._interceptors.filter(v => v !== cb);
+    return () => {
+        FluxDispatcher._interceptors = FluxDispatcher._interceptors.filter(v => v !== cb);
+    };
 }
 
 /**
