@@ -42,6 +42,12 @@ if (import.meta.main) {
         logger(c.yellowBright("Minify flag is provided, but this is a development server. Ignoring..."));
     }
 
+    // Check if adb is installed
+    if ((await $`adb version`.nothrow().quiet()).exitCode !== 0) {
+        logger(c.redBright("ADB is not installed or not found in PATH. Please install ADB and try again."));
+        process.exit(1);
+    }
+
     logger.clear();
 
     const connectedDevices = await getConnectedDevices();
