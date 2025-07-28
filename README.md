@@ -1,6 +1,6 @@
 ## This is **NOT** a Lumi remake
 
-This is a repo made for contributing some plugins made for wintry to the main project.
+This is a repo made for contributing some plugins made for Lumi to the original Wintry project.
 
 ### License
 
