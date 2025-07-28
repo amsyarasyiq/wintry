@@ -8,10 +8,6 @@ export class LazyModuleContext<A = unknown, R = unknown, O = unknown> {
     static ProxySymbol = Symbol.for("wintry.metro.lazyContext");
     static ProxyMap = new WeakMap<any, LazyModuleContext<any, any, any>>();
 
-    static getContext(object: any): LazyModuleContext<any, any, any> | undefined {
-        return LazyModuleContext.ProxyMap.get(object) ?? object[LazyModuleContext.ProxySymbol];
-    }
-
     private _proxy: R | undefined;
 
     filter: ModuleFilter<A, R, O>;

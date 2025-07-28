@@ -8,7 +8,7 @@ import { wtlogger } from "@api/logger";
 import { isSafeModeEnabled } from "@loader";
 import { waitFor } from "@metro/internal/modules";
 import { getContextualPatcher, getPluginSettings } from "@plugins/utils";
-import { interceptFluxEvent, type FluxEvent } from "@api/flux";
+import { interceptFluxEventType, type FluxEvent } from "@api/flux";
 import type { ContextualPatcher } from "@patcher/contextual";
 
 const logger = wtlogger.createChild("PluginStore");
@@ -72,9 +72,8 @@ function applyPluginFluxInterceptors(
     if (!plugin.flux) return;
 
     for (const [eventName, cb] of Object.entries(plugin.flux)) {
-        const unintercept = interceptFluxEvent((event: FluxEvent) => {
+        const unintercept = interceptFluxEventType(eventName, (event: FluxEvent) => {
             try {
-                if (event.type !== eventName) return;
                 return cb(event);
             } catch (e) {
                 logger.error`${id}: Error while handling ${event.type}: ${e}`;
@@ -85,7 +84,7 @@ function applyPluginFluxInterceptors(
 
         pluginPatcherContext.attachDisposer(() => {
             unintercept();
-            logger.debug(`Intercepted from flux event '${eventName}' for plugin '${id}'`);
+            logger.debug(`Unintercepted from flux event '${eventName}' for plugin '${id}'`);
         });
     }
 }

@@ -1,4 +1,3 @@
-// shelter-mod inspired
 import type { FluxDispatcher as FD } from "discord-types/other";
 
 type FluxDispatcherWithInterceptors = FD & {
@@ -8,9 +7,11 @@ type FluxDispatcherWithInterceptors = FD & {
 const blockedSym = Symbol.for("wintry.flux.blocked");
 const modifiedSym = Symbol.for("wintry.flux.modified");
 
-export type FluxEvent = Record<string, any> & { type: string };
-export type FluxIntercept = (payload: FluxEvent) => any;
 let intercepts: FluxIntercept[] = [];
+const typeSpecificIntercepts: Map<string, FluxIntercept[]> = new Map();
+
+export type FluxEvent = Record<string, any> & { type: string, [blockedSym]?: boolean, [modifiedSym]?: boolean };
+export type FluxIntercept = (payload: FluxEvent) => any;
 
 /**
  * @internal
@@ -18,10 +19,11 @@ let intercepts: FluxIntercept[] = [];
  * It returns a function to remove the interceptor.
  */
 export function injectFluxInterceptor(FluxDispatcher: FluxDispatcherWithInterceptors) {
-    const cb = (payload: any) => {
+    const cb = (payload: FluxEvent) => {
         let blocked = false;
         let modified = false;
 
+        // Process general interceptors
         for (let i = 0, len = intercepts.length; i < len; i++) {
             const res = intercepts[i](payload);
 
@@ -35,6 +37,23 @@ export function injectFluxInterceptor(FluxDispatcher: FluxDispatcherWithIntercep
             }
         }
 
+        // Process type-specific interceptors
+        const typeSpecific = typeSpecificIntercepts.get(payload.type);
+        if (typeSpecific) {
+            for (let i = 0, len = typeSpecific.length; i < len; i++) {
+                const res = typeSpecific[i](payload);
+
+                if (res == null) continue;
+
+                if (!res) {
+                    blocked = true;
+                } else if (typeof res === "object") {
+                    Object.assign(payload, res);
+                    modified = true;
+                }
+            }
+        }
+
         if (blocked) payload[blockedSym] = true;
         if (modified) payload[modifiedSym] = true;
 
@@ -42,7 +61,9 @@ export function injectFluxInterceptor(FluxDispatcher: FluxDispatcherWithIntercep
     };
 
     (FluxDispatcher._interceptors ??= []).unshift(cb);
-    return () => FluxDispatcher._interceptors.filter(v => v !== cb);
+    return () => {
+        FluxDispatcher._interceptors = FluxDispatcher._interceptors.filter(v => v !== cb);
+    };
 }
 
 /**
@@ -54,5 +75,31 @@ export function interceptFluxEvent(cb: FluxIntercept) {
 
     return () => {
         intercepts = intercepts.filter(i => i !== cb);
+    };
+}
+
+/**
+ * Intercept Flux dispatches for a specific event type. This is more performant
+ * than the general interceptor when you only need to listen to specific events.
+ * Return type affects the end result, where nullish -> nothing, falsy -> block, object -> modify
+ */
+export function interceptFluxEventType(eventType: string, cb: FluxIntercept) {
+    const existing = typeSpecificIntercepts.get(eventType);
+    if (existing) {
+        existing.push(cb);
+    } else {
+        typeSpecificIntercepts.set(eventType, [cb]);
+    }
+
+    return () => {
+        const callbacks = typeSpecificIntercepts.get(eventType);
+        if (callbacks) {
+            const filtered = callbacks.filter(i => i !== cb);
+            if (filtered.length === 0) {
+                typeSpecificIntercepts.delete(eventType);
+            } else {
+                typeSpecificIntercepts.set(eventType, filtered);
+            }
+        }
     };
 }
