@@ -25,6 +25,10 @@ export const { values: args } = parseArgs({
             type: "boolean",
             default: false,
         },
+        waydroid: {
+            type: "boolean",
+            default: false,
+        },
         nocompile: {
             type: "boolean",
             default: false,
