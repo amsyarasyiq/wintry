@@ -49,6 +49,7 @@
 		"serve": "bun run scripts/serve",
 		"adb": "bun run scripts/adb",
 		"adb:wsa": "bun run scripts/adb --wsa",
+		"adb:waydroid": "bun run scripts/adb --waydroid",
 		"typesafe-i18n": "typesafe-i18n",
 		"i18n:export": "bun run scripts/i18n",
 		"release": "bun run scripts/release"
