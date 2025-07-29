@@ -51,8 +51,6 @@ export interface WintryPluginDefinition<D extends DefinedOptions<O>, O extends O
 
     readonly patches?: PluginPatch[];
 
-    readonly flux?: Record<string, FluxIntercept>;
-
     /**
      * Define Flux event interceptors for specific event types. Allows intercepting,
      * modifying, or blocking Discord's Flux events.
