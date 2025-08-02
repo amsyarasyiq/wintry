@@ -3,6 +3,7 @@ import { replyCommand } from "@api/commands/helpers";
 import { ApplicationCommandOptionType } from "@api/commands/types";
 import { Devs } from "@data/constants";
 import { byProps } from "@metro/common/filters";
+import { defineCommand } from "@api/commands/helpers";
 
 const settings = definePluginSettings({
     bunnyName: {
@@ -87,16 +88,15 @@ export default definePlugin({
     isAvailable: () => __DEV__,
 
     commands: [
-        {
+        defineCommand({
             name: "sample-command",
             description: "A sample command that does nothing.",
             options: [],
             execute(args, ctx) {
                 replyCommand(ctx.channel.id, { content: "This is a sample command that does nothing." }, false);
             },
-        },
-        {
-            // with options
+        }),
+        defineCommand({
             name: "sample-command-with-options",
             description: "A sample command with options.",
             options: [
@@ -122,7 +122,7 @@ export default definePlugin({
                     true,
                 );
             },
-        },
+        }),
     ],
 
     patches: [
