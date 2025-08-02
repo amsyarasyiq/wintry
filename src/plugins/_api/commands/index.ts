@@ -64,8 +64,13 @@ export default definePlugin({
                         description: "The code to evaluate",
                         required: true,
                     },
+                    {
+                        name: "ephemeral",
+                        type: ApplicationCommandOptionType.BOOLEAN,
+                        description: "Whether to send the result as an ephemeral message",
+                    },
                 ],
-                execute([code], ctx) {
+                execute([code, ephemeral], ctx) {
                     try {
                         const res = global.eval?.(code.value);
                         const result =
@@ -75,11 +80,15 @@ export default definePlugin({
                                       depth: 0,
                                   });
 
-                        replyCommand(ctx.channel.id, { content: `\`\`\`js\n${result}\n\`\`\`` });
+                        replyCommand(ctx.channel.id, { content: `\`\`\`js\n${result}\n\`\`\`` }, ephemeral?.value);
                     } catch (error) {
-                        replyCommand(ctx.channel.id, {
-                            content: `Error: ${error instanceof Error ? error.message : String(error)}`,
-                        });
+                        replyCommand(
+                            ctx.channel.id,
+                            {
+                                content: `Error: ${error instanceof Error ? error.message : String(error)}`,
+                            },
+                            ephemeral?.value,
+                        );
                     }
                 },
             });
