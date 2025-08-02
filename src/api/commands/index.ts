@@ -1,5 +1,4 @@
 import { after } from "@patcher";
-import { wtlogger } from "@api/logger";
 import { ApplicationCommandInputType, ApplicationCommandType } from "./types";
 import type { ApplicationCommand, WintryApplicationCommand } from "./types";
 
@@ -56,15 +55,12 @@ export function registerCommand(command: Omit<WintryApplicationCommand, "id">): 
 
     // Add it to the commands array (ID will be assigned when getBuiltInCommands is called)
     registeredCommands.push(command);
-    wtlogger.debug`Registered command: ${command.name}`;
 
     return () => {
         registeredCommands = registeredCommands.filter(c => c !== command);
 
         // @ts-expect-error - command.id can exist in here
         if (command.id) commandIdSet.delete(command.id);
-
-        wtlogger.debug`Deregistered command: ${command.name}`;
     };
 }
 
