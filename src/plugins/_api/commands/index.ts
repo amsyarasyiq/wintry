@@ -52,34 +52,36 @@ export default definePlugin({
             },
         });
 
-        registerCommand({
-            name: "eval",
-            description: "Evaluate JavaScript code",
-            options: [
-                {
-                    name: "code",
-                    type: ApplicationCommandOptionType.STRING,
-                    description: "The code to evaluate",
-                    required: true,
-                },
-            ],
-            execute([code], ctx) {
-                try {
-                    const res = global.eval?.(code.value);
-                    const result =
-                        typeof res === "string"
-                            ? res
-                            : inspect(res, {
-                                  depth: 0,
-                              });
+        // TODO: Consider exposing this to normal users, under a hidden settings and with a warning
+        if (__DEV__)
+            registerCommand({
+                name: "eval",
+                description: "Evaluate JavaScript code",
+                options: [
+                    {
+                        name: "code",
+                        type: ApplicationCommandOptionType.STRING,
+                        description: "The code to evaluate",
+                        required: true,
+                    },
+                ],
+                execute([code], ctx) {
+                    try {
+                        const res = global.eval?.(code.value);
+                        const result =
+                            typeof res === "string"
+                                ? res
+                                : inspect(res, {
+                                      depth: 0,
+                                  });
 
-                    replyCommand(ctx.channel.id, { content: `\`\`\`js\n${result}\n\`\`\`` });
-                } catch (error) {
-                    replyCommand(ctx.channel.id, {
-                        content: `Error: ${error instanceof Error ? error.message : String(error)}`,
-                    });
-                }
-            },
-        });
+                        replyCommand(ctx.channel.id, { content: `\`\`\`js\n${result}\n\`\`\`` });
+                    } catch (error) {
+                        replyCommand(ctx.channel.id, {
+                            content: `Error: ${error instanceof Error ? error.message : String(error)}`,
+                        });
+                    }
+                },
+            });
     },
 });
