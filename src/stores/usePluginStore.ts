@@ -10,6 +10,7 @@ import { waitFor } from "@metro/internal/modules";
 import { getContextualPatcher, getPluginSettings } from "@plugins/utils";
 import { interceptFluxEventType, type FluxEvent } from "@api/flux";
 import type { ContextualPatcher } from "@patcher/contextual";
+import { registerCommand } from "@api/commands";
 
 const logger = wtlogger.createChild("PluginStore");
 const PLUGINS = lazyValue(() => require("#wt-plugins").default, { hint: "object" }) as Record<
@@ -51,6 +52,7 @@ function startPlugin(draft: PluginStore, id: string) {
         const pluginPatcherContext = getContextualPatcher(id);
         pluginPatcherContext.reuse();
 
+        applyPluginCommands(id, plugin, pluginPatcherContext);
         applyPluginPatches(id, plugin, pluginPatcherContext);
         applyPluginFluxInterceptors(id, plugin, pluginPatcherContext);
 
@@ -62,6 +64,19 @@ function startPlugin(draft: PluginStore, id: string) {
     }
 
     return;
+}
+
+function applyPluginCommands(id: string, plugin: WintryPluginInstance, pluginPatcherContext: ContextualPatcher) {
+    if (!plugin.commands) return;
+
+    for (const command of plugin.commands) {
+        logger.debug(`Registering command '${command.name}' for plugin '${id}'`);
+        const unregister = registerCommand(command);
+        pluginPatcherContext.attachDisposer(() => {
+            unregister();
+            logger.debug(`Unregistered command '${command.name}' for plugin '${id}'`);
+        });
+    }
 }
 
 function applyPluginFluxInterceptors(
