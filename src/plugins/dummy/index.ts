@@ -1,6 +1,9 @@
 import { definePlugin, definePluginSettings } from "#plugin-context";
+import { replyCommand } from "@api/commands/helpers";
+import { ApplicationCommandOptionType } from "@api/commands/types";
 import { Devs } from "@data/constants";
 import { byProps } from "@metro/common/filters";
+import { defineCommand } from "@api/commands/helpers";
 
 const settings = definePluginSettings({
     bunnyName: {
@@ -83,6 +86,44 @@ export default definePlugin({
     authors: [Devs.Pylix],
 
     isAvailable: () => __DEV__,
+
+    commands: [
+        defineCommand({
+            name: "sample-command",
+            description: "A sample command that does nothing.",
+            options: [],
+            execute(args, ctx) {
+                replyCommand(ctx.channel.id, { content: "This is a sample command that does nothing." }, false);
+            },
+        }),
+        defineCommand({
+            name: "sample-command-with-options",
+            description: "A sample command with options.",
+            options: [
+                {
+                    name: "option1",
+                    type: ApplicationCommandOptionType.STRING,
+                    description: "A sample string option.",
+                    required: true,
+                },
+                {
+                    name: "option2",
+                    type: ApplicationCommandOptionType.BOOLEAN,
+                    description: "A sample boolean option.",
+                    required: false,
+                },
+            ],
+            execute([option1, option2], ctx) {
+                replyCommand(
+                    ctx.channel.id,
+                    {
+                        content: `You provided option1: ${option1.value}, option2: ${option2.value ? "true" : "false"}`,
+                    },
+                    true,
+                );
+            },
+        }),
+    ],
 
     patches: [
         {
