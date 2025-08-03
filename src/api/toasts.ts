@@ -35,7 +35,6 @@ export interface ToastUtils {
 }
 
 export interface ToastController {
-    show: () => ToastController;
     hide: () => ToastController;
     update: (newConfig: Partial<Toast>) => ToastController;
 }
@@ -89,10 +88,6 @@ export function showToast(configOrText: string | ToastProps): ToastController {
     showToast();
 
     const controller: ToastController = {
-        show: () => {
-            showToast();
-            return controller;
-        },
         hide: () => {
             useToastStore.getState().hideToast(id);
             return controller;

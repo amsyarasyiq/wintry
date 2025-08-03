@@ -1,11 +1,7 @@
 import { definePlugin, definePluginSettings } from "#plugin-context";
 import { defineCommand, replyCommand } from "@api/commands/helpers";
 import { ApplicationCommandOptionType } from "@api/commands/types";
-import { showToast } from "@api/toasts";
 import { Devs } from "@data/constants";
-
-// TODO: Remove this once the silent typing plugin is fully implemented
-const toast = showToast("you are typing rn...").hide();
 
 const settings = definePluginSettings({
     silentTypingActive: {
@@ -47,8 +43,6 @@ export default definePlugin({
     flux: {
         TYPING_START_LOCAL: () => {
             if (settings.get().silentTypingActive) return false;
-
-            toast.show();
         },
     },
 });
