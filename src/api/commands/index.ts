@@ -1,7 +1,11 @@
 import { after } from "@patcher";
 import { ApplicationCommandInputType, ApplicationCommandType } from "./types";
-import type { ApplicationCommand, CommandOption, WintryApplicationCommand } from "./types";
-import type { Mutable } from "@utils/types";
+import type {
+    ApplicationCommand,
+    CommandOption,
+    WintryApplicationCommand,
+    WintryApplicationCommandDefinition,
+} from "./types";
 
 let registeredCommands: WintryApplicationCommand<readonly CommandOption[]>[] = [];
 const commandIdSet = new Set<string>();
@@ -36,7 +40,7 @@ export function patchCommands(commandsModule: any) {
 }
 
 export function registerCommand<const CO extends readonly CommandOption[]>(
-    command: Mutable<WintryApplicationCommand<CO> & { id?: never }>,
+    command: WintryApplicationCommandDefinition<CO>,
 ): () => void {
     command.applicationId ??= "-1";
     command.type ??= ApplicationCommandType.CHAT;
@@ -46,9 +50,13 @@ export function registerCommand<const CO extends readonly CommandOption[]>(
     command.displayDescription ??= command.description;
     command.untranslatedDescription ??= command.description;
 
+    // @ts-ignore: This is a custom property for Wintry commands
     command.__WINTRY_EXTRA = {
         shouldHide: command.shouldHide,
     };
+
+    // @ts-ignore: Remove all properties that are not part of the WintryCommand type
+    command.shouldHide = undefined;
 
     if (command.options) {
         for (const opt of command.options) {

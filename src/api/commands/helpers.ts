@@ -2,7 +2,7 @@ import { Clyde, MessageActions } from "@metro/common/libraries";
 import type { Message } from "discord-types/general";
 import { toMerged } from "es-toolkit";
 import type { PartialDeep } from "type-fest";
-import type { CommandOption, WintryApplicationCommand } from "./types";
+import type { CommandOption, WintryApplicationCommandDefinition } from "./types";
 
 export function replyCommand(channelId: string, message: PartialDeep<Message>, ephemeral = true): Message {
     if (ephemeral) {
@@ -32,7 +32,7 @@ export function sendBotMessage(channelId: string, message: PartialDeep<Message>)
  * @param command The command to define.
  */
 export function defineCommand<const CO extends readonly CommandOption[]>(
-    command: WintryApplicationCommand<CO> & { id?: never },
-): WintryApplicationCommand<CommandOption[]> & { id?: never } {
-    return command as unknown as WintryApplicationCommand<CommandOption[]> & { id?: never };
+    command: WintryApplicationCommandDefinition<CO>,
+): WintryApplicationCommandDefinition<CommandOption[]> {
+    return command as unknown as WintryApplicationCommandDefinition<CommandOption[]>;
 }

@@ -1,3 +1,4 @@
+import type { Mutable } from "@utils/types";
 import type { Channel, Guild } from "discord-types/general";
 
 // =============================================================================
@@ -262,11 +263,17 @@ export interface ApplicationCommand<CO extends readonly CommandOption[]> {
     readonly untranslatedName?: string;
     readonly inputType?: ApplicationCommandInputType;
     readonly type?: ApplicationCommandType;
-    readonly __WINTRY_EXTRA?: WintryCommandExtra;
 }
 
 export interface WintryCommandExtra {
+    readonly __WINTRY_EXTRA?: WintryCommandExtra;
     shouldHide?: () => boolean;
 }
 
 export type WintryApplicationCommand<CO extends readonly CommandOption[]> = ApplicationCommand<CO> & WintryCommandExtra;
+export type WintryApplicationCommandDefinition<CO extends readonly CommandOption[]> = Mutable<
+    WintryApplicationCommand<CO> & {
+        id?: never; // ID is assigned when the command is registered
+        __WINTRY_EXTRA?: never; // This is only used internally
+    }
+>;
