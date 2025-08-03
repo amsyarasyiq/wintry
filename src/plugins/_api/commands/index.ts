@@ -27,7 +27,7 @@ export default definePlugin({
 
     start() {
         registerCommand({
-            name: "debug",
+            name: "wintry-debug",
             description: "Get debug information about Wintry and the current environment",
             options: [
                 {
@@ -66,7 +66,7 @@ export default definePlugin({
         // TODO: Consider exposing this to normal users, under a hidden settings and with a warning
         if (__DEV__)
             registerCommand({
-                name: "eval",
+                name: "wintry-eval",
                 description: "Evaluate JavaScript code",
                 options: [
                     {
