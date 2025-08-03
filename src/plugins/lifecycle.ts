@@ -9,14 +9,6 @@ import type { WintryPluginInstance } from "./types";
 import { getContextualPatcher, getPluginSettings, getStoreState } from "./utils";
 
 /**
- * Get the plugin instance by ID
- * @param id The plugin ID to get the instance for
- */
-export function getPluginInstance(id: string): WintryPluginInstance | undefined {
-    return PLUGINS[id];
-}
-
-/**
  * Initialize all plugins, this should be called once at the start of the app before index is initialized
  * @internal
  */

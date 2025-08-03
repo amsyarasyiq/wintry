@@ -1,5 +1,5 @@
 import { toDefaulted } from "es-toolkit/compat";
-import usePluginStore, { type PluginStore } from "@stores/usePluginStore";
+import usePluginStore, { PLUGINS, type PluginStore } from "@stores/usePluginStore";
 import type {
     DefinedOptions,
     OptionDefinitions,
@@ -167,10 +167,24 @@ export function registerPluginSettings<Def extends OptionDefinitions>(id: string
     return definition;
 }
 
+/**
+ * Get the plugin instance by ID
+ * @param id The plugin ID to get the instance for
+ */
+export function getPluginInstance(id: string): WintryPluginInstance | undefined {
+    return PLUGINS[id];
+}
+
 export function isPluginInternal(plugin: WintryPluginInstance) {
+    // TODO: check for .required instead?
     return plugin.$path.startsWith("/_");
 }
 
+/**
+ * Get the current plugin store state as readonly.
+ * This is useful for accessing the plugin settings and states without accidentally modifying them.
+ * @returns The current plugin store state
+ */
 export function getStoreState() {
     return usePluginStore.getState() as ReadonlyDeep<PluginStore>;
 }
