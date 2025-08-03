@@ -5,6 +5,7 @@ import { ApplicationCommandOptionType } from "@api/commands/types";
 import { Devs } from "@data/constants";
 import { getDebugInfo } from "@debug/info";
 import { byProps } from "@metro/common/filters";
+import usePluginStore from "@stores/usePluginStore";
 import { inspect } from "node-inspect-extracted";
 
 export default definePlugin({
@@ -59,6 +60,31 @@ export default definePlugin({
 
                 const content = lines.join("\n");
 
+                replyCommand(ctx.channel.id, { content }, !!ephemeral?.value);
+            },
+        });
+
+        registerCommand({
+            name: "wintry-plugins",
+            description: "List all enabled plugins",
+            options: [
+                {
+                    name: "ephemeral",
+                    type: ApplicationCommandOptionType.BOOLEAN,
+                    description: "Whether to send the plugin list as an ephemeral message",
+                },
+            ],
+            execute([ephemeral], ctx) {
+                const plugins = Object.entries(usePluginStore.getState().settings)
+                    .filter(([_, settings]) => settings.enabled)
+                    .map(([id, settings]) => id);
+
+                if (plugins.length === 0) {
+                    replyCommand(ctx.channel.id, { content: "No plugins are enabled." }, !!ephemeral?.value);
+                    return;
+                }
+
+                const content = `**Enabled Plugins:**\n${plugins.join(", ")}`;
                 replyCommand(ctx.channel.id, { content }, !!ephemeral?.value);
             },
         });
