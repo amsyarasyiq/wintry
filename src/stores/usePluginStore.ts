@@ -4,7 +4,6 @@ import { immer } from "zustand/middleware/immer";
 import { kvStorage } from "@loader/kvStorage";
 import type { PluginSettings, PluginState } from "@plugins/types";
 import { wtlogger } from "@api/logger";
-import {} from "@plugins/lifecycle";
 
 export const logger = wtlogger.createChild("PluginStore");
 export interface PluginStore {
