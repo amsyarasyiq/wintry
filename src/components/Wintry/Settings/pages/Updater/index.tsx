@@ -16,7 +16,7 @@ import { useInitConfigStore } from "@stores/useInitConfigStore";
 import { useEffect } from "react";
 
 export default function UpdaterPage() {
-    const { bunny } = getVersions();
+    const { wintry } = getVersions();
     const { isCheckingForUpdates, notifyOnNewUpdate, checkForUpdates } = useUpdaterStore();
     const { config } = useInitConfigStore();
 
@@ -43,13 +43,13 @@ export default function UpdaterPage() {
                     label={t.wintry()}
                     icon={<TableRow.Icon source={require("@assets/ic_wintry.png")} />}
                     trailing={
-                        <TableRow.TrailingText text={`${bunny.version}-${bunny.shortRevision} (${bunny.branch})`} />
+                        <TableRow.TrailingText text={`${wintry.version}-${wintry.shortRevision} (${wintry.branch})`} />
                     }
                 />
                 <TableRow
                     label={t.settings.updater.repo()}
                     icon={<TableRow.Icon source={findAssetId("img_account_sync_github_light")} />}
-                    trailing={<TableRow.TrailingText text={bunny.remote} />}
+                    trailing={<TableRow.TrailingText text={wintry.remote} />}
                 />
             </TableRowGroup>
             <View style={{ flexShrink: 1, alignSelf: "flex-end" }}>

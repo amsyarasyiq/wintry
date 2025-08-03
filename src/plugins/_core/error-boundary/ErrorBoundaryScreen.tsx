@@ -43,7 +43,7 @@ export function ErrorBoundaryScreen(props: ErrorBoundaryScreenProps) {
                     <Text variant="text-md/normal">{t.error_boundary.screen.description()}</Text>
                     <Text variant="text-sm/normal" color="text-muted">
                         {debugInfo.os.name}; {debugInfo.discord.build} ({debugInfo.discord.version});{" "}
-                        {debugInfo.bunny.version} {debugInfo.bunny.shortRevision}
+                        {debugInfo.wintry.version} {debugInfo.wintry.shortRevision}
                     </Text>
                 </View>
                 <ScrollView fadingEdgeLength={64} contentContainerStyle={{ gap: 12 }}>

@@ -38,15 +38,26 @@ export default definePlugin({
             ],
             execute([ephemeral], ctx) {
                 const info = getDebugInfo();
-                const content = [
-                    "**Wintry Debug Info**",
-                    `> Wintry: ${info.bunny.version} (${info.bunny.shortRevision} ${info.bunny.branch})`,
-                    `> Discord: ${info.discord.version} (${info.discord.build})`,
-                    `> React: ${info.react.version} (RN ${info.reactNative.version})`,
-                    `> Hermes Bytecode: ${info.hermes.bytecodeVersion}`,
-                    `> System: ${info.os.name} ${info.os.version}`.trimEnd(),
-                    `> Device: ${info.device.model} (${info.device.manufacturer})`,
-                ].join("\n");
+
+                const lines = [
+                    `> **Wintry** v${info.wintry.version} (${info.wintry.shortRevision}${info.wintry.branch !== "main" ? ` • ${info.wintry.branch}` : ""})`,
+                    `> **Loader** ${info.loader.name} (v${info.loader.version})`,
+                    `> **Discord** ${info.discord.version} (Build ${info.discord.build})`,
+                    `> **React** ${info.react.version} / ${info.reactNative.branch}`,
+                    `> **System** ${info.os.name} ${info.os.version}`,
+                    `> **Device** ${info.device.model}${info.device.manufacturer ? ` (${info.device.manufacturer})` : ""}`,
+                ];
+
+                const subtextItems = [
+                    `remote: ${info.wintry.remote}`,
+                    `hermes bytecode: ${info.hermes.bytecodeVersion}`,
+                    ...("sdk" in info.os ? [`sdk: ${info.os.sdk}`] : []),
+                    `brand: ${info.device.brand}`,
+                ];
+
+                lines.push(`-# ${subtextItems.join(" • ")}`);
+
+                const content = lines.join("\n");
 
                 replyCommand(ctx.channel.id, { content }, !!ephemeral?.value);
             },
