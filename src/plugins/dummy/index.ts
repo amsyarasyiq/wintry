@@ -4,7 +4,6 @@ import { ApplicationCommandOptionType } from "@api/commands/types";
 import { Devs } from "@data/constants";
 import { byProps } from "@metro/common/filters";
 import { defineCommand } from "@api/commands/helpers";
-import { delay } from "es-toolkit";
 
 const settings = definePluginSettings({
     bunnyName: {
@@ -131,9 +130,7 @@ export default definePlugin({
         },
     ],
 
-    async start() {
-        await delay(1000);
-
+    start() {
         settings.set({
             bunnyName: "Fluffier",
             winterCoat: false,
