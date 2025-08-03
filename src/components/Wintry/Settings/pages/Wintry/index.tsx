@@ -20,7 +20,7 @@ export default function WintryPage() {
     const navigation = NavigationNative.useNavigation();
     const { config, toggleSafeMode } = useInitConfigStore();
     const updateAvailable = useUpdaterStore(state => state.availableUpdate);
-    const { bunny, discord } = getVersions();
+    const { wintry, discord } = getVersions();
 
     return (
         <PageWrapper scrollable={true} containerStyle={{ paddingTop: 16, gap: 12 }}>
@@ -30,7 +30,7 @@ export default function WintryPage() {
                         title={t.wintry()}
                         tag={updateAvailable ? t.updater.update_tag() : undefined}
                         style={{ flex: 1 }}
-                        trailing={`${bunny.version}-${bunny.shortRevision}\n(${bunny.branch})`}
+                        trailing={`${wintry.version}-${wintry.shortRevision}\n(${wintry.branch})`}
                         icon={<TableRow.Icon source={require("@assets/ic_wintry.png")} />}
                         onPress={() => {
                             navigation.push("WINTRY_CUSTOM_PAGE", {

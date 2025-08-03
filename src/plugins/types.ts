@@ -5,6 +5,7 @@ import type { Filter } from "@metro/common/filters";
 import type { ContextualPatcher } from "@patcher/contextual";
 import type { WithThis } from "@utils/types";
 import type { FluxIntercept } from "@api/flux";
+import type { CommandOption, WintryApplicationCommandDefinition } from "@api/commands/types";
 
 export interface PluginState {
     running: boolean;
@@ -54,7 +55,7 @@ export interface WintryPluginDefinition<D extends DefinedOptions<O>, O extends O
     /**
      * Define Flux event interceptors for specific event types. Allows intercepting,
      * modifying, or blocking Discord's Flux events.
-     * 
+     *
      * Each key is a Flux event type, and each value is a FluxIntercept function.
      * @example
      * ```ts
@@ -68,6 +69,24 @@ export interface WintryPluginDefinition<D extends DefinedOptions<O>, O extends O
      * }
      */
     readonly flux?: Record<string, FluxIntercept>;
+
+    /**
+     * Define commands for the plugin. These commands can be used in the Discord chat.
+     * For strong typing, each command is defined using the `defineCommand` function.
+     * @example
+     * ```ts
+     * commands: [
+     *   defineCommand({
+     *     name: "hello",
+     *     description: "Says hello",
+     *     execute: (args, context) => {
+     *        // Reply to the command
+     *     },
+     *   }),
+     * ]
+     * ```
+     */
+    readonly commands?: WintryApplicationCommandDefinition<CommandOption[]>[];
 
     /**
      * This is called once the index module is loaded and you can force lookup modules from here.
