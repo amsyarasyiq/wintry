@@ -126,6 +126,18 @@ export function registerPluginSettings<Def extends OptionDefinitions>(id: string
         pluginId: id,
         definition: def,
         get: () => usePluginStore.getState().settings[definition.pluginId] as any,
+        set: (
+            updater: Partial<SettingsStore<Def>> | ((state: SettingsStore<Def>) => Partial<SettingsStore<Def>>) | void,
+        ) =>
+            usePluginStore.setState(state => {
+                if (typeof updater === "function") {
+                    const ret = updater(state.settings[definition.pluginId] as SettingsStore<Def>);
+                    Object.assign(state.settings[definition.pluginId], ret);
+                }
+                if (updater != null) {
+                    Object.assign(state.settings[definition.pluginId], updater);
+                }
+            }),
         use<T>(selector: (state: SettingsStore<Def>) => T) {
             return usePluginStore(state => selector(state.settings[this.pluginId] as SettingsStore<Def>));
         },
@@ -149,7 +161,7 @@ export function registerPluginSettings<Def extends OptionDefinitions>(id: string
         // },
     };
 
-    settingsDefRegistry.set(id, definition);
+    settingsDefRegistry.set(id, definition as DefinedOptions<OptionDefinitions>);
 
     return definition;
 }
