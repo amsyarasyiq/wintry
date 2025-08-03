@@ -163,27 +163,42 @@ export interface BooleanArgument extends BaseArgument {
 
 export interface UserArgument extends BaseArgument {
     type: typeof ApplicationCommandOptionType.USER;
-    value: string; // User ID
+    /**
+     * User ID as a string
+     */
+    value: string;
 }
 
 export interface ChannelArgument extends BaseArgument {
     type: typeof ApplicationCommandOptionType.CHANNEL;
-    value: string; // Channel ID
+    /**
+     * Channel ID as a string
+     */
+    value: string;
 }
 
 export interface RoleArgument extends BaseArgument {
     type: typeof ApplicationCommandOptionType.ROLE;
-    value: string; // Role ID
+    /**
+     * Role ID as a string
+     */
+    value: string;
 }
 
 export interface MentionableArgument extends BaseArgument {
     type: typeof ApplicationCommandOptionType.MENTIONABLE;
-    value: string; // User or Role ID
+    /**
+     * User or Role ID as a string
+     */
+    value: string;
 }
 
 export interface AttachmentArgument extends BaseArgument {
     type: typeof ApplicationCommandOptionType.ATTACHMENT;
-    value: string; // Attachment ID
+    /**
+     * Attachment ID as a string
+     */
+    value: string;
 }
 
 export type Argument =

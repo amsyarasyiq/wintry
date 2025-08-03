@@ -90,14 +90,6 @@ export default definePlugin({
     commands: [
         defineCommand({
             name: "sample-command",
-            description: "A sample command that does nothing.",
-            options: [],
-            execute(args, ctx) {
-                replyCommand(ctx.channel.id, { content: "This is a sample command that does nothing." }, false);
-            },
-        }),
-        defineCommand({
-            name: "sample-command-with-options",
             description: "A sample command with options.",
             options: [
                 {
@@ -137,10 +129,4 @@ export default definePlugin({
             },
         },
     ],
-
-    start() {
-        // console.log({
-        //     settings
-        // })
-    },
 });
