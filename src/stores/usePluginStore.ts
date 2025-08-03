@@ -12,7 +12,7 @@ export interface PluginStore {
     states: Record<string, PluginState>;
 }
 
-export const usePluginStore = create(
+const usePluginStore = create(
     subscribeWithSelector(
         persist(
             immer<PluginStore>(set => ({

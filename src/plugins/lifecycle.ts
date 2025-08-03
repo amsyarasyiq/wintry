@@ -3,7 +3,7 @@ import { interceptFluxEventType, type FluxEvent } from "@api/flux";
 import { isSafeModeEnabled } from "@loader";
 import { waitFor } from "@metro/internal/modules";
 import type { ContextualPatcher } from "@patcher/contextual";
-import { logger, usePluginStore } from "@stores/usePluginStore";
+import usePluginStore, { logger } from "@stores/usePluginStore";
 import { PLUGINS } from "./utils";
 import { getProxyFactory } from "@utils/lazy";
 import type { WintryPluginInstance } from "./types";
