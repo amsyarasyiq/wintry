@@ -155,6 +155,9 @@ export interface DefinedOptions<Def extends OptionDefinitions> {
     pluginId: string;
     definition: Def;
     get: () => SettingsStore<Def>;
+    set: (
+        updater: Partial<SettingsStore<Def>> | ((state: SettingsStore<Def>) => Partial<SettingsStore<Def>>) | void,
+    ) => void;
     use: <T>(selector: (state: SettingsStore<Def>) => T) => T;
     subscribe: <T>(
         selector: (state: SettingsStore<Def>) => T,
