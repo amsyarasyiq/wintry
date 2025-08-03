@@ -269,7 +269,7 @@ export interface ApplicationCommand<CO extends readonly CommandOption[]> {
 
 export interface WintryCommandExtra {
     readonly __WINTRY_EXTRA?: WintryCommandExtra;
-    wt_predicate?: () => boolean;
+    wtPredicate?: () => boolean;
 }
 
 export type WintryApplicationCommand<CO extends readonly CommandOption[]> = ApplicationCommand<CO> & WintryCommandExtra;
