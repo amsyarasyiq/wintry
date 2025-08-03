@@ -14,6 +14,7 @@ import type { CommandOption, WintryApplicationCommandDefinition } from "./types"
 export function replyCommand(channelId: string, message: PartialDeep<Message>, ephemeral = true) {
     if (ephemeral) {
         sendBotMessage(channelId, message);
+        return;
     }
 
     MessageActions.sendMessage(channelId, message);
