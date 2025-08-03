@@ -1,3 +1,4 @@
+import type { Mutable } from "@utils/types";
 import type { Channel, Guild } from "discord-types/general";
 
 // =============================================================================
@@ -163,27 +164,42 @@ export interface BooleanArgument extends BaseArgument {
 
 export interface UserArgument extends BaseArgument {
     type: typeof ApplicationCommandOptionType.USER;
-    value: string; // User ID
+    /**
+     * User ID as a string
+     */
+    value: string;
 }
 
 export interface ChannelArgument extends BaseArgument {
     type: typeof ApplicationCommandOptionType.CHANNEL;
-    value: string; // Channel ID
+    /**
+     * Channel ID as a string
+     */
+    value: string;
 }
 
 export interface RoleArgument extends BaseArgument {
     type: typeof ApplicationCommandOptionType.ROLE;
-    value: string; // Role ID
+    /**
+     * Role ID as a string
+     */
+    value: string;
 }
 
 export interface MentionableArgument extends BaseArgument {
     type: typeof ApplicationCommandOptionType.MENTIONABLE;
-    value: string; // User or Role ID
+    /**
+     * User or Role ID as a string
+     */
+    value: string;
 }
 
 export interface AttachmentArgument extends BaseArgument {
     type: typeof ApplicationCommandOptionType.ATTACHMENT;
-    value: string; // Attachment ID
+    /**
+     * Attachment ID as a string
+     */
+    value: string;
 }
 
 export type Argument =
@@ -201,28 +217,30 @@ export type Argument =
 // Type Mapping and Utilities
 // =============================================================================
 
+type BaseMap<T extends CommandOption> = T extends StringCommandOption
+    ? StringArgument
+    : T extends IntegerCommandOption
+      ? IntegerArgument
+      : T extends NumberCommandOption
+        ? NumberArgument
+        : T extends BooleanCommandOption
+          ? BooleanArgument
+          : T extends UserCommandOption
+            ? UserArgument
+            : T extends ChannelCommandOption
+              ? ChannelArgument
+              : T extends RoleCommandOption
+                ? RoleArgument
+                : T extends MentionableCommandOption
+                  ? MentionableArgument
+                  : T extends AttachmentCommandOption
+                    ? AttachmentArgument
+                    : Argument;
+
+type MapSingleCommandOption<T extends CommandOption> = T["required"] extends true ? BaseMap<T> : BaseMap<T> | undefined;
+
 type MapCommandOptionToArgument<T extends readonly CommandOption[]> = {
-    [K in keyof T]: T[K] extends CommandOption
-        ? T[K] extends StringCommandOption
-            ? StringArgument
-            : T[K] extends IntegerCommandOption
-              ? IntegerArgument
-              : T[K] extends NumberCommandOption
-                ? NumberArgument
-                : T[K] extends BooleanCommandOption
-                  ? BooleanArgument
-                  : T[K] extends UserCommandOption
-                    ? UserArgument
-                    : T[K] extends ChannelCommandOption
-                      ? ChannelArgument
-                      : T[K] extends RoleCommandOption
-                        ? RoleArgument
-                        : T[K] extends MentionableCommandOption
-                          ? MentionableArgument
-                          : T[K] extends AttachmentCommandOption
-                            ? AttachmentArgument
-                            : never
-        : never;
+    [K in keyof T]: T[K] extends CommandOption ? MapSingleCommandOption<T[K]> : never;
 };
 
 // =============================================================================
@@ -239,7 +257,7 @@ export interface ApplicationCommand<CO extends readonly CommandOption[]> {
     readonly description: string;
     readonly execute: (args: MapCommandOptionToArgument<CO>, ctx: CommandContext) => void;
     readonly options: CO;
-    readonly id?: string;
+    readonly id: string;
     readonly applicationId?: string;
     readonly displayName?: string;
     readonly displayDescription?: string;
@@ -247,11 +265,13 @@ export interface ApplicationCommand<CO extends readonly CommandOption[]> {
     readonly untranslatedName?: string;
     readonly inputType?: ApplicationCommandInputType;
     readonly type?: ApplicationCommandType;
-    readonly __WINTRY_EXTRA?: WintryExtra;
 }
 
-interface WintryExtra {
-    shouldHide?: () => boolean;
+export interface WintryCommandExtra {
+    wtPredicate?: () => boolean;
 }
 
-export type WintryApplicationCommand<CO extends readonly CommandOption[]> = ApplicationCommand<CO> & WintryExtra;
+export type WintryApplicationCommand<CO extends readonly CommandOption[]> = ApplicationCommand<CO> & WintryCommandExtra;
+export type WintryApplicationCommandDefinition<CO extends readonly CommandOption[]> = Mutable<
+    Omit<WintryApplicationCommand<CO>, "id">
+>;

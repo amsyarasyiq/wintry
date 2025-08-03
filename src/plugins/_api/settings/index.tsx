@@ -134,7 +134,7 @@ export default definePlugin({
                             const availableUpdate = useUpdaterStore(s => s.availableUpdate);
                             if (availableUpdate) return <Tag text={t.updater.update_tag()} />;
 
-                            const { version, shortRevision, branch } = getVersions().bunny;
+                            const { version, shortRevision, branch } = getVersions().wintry;
                             return `${version}-${shortRevision} (${branch})`;
                         },
                         screen: {

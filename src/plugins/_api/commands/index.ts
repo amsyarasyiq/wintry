@@ -5,6 +5,7 @@ import { ApplicationCommandOptionType } from "@api/commands/types";
 import { Devs } from "@data/constants";
 import { getDebugInfo } from "@debug/info";
 import { byProps } from "@metro/common/filters";
+import usePluginStore from "@stores/usePluginStore";
 import { inspect } from "node-inspect-extracted";
 
 export default definePlugin({
@@ -27,7 +28,7 @@ export default definePlugin({
 
     start() {
         registerCommand({
-            name: "debug",
+            name: "wintry-debug",
             description: "Get debug information about Wintry and the current environment",
             options: [
                 {
@@ -38,16 +39,52 @@ export default definePlugin({
             ],
             execute([ephemeral], ctx) {
                 const info = getDebugInfo();
-                const content = [
-                    "**Wintry Debug Info**",
-                    `> Wintry: ${info.bunny.version} (${info.bunny.shortRevision} ${info.bunny.branch})`,
-                    `> Discord: ${info.discord.version} (${info.discord.build})`,
-                    `> React: ${info.react.version} (RN ${info.reactNative.version})`,
-                    `> Hermes Bytecode: ${info.hermes.bytecodeVersion}`,
-                    `> System: ${info.os.name} ${info.os.version}`.trimEnd(),
-                    `> Device: ${info.device.model} (${info.device.manufacturer})`,
-                ].join("\n");
 
+                const lines = [
+                    `> **Wintry** v${info.wintry.version} (${info.wintry.shortRevision}${info.wintry.branch !== "main" ? ` • ${info.wintry.branch}` : ""})`,
+                    `> **Loader** ${info.loader.name} (v${info.loader.version})`,
+                    `> **Discord** ${info.discord.version} (Build ${info.discord.build})`,
+                    `> **React** ${info.react.version} / ${info.reactNative.branch}`,
+                    `> **System** ${info.os.name} ${info.os.version}`,
+                    `> **Device** ${info.device.model}${info.device.manufacturer ? ` (${info.device.manufacturer})` : ""}`,
+                ];
+
+                const subtextItems = [
+                    `remote: ${info.wintry.remote}`,
+                    `hermes bytecode: ${info.hermes.bytecodeVersion}`,
+                    ...("sdk" in info.os ? [`sdk: ${info.os.sdk}`] : []),
+                    `brand: ${info.device.brand}`,
+                ];
+
+                lines.push(`-# ${subtextItems.join(" • ")}`);
+
+                const content = lines.join("\n");
+
+                replyCommand(ctx.channel.id, { content }, !!ephemeral?.value);
+            },
+        });
+
+        registerCommand({
+            name: "wintry-plugins",
+            description: "List all enabled plugins",
+            options: [
+                {
+                    name: "ephemeral",
+                    type: ApplicationCommandOptionType.BOOLEAN,
+                    description: "Whether to send the plugin list as an ephemeral message",
+                },
+            ],
+            execute([ephemeral], ctx) {
+                const plugins = Object.entries(usePluginStore.getState().settings)
+                    .filter(([_, settings]) => settings.enabled)
+                    .map(([id, settings]) => id);
+
+                if (plugins.length === 0) {
+                    replyCommand(ctx.channel.id, { content: "No plugins are enabled." }, !!ephemeral?.value);
+                    return;
+                }
+
+                const content = `**Enabled Plugins:**\n${plugins.join(", ")}`;
                 replyCommand(ctx.channel.id, { content }, !!ephemeral?.value);
             },
         });
@@ -55,7 +92,7 @@ export default definePlugin({
         // TODO: Consider exposing this to normal users, under a hidden settings and with a warning
         if (__DEV__)
             registerCommand({
-                name: "eval",
+                name: "wintry-eval",
                 description: "Evaluate JavaScript code",
                 options: [
                     {

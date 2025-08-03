@@ -2,21 +2,27 @@ import { Clyde, MessageActions } from "@metro/common/libraries";
 import type { Message } from "discord-types/general";
 import { toMerged } from "es-toolkit";
 import type { PartialDeep } from "type-fest";
-import type { CommandOption, WintryApplicationCommand } from "./types";
+import type { CommandOption, WintryApplicationCommandDefinition } from "./types";
 
-export function replyCommand(channelId: string, message: PartialDeep<Message>, ephemeral = true): Message {
+/**
+ * Sends a reply message to a specified channel, with optional ephemeral behavior.
+ *
+ * @param channelId - The ID of the channel to send the message to.
+ * @param message - The message content to send, as a partial deep structure of the Message type.
+ * @param ephemeral - If true, sends the message as an ephemeral (temporary) bot message. Defaults to true.
+ */
+export function replyCommand(channelId: string, message: PartialDeep<Message>, ephemeral = true) {
     if (ephemeral) {
-        return sendBotMessage(channelId, message);
+        sendBotMessage(channelId, message);
     }
 
-    return MessageActions.sendMessage(channelId, message);
+    MessageActions.sendMessage(channelId, message);
 }
 
 /**
  * Send a message as Clyde
- * @param {string} channelId ID of channel to send message to
- * @param {Message} message Message to send
- * @returns {Message}
+ * @param channelId - ID of channel to send message to
+ * @param message - Message to send
  */
 export function sendBotMessage(channelId: string, message: PartialDeep<Message>): Message {
     const botMessage = Clyde.createBotMessage({ channelId, content: "", embeds: [] });
@@ -31,9 +37,8 @@ export function sendBotMessage(channelId: string, message: PartialDeep<Message>)
  * To register a command, use `registerCommand` instead.
  * @param command The command to define.
  */
-
 export function defineCommand<const CO extends readonly CommandOption[]>(
-    command: WintryApplicationCommand<CO> & { id?: never },
-): WintryApplicationCommand<CommandOption[]> {
-    return command as unknown as WintryApplicationCommand<CommandOption[]>;
+    command: WintryApplicationCommandDefinition<CO>,
+): WintryApplicationCommandDefinition<CommandOption[]> {
+    return command as unknown as WintryApplicationCommandDefinition<CommandOption[]>;
 }
