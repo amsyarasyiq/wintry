@@ -268,13 +268,10 @@ export interface ApplicationCommand<CO extends readonly CommandOption[]> {
 }
 
 export interface WintryCommandExtra {
-    readonly __WINTRY_EXTRA?: WintryCommandExtra;
     wtPredicate?: () => boolean;
 }
 
 export type WintryApplicationCommand<CO extends readonly CommandOption[]> = ApplicationCommand<CO> & WintryCommandExtra;
 export type WintryApplicationCommandDefinition<CO extends readonly CommandOption[]> = Mutable<
-    Omit<WintryApplicationCommand<CO>, "id"> & {
-        __WINTRY_EXTRA?: never; // This is only used internally
-    }
+    Omit<WintryApplicationCommand<CO>, "id">
 >;

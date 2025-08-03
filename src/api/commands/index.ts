@@ -15,9 +15,7 @@ let registeredCommands: WintryApplicationCommand<readonly CommandOption[]>[] = [
  */
 export function patchCommands(commandsModule: any) {
     const unpatch = after(commandsModule, "getBuiltInCommands", ([type]: any[], res: ApplicationCommand<any>[]) => {
-        const commandsToInclude = registeredCommands.filter(
-            c => type.includes(c.type) && c.__WINTRY_EXTRA?.wtPredicate?.() !== false,
-        );
+        const commandsToInclude = registeredCommands.filter(c => type.includes(c.type) && c.wtPredicate?.() !== false);
 
         // Assign IDs to commands that need them
         for (const command of commandsToInclude) {
@@ -46,17 +44,6 @@ export function registerCommand<const CO extends readonly CommandOption[]>(
     command.untranslatedName ??= command.name;
     command.displayDescription ??= command.description;
     command.untranslatedDescription ??= command.description;
-
-    for (const key of Object.keys(command)) {
-        if (key.startsWith("wt")) {
-            // Ensure that any custom properties are not included in the final command object
-            // This is to prevent issues with Discord's command registration
-            const cmm = command as any;
-            delete cmm[key];
-            cmm.__WINTRY_EXTRA ??= {};
-            cmm.__WINTRY_EXTRA[key] = cmm[key];
-        }
-    }
 
     if (command.options) {
         for (const opt of command.options) {
