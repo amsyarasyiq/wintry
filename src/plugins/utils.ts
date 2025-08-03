@@ -46,9 +46,9 @@ export function getPluginSettings(id: string) {
     return settingsDefRegistry.get(id);
 }
 
-export function registerPlugin<P extends WintryPluginDefinition<D>, D extends DefinedOptions>(
+export function registerPlugin<P extends WintryPluginDefinition>(
     id: string,
-    plugin: WintryPluginInstance<D>,
+    plugin: WintryPluginInstance,
 ): (relativePath: string) => P {
     const pluginState: PluginState = { running: false };
     const pluginSettings: PluginSettings = toDefaulted(usePluginStore.getState().settings[id] ?? {}, {
