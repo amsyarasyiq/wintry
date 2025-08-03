@@ -57,17 +57,12 @@ export function togglePlugin(id: string, value?: boolean, triggerLifecycleEvents
 }
 
 /**
- * Starts a plugin by its ID, initializing its context, applying commands, patches,
- * and flux interceptors, and updating its running state.
+ * Starts a plugin by its ID, initializing what should be initialized and updating its running state.
  *
  * The function performs several safety checks:
  * - Skips starting if safe mode is enabled and the plugin is not required.
  * - Skips if the plugin is not available.
  * - Skips if the plugin is already running.
- *
- * If all checks pass, it prepares the plugin's patcher context, applies necessary
- * commands, patches, and flux interceptors, updates the plugin's running state,
- * and calls the plugin's `start` method if defined.
  *
  * Logs relevant information and errors during the process.
  *
@@ -120,9 +115,8 @@ export function startPlugin(id: string) {
  * Cleans up and stops a plugin by its ID.
  *
  * This function attempts to dispose of any contextual patchers and calls the plugin's
- * cleanup method if available. It prevents stopping required plugins and logs appropriate
- * warnings or errors. If the plugin is already stopped, it logs a warning and exits.
- * After successful cleanup, it updates the plugin's running state to false.
+ * cleanup method if available. If the plugin is already stopped, it logs a warning and exits.
+ * After attempting to cleanup, it updates the plugin's running state to false.
  *
  * @param id - The unique identifier of the plugin to clean up.
  * @throws {Error} If attempting to stop a required plugin in development mode.
