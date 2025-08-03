@@ -70,7 +70,22 @@ export interface WintryPluginDefinition<D extends DefinedOptions<O>, O extends O
      */
     readonly flux?: Record<string, FluxIntercept>;
 
-    // TODO: doc here
+    /**
+     * Define commands for the plugin. These commands can be used in the Discord chat.
+     * For strong typing, each command is defined using the `defineCommand` function.
+     * @example
+     * ```ts
+     * commands: [
+     *   defineCommand({
+     *     name: "hello",
+     *     description: "Says hello",
+     *     execute: (args, context) => {
+     *        // Reply to the command
+     *     },
+     *   }),
+     * ]
+     * ```
+     */
     readonly commands?: ReturnType<typeof defineCommand>[];
 
     /**
