@@ -3,7 +3,7 @@ import { initCheckForUpdates } from "@stores/useUpdaterStore";
 import reportErrorOnInitialization from "./error-reporter";
 import { wintryGlobalObject } from "./globals";
 import { initializeMetro } from "./metro/internal";
-import { initializePlugins } from "./stores/usePluginStore";
+import { initializePlugins } from "@plugins/lifecycle";
 
 export function initializeWintry() {
     try {

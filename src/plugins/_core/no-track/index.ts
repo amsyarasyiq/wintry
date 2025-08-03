@@ -6,7 +6,7 @@ import { definePlugin } from "#plugin-context";
 export default definePlugin({
     name: "NoTrack",
     description: "Prevents Discord's tracking analytics and Sentry crash reporting",
-    authors: [Devs.Pylix],
+    authors: [Devs.Aeyric],
     required: true,
 
     patches: [

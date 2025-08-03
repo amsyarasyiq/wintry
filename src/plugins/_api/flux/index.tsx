@@ -6,7 +6,7 @@ import { byProps } from "@metro/common/filters";
 export default definePlugin({
     name: "FluxAPI",
     description: "Provides an API for intercepting Flux dispatches.",
-    authors: [Devs.Pylix],
+    authors: [Devs.Aeyric],
 
     required: true,
 

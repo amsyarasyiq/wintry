@@ -5,6 +5,7 @@ import { createAddonCollectionManager } from "../Addon/AddonCollectionManager";
 import type { WintryPluginInstance } from "@plugins/types";
 import usePluginStore from "@stores/usePluginStore";
 import { showSheet } from "@components/utils/sheets";
+import { togglePlugin } from "@plugins/lifecycle";
 
 // TODO: since this is top level defined, we can't do i18n here. adapt this to be able to use i18n
 const pluginFilterSystem = createAddonCollectionManager({
@@ -57,9 +58,7 @@ export default function PluginsPage() {
             useCanHandleAddon={id => PLUGINS[id].$isToggleable()}
             useToggler={id => {
                 const enabled = usePluginStore(s => s.settings[id].enabled);
-                const toggle = usePluginStore(s => s.togglePlugin);
-
-                return [enabled, v => toggle(id, v)];
+                return [enabled, v => togglePlugin(id, v)];
             }}
         />
     );
