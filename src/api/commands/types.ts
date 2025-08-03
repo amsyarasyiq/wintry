@@ -247,11 +247,11 @@ export interface ApplicationCommand<CO extends readonly CommandOption[]> {
     readonly untranslatedName?: string;
     readonly inputType?: ApplicationCommandInputType;
     readonly type?: ApplicationCommandType;
-    readonly __WINTRY_EXTRA?: WintryExtra;
+    readonly __WINTRY_EXTRA?: WintryCommandExtra;
 }
 
-interface WintryExtra {
+export interface WintryCommandExtra {
     shouldHide?: () => boolean;
 }
 
-export type WintryApplicationCommand<CO extends readonly CommandOption[]> = ApplicationCommand<CO> & WintryExtra;
+export type WintryApplicationCommand<CO extends readonly CommandOption[]> = ApplicationCommand<CO> & WintryCommandExtra;
