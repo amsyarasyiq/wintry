@@ -14,7 +14,7 @@ import type { ReadonlyDeep } from "type-fest";
 import { lazyValue } from "@utils/lazy";
 
 const patcherRegistry = new Map<string, ContextualPatcher>();
-const settingsDefRegistry = new Map<string, DefinedOptions<OptionDefinitions>>();
+const settingsDefRegistry = new Map<string, DefinedOptions>();
 
 export let PLUGINS = lazyValue(
     () => {
@@ -46,11 +46,10 @@ export function getPluginSettings(id: string) {
     return settingsDefRegistry.get(id);
 }
 
-export function registerPlugin<
-    P extends WintryPluginDefinition<D, O>,
-    D extends DefinedOptions<O>,
-    O extends OptionDefinitions,
->(id: string, plugin: WintryPluginInstance<O>): (relativePath: string) => P {
+export function registerPlugin<P extends WintryPluginDefinition<D>, D extends DefinedOptions>(
+    id: string,
+    plugin: WintryPluginInstance<D>,
+): (relativePath: string) => P {
     const pluginState: PluginState = { running: false };
     const pluginSettings: PluginSettings = toDefaulted(usePluginStore.getState().settings[id] ?? {}, {
         enabled: Boolean(plugin.preenabled === true || plugin.required || false),
@@ -171,7 +170,7 @@ export function registerPluginSettings<Def extends OptionDefinitions>(id: string
         // },
     };
 
-    settingsDefRegistry.set(id, definition as DefinedOptions<OptionDefinitions>);
+    settingsDefRegistry.set(id, definition as DefinedOptions);
 
     return definition;
 }

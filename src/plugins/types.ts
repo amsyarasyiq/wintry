@@ -31,7 +31,7 @@ export interface PluginPatch {
 // Plugin Definition Interface
 // =============================================================================
 
-export interface WintryPluginDefinition<D extends DefinedOptions<O>, O extends OptionDefinitions> {
+export interface WintryPluginDefinition<D extends DefinedOptions = DefinedOptions> {
     // Properties that starts with `$` are runtime properties.
     readonly $id?: string;
     readonly $settings?: D;
@@ -120,15 +120,18 @@ export interface WintryPluginDefinition<D extends DefinedOptions<O>, O extends O
 // Plugin Instance Types
 // =============================================================================
 
-type RequiredRuntimePropertyKey = KeysMatching<WintryPluginDefinition<any, any>, `$${string}`>;
+type RequiredRuntimePropertyKey = KeysMatching<WintryPluginDefinition, `$${string}`>;
 
 // Allows defining a plugin without the state property and allow extra properties
-export type WintryPluginInstance<
-    O extends OptionDefinitions = OptionDefinitions,
-    D extends DefinedOptions<O> = DefinedOptions<O>,
-> = SetRequired<WintryPluginDefinition<D, O>, RequiredRuntimePropertyKey>;
+export type WintryPluginInstance<D extends DefinedOptions = DefinedOptions> = SetRequired<
+    WintryPluginDefinition<D>,
+    RequiredRuntimePropertyKey
+>;
 
-export type LooseWintryPlugin<P> = WithThis<P, WintryPluginInstance>;
+export type LooseWintryPlugin<P extends WintryPluginDefinition> = WithThis<
+    P,
+    WintryPluginInstance<NonNullable<P["$settings"]>>
+>;
 
 // =============================================================================
 // Option Definitions and Base Types
@@ -201,11 +204,13 @@ export type OptionDefToType<T extends OptionDefinition> = T extends StringOption
     ? string
     : T extends BooleanOptionDefinition
       ? boolean
-      : T extends RadioOptionDefinition | SelectOptionDefinition
+      : T extends RadioOptionDefinition
         ? T["options"][number]["value"]
-        : T extends SliderOptionDefinition
-          ? T["points"][number]
-          : never;
+        : T extends SelectOptionDefinition
+          ? T["options"][number]["value"][]
+          : T extends SliderOptionDefinition
+            ? T["points"][number]
+            : never;
 
 type OptionDefaultType<O extends OptionDefinition> = O extends RadioOptionDefinition | SelectOptionDefinition
     ? O["options"] extends readonly { default?: boolean }[]
@@ -223,7 +228,7 @@ export type SettingsStore<D extends OptionDefinitions> = {
 // Settings Management Interface
 // =============================================================================
 
-export interface DefinedOptions<Def extends OptionDefinitions> {
+export interface DefinedOptions<Def extends OptionDefinitions = OptionDefinitions> {
     readonly pluginId: string;
     readonly definition: Def;
     get(): SettingsStore<Def>;
