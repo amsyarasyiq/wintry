@@ -31,9 +31,8 @@ export function sendBotMessage(channelId: string, message: PartialDeep<Message>)
  * To register a command, use `registerCommand` instead.
  * @param command The command to define.
  */
-
 export function defineCommand<const CO extends readonly CommandOption[]>(
     command: WintryApplicationCommand<CO> & { id?: never },
-): WintryApplicationCommand<CommandOption[]> {
-    return command as unknown as WintryApplicationCommand<CommandOption[]>;
+): WintryApplicationCommand<CommandOption[]> & { id?: never } {
+    return command as unknown as WintryApplicationCommand<CommandOption[]> & { id?: never };
 }

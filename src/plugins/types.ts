@@ -5,7 +5,7 @@ import type { Filter } from "@metro/common/filters";
 import type { ContextualPatcher } from "@patcher/contextual";
 import type { WithThis } from "@utils/types";
 import type { FluxIntercept } from "@api/flux";
-import type { CommandOption, WintryApplicationCommand } from "@api/commands/types";
+import type { defineCommand } from "@api/commands/helpers";
 
 export interface PluginState {
     running: boolean;
@@ -71,7 +71,7 @@ export interface WintryPluginDefinition<D extends DefinedOptions<O>, O extends O
     readonly flux?: Record<string, FluxIntercept>;
 
     // TODO: doc here
-    readonly commands?: WintryApplicationCommand<CommandOption[]>[];
+    readonly commands?: ReturnType<typeof defineCommand>[];
 
     /**
      * This is called once the index module is loaded and you can force lookup modules from here.
