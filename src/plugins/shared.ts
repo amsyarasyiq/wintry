@@ -9,9 +9,7 @@ interface PluginContextMeta {
 }
 
 interface PluginContext {
-    definePlugin<P extends WintryPluginDefinition<D, O>, D extends DefinedOptions<O>, O extends OptionDefinitions>(
-        plugin: LooseWintryPlugin<P>,
-    ): (...args: any[]) => P;
+    definePlugin<P extends WintryPluginDefinition>(plugin: LooseWintryPlugin<P>): (...args: any[]) => P;
 
     definePluginSettings<Def extends OptionDefinitions>(def: Def): DefinedOptions<Def>;
 

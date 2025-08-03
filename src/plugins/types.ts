@@ -3,9 +3,13 @@ import type { Dev } from "@data/constants";
 import type usePluginStore from "@stores/usePluginStore";
 import type { Filter } from "@metro/common/filters";
 import type { ContextualPatcher } from "@patcher/contextual";
-import type { WithThis } from "@utils/types";
+import type { KeysMatching, WithThis } from "@utils/types";
 import type { FluxIntercept } from "@api/flux";
 import type { CommandOption, WintryApplicationCommandDefinition } from "@api/commands/types";
+
+// =============================================================================
+// Plugin Core Types
+// =============================================================================
 
 export interface PluginState {
     running: boolean;
@@ -23,8 +27,12 @@ export interface PluginPatch {
     patch: (module: any, patcher: ContextualPatcher) => void;
 }
 
-export interface WintryPluginDefinition<D extends DefinedOptions<O>, O extends OptionDefinitions> {
-    // Runtime properties. Please update RequiredRuntimePropertyKey if you add more required properties.
+// =============================================================================
+// Plugin Definition Interface
+// =============================================================================
+
+export interface WintryPluginDefinition<D extends DefinedOptions = DefinedOptions> {
+    // Properties that starts with `$` are runtime properties.
     readonly $id?: string;
     readonly $settings?: D;
     readonly $state?: PluginState;
@@ -108,64 +116,28 @@ export interface WintryPluginDefinition<D extends DefinedOptions<O>, O extends O
     readonly onStopRequest?: (stop: () => void) => boolean;
 }
 
-type RequiredRuntimePropertyKey = "id" | "state" | "path" | "isToggleable";
+// =============================================================================
+// Plugin Instance Types
+// =============================================================================
+
+type RequiredRuntimePropertyKey = KeysMatching<WintryPluginDefinition, `$${string}`>;
 
 // Allows defining a plugin without the state property and allow extra properties
-export type WintryPluginInstance<
-    O extends OptionDefinitions = OptionDefinitions,
-    D extends DefinedOptions<O> = DefinedOptions<O>,
-> = SetRequired<WintryPluginDefinition<D, O>, `$${RequiredRuntimePropertyKey}`>;
+export type WintryPluginInstance<D extends DefinedOptions = DefinedOptions> = SetRequired<
+    WintryPluginDefinition<D>,
+    RequiredRuntimePropertyKey
+>;
 
-export type LooseWintryPlugin<P> = WithThis<P, WintryPluginInstance>;
+export type LooseWintryPlugin<P extends WintryPluginDefinition> = WithThis<
+    P,
+    WintryPluginInstance<NonNullable<P["$settings"]>>
+>;
+
+// =============================================================================
+// Option Definitions and Base Types
+// =============================================================================
 
 export type OptionDefinitions = Record<string, OptionDefinition>;
-export type OptionDefinition =
-    | StringOptionDefinition
-    | BooleanOptionDefinition
-    | SelectOptionDefinition
-    | RadioOptionDefinition
-    | SliderOptionDefinition
-    | SelectOptionDefinition;
-
-export type OptionDefToType<T extends OptionDefinition> = T extends StringOptionDefinition
-    ? string
-    : T extends BooleanOptionDefinition
-      ? boolean
-      : T extends RadioOptionDefinition
-        ? T["options"][number]["value"]
-        : T extends SelectOptionDefinition
-          ? T["options"][number]["value"][]
-          : T extends SliderOptionDefinition
-            ? T["points"][number]
-            : never;
-
-type OptionDefaultType<O extends OptionDefinition> = O extends RadioOptionDefinition | SelectOptionDefinition
-    ? O["options"] extends { default?: boolean }[]
-        ? O["options"][number]["value"]
-        : undefined
-    : O extends { default: infer T }
-      ? T
-      : undefined;
-
-export type SettingsStore<D extends OptionDefinitions> = {
-    [K in keyof D]: OptionDefToType<D[K]> | OptionDefaultType<D[K]>;
-};
-
-export interface DefinedOptions<Def extends OptionDefinitions> {
-    pluginId: string;
-    definition: Def;
-    get: () => SettingsStore<Def>;
-    set: (
-        updater: Partial<SettingsStore<Def>> | ((state: SettingsStore<Def>) => Partial<SettingsStore<Def>>) | void,
-    ) => void;
-    use: <T>(selector: (state: SettingsStore<Def>) => T) => T;
-    subscribe: <T>(
-        selector: (state: SettingsStore<Def>) => T,
-        listener: (state: T, prevState: T) => void,
-        options?: Parameters<typeof usePluginStore.subscribe>[2],
-    ) => () => void;
-    unsubscribeAll: () => void;
-}
 
 type OptionType = "string" | "boolean" | "select" | "radio" | "slider";
 
@@ -175,6 +147,18 @@ interface OptionDefinitionBase {
     description?: string;
     icon?: string | { uri: string };
 }
+
+interface SelectRadioOptionRow {
+    label: string;
+    description?: string;
+    icon?: string | { uri: string };
+    value: string | number | boolean;
+    default?: boolean;
+}
+
+// =============================================================================
+// Specific Option Definition Types
+// =============================================================================
 
 interface StringOptionDefinition extends OptionDefinitionBase {
     type: "string";
@@ -191,24 +175,71 @@ interface BooleanOptionDefinition extends OptionDefinitionBase {
 
 interface SelectOptionDefinition extends OptionDefinitionBase {
     type: "select";
-    options: SelectRadioOptionRow[];
+    options: readonly SelectRadioOptionRow[];
 }
 
 interface RadioOptionDefinition extends OptionDefinitionBase {
     type: "radio";
-    options: SelectRadioOptionRow[];
+    options: readonly SelectRadioOptionRow[];
 }
 
 interface SliderOptionDefinition extends OptionDefinitionBase {
     type: "slider";
-    points: (string | number)[];
+    points: readonly (string | number)[];
     default?: string | number;
 }
 
-interface SelectRadioOptionRow {
-    label: string;
-    description?: string;
-    icon?: string | { uri: string };
-    value: string | number | boolean;
-    default?: boolean;
+export type OptionDefinition =
+    | StringOptionDefinition
+    | BooleanOptionDefinition
+    | SelectOptionDefinition
+    | RadioOptionDefinition
+    | SliderOptionDefinition;
+
+// =============================================================================
+// Type Mapping and Utilities
+// =============================================================================
+
+export type OptionDefToType<T extends OptionDefinition> = T extends StringOptionDefinition
+    ? string
+    : T extends BooleanOptionDefinition
+      ? boolean
+      : T extends RadioOptionDefinition
+        ? T["options"][number]["value"]
+        : T extends SelectOptionDefinition
+          ? T["options"][number]["value"][]
+          : T extends SliderOptionDefinition
+            ? T["points"][number]
+            : never;
+
+type OptionDefaultType<O extends OptionDefinition> = O extends RadioOptionDefinition | SelectOptionDefinition
+    ? O["options"] extends readonly { default?: boolean }[]
+        ? O["options"][number]["value"]
+        : undefined
+    : O extends { default: infer T }
+      ? T
+      : undefined;
+
+export type SettingsStore<D extends OptionDefinitions> = {
+    [K in keyof D]: OptionDefToType<D[K]> | OptionDefaultType<D[K]>;
+};
+
+// =============================================================================
+// Settings Management Interface
+// =============================================================================
+
+export interface DefinedOptions<Def extends OptionDefinitions = OptionDefinitions> {
+    readonly pluginId: string;
+    readonly definition: Def;
+    get(): SettingsStore<Def>;
+    set(
+        updater: Partial<SettingsStore<Def>> | ((state: SettingsStore<Def>) => Partial<SettingsStore<Def>>) | void,
+    ): void;
+    use<T>(selector: (state: SettingsStore<Def>) => T): T;
+    subscribe<T>(
+        selector: (state: SettingsStore<Def>) => T,
+        listener: (state: T, prevState: T) => void,
+        options?: Parameters<typeof usePluginStore.subscribe>[2],
+    ): () => void;
+    unsubscribeAll(): void;
 }

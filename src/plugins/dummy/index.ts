@@ -135,7 +135,6 @@ export default definePlugin({
             bunnyName: "Fluffier",
             winterCoat: false,
         });
-
         settings.set(prevState => {
             logger.inspect({ prevState });
             return {
