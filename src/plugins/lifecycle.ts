@@ -3,7 +3,8 @@ import { interceptFluxEventType, type FluxEvent } from "@api/flux";
 import { isSafeModeEnabled } from "@loader";
 import { waitFor } from "@metro/internal/modules";
 import type { ContextualPatcher } from "@patcher/contextual";
-import { PLUGINS, logger, usePluginStore } from "@stores/usePluginStore";
+import { logger, usePluginStore } from "@stores/usePluginStore";
+import { PLUGINS } from "./utils";
 import { getProxyFactory } from "@utils/lazy";
 import type { WintryPluginInstance } from "./types";
 import { getContextualPatcher, getPluginSettings, getStoreState } from "./utils";
@@ -12,7 +13,6 @@ import { getContextualPatcher, getPluginSettings, getStoreState } from "./utils"
  * Initialize all plugins, this should be called once at the start of the app before index is initialized
  * @internal
  */
-
 export function initializePlugins() {
     usePluginStore.persist.rehydrate(); // Ensure settings are loaded
     getProxyFactory(PLUGINS)?.(); // Ensure plugins are initialized

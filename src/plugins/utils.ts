@@ -1,5 +1,5 @@
 import { toDefaulted } from "es-toolkit/compat";
-import usePluginStore, { PLUGINS, type PluginStore } from "@stores/usePluginStore";
+import usePluginStore, { type PluginStore } from "@stores/usePluginStore";
 import type {
     DefinedOptions,
     OptionDefinitions,
@@ -11,9 +11,18 @@ import type {
 } from "./types";
 import { createContextualPatcher, type ContextualPatcher } from "@patcher/contextual";
 import type { ReadonlyDeep } from "type-fest";
+import { lazyValue } from "@utils/lazy";
 
 const patcherRegistry = new Map<string, ContextualPatcher>();
 const settingsDefRegistry = new Map<string, DefinedOptions<OptionDefinitions>>();
+
+export let PLUGINS = lazyValue(
+    () => {
+        PLUGINS = require("#wt-plugins").default;
+        return PLUGINS;
+    },
+    { hint: "object" },
+) as Record<string, WintryPluginInstance>;
 
 /**
  * Returns a contextual patcher for the given plugin ID.
