@@ -236,7 +236,7 @@ type MapCommandOptionToArgument<T extends readonly CommandOption[]> = {
                           ? MentionableArgument
                           : T[K] extends AttachmentCommandOption
                             ? AttachmentArgument
-                            : never
+                            : Argument
         : never;
 };
 
