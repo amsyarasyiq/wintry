@@ -3,7 +3,7 @@ import { delay } from "es-toolkit";
 import { inspect } from "node-inspect-extracted";
 
 // WebSocket configuration, hardcoded for now
-const WS_HOST = "192.168.0.157";
+const WS_HOST = "192.168.0.144";
 const WS_PORT = 9090;
 
 // WebSocket connection manager
@@ -61,7 +61,7 @@ const messageHandlers = {
         let error: any;
 
         try {
-            result = await globalEvalWithSourceUrl(message.code, `repl-${message.nonce}`);
+            result = await global.eval?.(message.code);
             if (result?.await) {
                 result.return = await result.return;
             }

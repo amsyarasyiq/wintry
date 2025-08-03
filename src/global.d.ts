@@ -4,7 +4,6 @@ declare global {
 
     // ReactNative/Hermes globals
     var __turboModuleProxy: (name: string) => unknown;
-    var globalEvalWithSourceUrl: (script: string, sourceURL: string) => any;
     var nativePerformanceNow: typeof performance.now;
     var nativeModuleProxy: Record<string, any>;
 
