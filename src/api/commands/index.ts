@@ -8,7 +8,6 @@ import type {
 } from "./types";
 
 let registeredCommands: WintryApplicationCommand<readonly CommandOption[]>[] = [];
-const commandIdSet = new Set<string>();
 
 /**
  * Patches the commands module to include Wintry's custom commands.
@@ -25,7 +24,6 @@ export function patchCommands(commandsModule: any) {
             if (!command.id) {
                 // @ts-ignore: It's okay to mutate the command here
                 command.id = generateCommandId([...res, ...commandsToInclude.filter(c => c.id)]);
-                commandIdSet.add(command.id);
             }
         }
 
@@ -34,7 +32,6 @@ export function patchCommands(commandsModule: any) {
 
     return () => {
         registeredCommands = [];
-        commandIdSet.clear();
         unpatch();
     };
 }
@@ -68,12 +65,12 @@ export function registerCommand<const CO extends readonly CommandOption[]>(
         }
     }
 
+    const registeredCommand = command as unknown as WintryApplicationCommand<readonly CommandOption[]>;
     // Add it to the commands array (ID will be assigned when getBuiltInCommands is called)
-    registeredCommands.push(command as unknown as WintryApplicationCommand<readonly CommandOption[]>);
+    registeredCommands.push(registeredCommand);
 
     return () => {
-        registeredCommands = registeredCommands.filter(c => c !== command);
-        if (command.id) commandIdSet.delete(command.id);
+        registeredCommands = registeredCommands.filter(c => c !== registeredCommand);
     };
 }
 
@@ -84,19 +81,12 @@ function generateCommandId(currCommands: ApplicationCommand<CommandOption[]>[]):
     let baseId = -100;
 
     if (currCommands.length > 0) {
-        const sortedCommands = currCommands.sort((a, b) => Number.parseInt(b.id!) - Number.parseInt(a.id!));
-        const lastCommand = sortedCommands[sortedCommands.length - 1];
-        if (lastCommand?.id) {
-            const lastId = Number.parseInt(lastCommand.id, 10);
-            if (!Number.isNaN(lastId)) {
-                baseId = Math.min(baseId, lastId - 1);
+        for (const cmd of currCommands) {
+            const id = Number.parseInt(cmd.id, 10);
+            if (id <= baseId) {
+                baseId = id - 1;
             }
         }
-    }
-
-    // Ensure uniqueness among registered commands
-    while (commandIdSet.has(baseId.toString())) {
-        baseId--;
     }
 
     return baseId.toString();

@@ -257,7 +257,7 @@ export interface ApplicationCommand<CO extends readonly CommandOption[]> {
     readonly description: string;
     readonly execute: (args: MapCommandOptionToArgument<CO>, ctx: CommandContext) => void;
     readonly options: CO;
-    readonly id?: string;
+    readonly id: string;
     readonly applicationId?: string;
     readonly displayName?: string;
     readonly displayDescription?: string;
@@ -274,8 +274,7 @@ export interface WintryCommandExtra {
 
 export type WintryApplicationCommand<CO extends readonly CommandOption[]> = ApplicationCommand<CO> & WintryCommandExtra;
 export type WintryApplicationCommandDefinition<CO extends readonly CommandOption[]> = Mutable<
-    WintryApplicationCommand<CO> & {
-        id?: never; // ID is assigned when the command is registered
+    Omit<WintryApplicationCommand<CO>, "id"> & {
         __WINTRY_EXTRA?: never; // This is only used internally
     }
 >;
