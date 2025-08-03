@@ -1,5 +1,5 @@
 import { toDefaulted } from "es-toolkit/compat";
-import usePluginStore from "@stores/usePluginStore";
+import usePluginStore, { type PluginStore } from "@stores/usePluginStore";
 import type {
     DefinedOptions,
     OptionDefinitions,
@@ -10,6 +10,7 @@ import type {
     WintryPluginInstance,
 } from "./types";
 import { createContextualPatcher, type ContextualPatcher } from "@patcher/contextual";
+import type { ReadonlyDeep } from "type-fest";
 
 const patcherRegistry = new Map<string, ContextualPatcher>();
 const settingsDefRegistry = new Map<string, DefinedOptions<OptionDefinitions>>();
@@ -168,4 +169,8 @@ export function registerPluginSettings<Def extends OptionDefinitions>(id: string
 
 export function isPluginInternal(plugin: WintryPluginInstance) {
     return plugin.$path.startsWith("/_");
+}
+
+export function getStoreState() {
+    return usePluginStore.getState() as ReadonlyDeep<PluginStore>;
 }
