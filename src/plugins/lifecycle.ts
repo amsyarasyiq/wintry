@@ -26,6 +26,17 @@ export function initializePlugins() {
     }
 }
 
+/**
+ * Toggles the enabled state of a plugin by its ID.
+ *
+ * @param id - The unique identifier of the plugin to toggle.
+ * @param value - Optional. If provided, sets the plugin's enabled state to this value. If omitted, the enabled state is toggled.
+ * @param triggerLifecycleEvents - Optional. Whether to trigger the plugin's lifecycle events (`startPlugin` or `cleanupPlugin`). Defaults to `true`.
+ *
+ * @remarks
+ * - If the plugin is already in the desired state, no action is taken.
+ * - Lifecycle events are only triggered if `triggerLifecycleEvents` is `true` and safe mode is not enabled.
+ */
 export function togglePlugin(id: string, value?: boolean, triggerLifecycleEvents = true) {
     const store = getStoreState();
     const enabled = store.settings[id].enabled;
@@ -45,6 +56,24 @@ export function togglePlugin(id: string, value?: boolean, triggerLifecycleEvents
     }
 }
 
+/**
+ * Starts a plugin by its ID, initializing its context, applying commands, patches,
+ * and flux interceptors, and updating its running state.
+ *
+ * The function performs several safety checks:
+ * - Skips starting if safe mode is enabled and the plugin is not required.
+ * - Skips if the plugin is not available.
+ * - Skips if the plugin is already running.
+ *
+ * If all checks pass, it prepares the plugin's patcher context, applies necessary
+ * commands, patches, and flux interceptors, updates the plugin's running state,
+ * and calls the plugin's `start` method if defined.
+ *
+ * Logs relevant information and errors during the process.
+ *
+ * @param id - The unique identifier of the plugin to start.
+ * @returns void
+ */
 export function startPlugin(id: string) {
     const plugin = PLUGINS[id];
     const currStore = getStoreState();
@@ -87,6 +116,17 @@ export function startPlugin(id: string) {
     return;
 }
 
+/**
+ * Cleans up and stops a plugin by its ID.
+ *
+ * This function attempts to dispose of any contextual patchers and calls the plugin's
+ * cleanup method if available. It prevents stopping required plugins and logs appropriate
+ * warnings or errors. If the plugin is already stopped, it logs a warning and exits.
+ * After successful cleanup, it updates the plugin's running state to false.
+ *
+ * @param id - The unique identifier of the plugin to clean up.
+ * @throws {Error} If attempting to stop a required plugin in development mode.
+ */
 export function cleanupPlugin(id: string) {
     const plugin = PLUGINS[id];
 
