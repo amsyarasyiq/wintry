@@ -105,10 +105,7 @@ export function startPlugin(id: string) {
         plugin.start?.();
     } catch (e) {
         logger.error`Failed to start ${plugin.$id}: ${e}`;
-        return;
     }
-
-    return;
 }
 
 /**
@@ -154,7 +151,6 @@ export function cleanupPlugin(id: string) {
     usePluginStore.setState(s => {
         s.states[id].running = false;
     });
-    return;
 }
 
 function applyPluginCommands(id: string, plugin: WintryPluginInstance, pluginPatcherContext: ContextualPatcher) {
