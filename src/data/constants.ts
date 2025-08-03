@@ -4,9 +4,9 @@ export interface Dev {
 }
 
 export const Devs = {
-    Pylix: {
-        name: "pylix",
-        id: 492949202121261067n,
+    Aeyric: {
+        name: "aeyric",
+        id: 809031926191095869n,
     },
 } as const;
 

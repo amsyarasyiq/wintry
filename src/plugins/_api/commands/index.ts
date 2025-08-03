@@ -11,7 +11,7 @@ import { inspect } from "node-inspect-extracted";
 export default definePlugin({
     name: "Commands",
     description: "Provides an API to register and manage commands.",
-    authors: [Devs.Pylix],
+    authors: [Devs.Aeyric],
 
     required: true,
 

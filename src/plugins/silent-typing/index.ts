@@ -16,7 +16,7 @@ const settings = definePluginSettings({
 export default definePlugin({
     name: "SilentTyping",
     description: "Conceal your typing status to ensure your activity remains private while writing messages.",
-    authors: [Devs.Pylix],
+    authors: [Devs.Aeyric],
 
     commands: [
         defineCommand({

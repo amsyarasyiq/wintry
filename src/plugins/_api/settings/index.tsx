@@ -31,7 +31,7 @@ const settings = definePluginSettings({
 export default definePlugin({
     name: "Settings",
     description: "Provides a settings interface and debug information",
-    authors: [Devs.Pylix],
+    authors: [Devs.Aeyric],
     required: true,
 
     patches: [

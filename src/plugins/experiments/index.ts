@@ -17,7 +17,7 @@ function reinitStore() {
 export default definePlugin({
     name: "Experiments",
     description: "Exposes internal developer sections, allowing you to override Discord experiments.",
-    authors: [Devs.Pylix],
+    authors: [Devs.Aeyric],
 
     patches: [
         {

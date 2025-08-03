@@ -32,7 +32,7 @@ const settings = definePluginSettings({
 export default definePlugin({
     name: "ChatBubbles",
     description: "Adds customizable chat bubbles to the chat, similar to Flowercord.",
-    authors: [Devs.Pylix],
+    authors: [Devs.Aeyric],
 
     start() {
         BubbleModule.hookBubbles();

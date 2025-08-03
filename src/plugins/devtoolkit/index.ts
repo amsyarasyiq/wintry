@@ -9,7 +9,7 @@ import { establishWebSocketConnection } from "./repl-client";
 export default definePlugin({
     name: "DevToolkit",
     description: "A toolkit for developers to ease the development process.",
-    authors: [Devs.Pylix],
+    authors: [Devs.Aeyric],
     version: "1.0.0",
     start() {
         Object.defineProperty(SingleMetroModule.prototype, "l", {

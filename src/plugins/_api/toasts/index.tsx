@@ -7,7 +7,7 @@ import { useToastStore } from "@stores/useToastStore";
 export default definePlugin({
     name: "Toasts",
     description: "Provides a toast notification API.",
-    authors: [Devs.Pylix],
+    authors: [Devs.Aeyric],
     required: true,
 
     patches: [
