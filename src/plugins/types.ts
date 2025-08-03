@@ -3,7 +3,7 @@ import type { Dev } from "@data/constants";
 import type usePluginStore from "@stores/usePluginStore";
 import type { Filter } from "@metro/common/filters";
 import type { ContextualPatcher } from "@patcher/contextual";
-import type { WithThis } from "@utils/types";
+import type { KeysMatching, WithThis } from "@utils/types";
 import type { FluxIntercept } from "@api/flux";
 import type { CommandOption, WintryApplicationCommandDefinition } from "@api/commands/types";
 
@@ -32,7 +32,7 @@ export interface PluginPatch {
 // =============================================================================
 
 export interface WintryPluginDefinition<D extends DefinedOptions<O>, O extends OptionDefinitions> {
-    // Runtime properties. Please update RequiredRuntimePropertyKey if you add more required properties.
+    // Properties that starts with `$` are runtime properties.
     readonly $id?: string;
     readonly $settings?: D;
     readonly $state?: PluginState;
@@ -120,13 +120,13 @@ export interface WintryPluginDefinition<D extends DefinedOptions<O>, O extends O
 // Plugin Instance Types
 // =============================================================================
 
-type RequiredRuntimePropertyKey = "id" | "state" | "path" | "isToggleable";
+type RequiredRuntimePropertyKey = KeysMatching<WintryPluginDefinition<any, any>, `$${string}`>;
 
 // Allows defining a plugin without the state property and allow extra properties
 export type WintryPluginInstance<
     O extends OptionDefinitions = OptionDefinitions,
     D extends DefinedOptions<O> = DefinedOptions<O>,
-> = SetRequired<WintryPluginDefinition<D, O>, `$${RequiredRuntimePropertyKey}`>;
+> = SetRequired<WintryPluginDefinition<D, O>, RequiredRuntimePropertyKey>;
 
 export type LooseWintryPlugin<P> = WithThis<P, WintryPluginInstance>;
 
