@@ -109,7 +109,7 @@ export default definePlugin({
                 replyCommand(
                     ctx.channel.id,
                     {
-                        content: `You provided option1: ${option1.value}, option2: ${option2.value ? "true" : "false"}`,
+                        content: `You provided option1: ${option1.value}, option2: ${option2?.value}`,
                     },
                     true,
                 );

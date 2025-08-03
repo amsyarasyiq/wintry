@@ -217,28 +217,30 @@ export type Argument =
 // Type Mapping and Utilities
 // =============================================================================
 
+type BaseMap<T extends CommandOption> = T extends StringCommandOption
+    ? StringArgument
+    : T extends IntegerCommandOption
+      ? IntegerArgument
+      : T extends NumberCommandOption
+        ? NumberArgument
+        : T extends BooleanCommandOption
+          ? BooleanArgument
+          : T extends UserCommandOption
+            ? UserArgument
+            : T extends ChannelCommandOption
+              ? ChannelArgument
+              : T extends RoleCommandOption
+                ? RoleArgument
+                : T extends MentionableCommandOption
+                  ? MentionableArgument
+                  : T extends AttachmentCommandOption
+                    ? AttachmentArgument
+                    : Argument;
+
+type MapSingleCommandOption<T extends CommandOption> = T["required"] extends true ? BaseMap<T> : BaseMap<T> | undefined;
+
 type MapCommandOptionToArgument<T extends readonly CommandOption[]> = {
-    [K in keyof T]: T[K] extends CommandOption
-        ? T[K] extends StringCommandOption
-            ? StringArgument
-            : T[K] extends IntegerCommandOption
-              ? IntegerArgument
-              : T[K] extends NumberCommandOption
-                ? NumberArgument
-                : T[K] extends BooleanCommandOption
-                  ? BooleanArgument
-                  : T[K] extends UserCommandOption
-                    ? UserArgument
-                    : T[K] extends ChannelCommandOption
-                      ? ChannelArgument
-                      : T[K] extends RoleCommandOption
-                        ? RoleArgument
-                        : T[K] extends MentionableCommandOption
-                          ? MentionableArgument
-                          : T[K] extends AttachmentCommandOption
-                            ? AttachmentArgument
-                            : Argument
-        : never;
+    [K in keyof T]: T[K] extends CommandOption ? MapSingleCommandOption<T[K]> : never;
 };
 
 // =============================================================================
