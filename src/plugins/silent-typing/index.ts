@@ -35,12 +35,10 @@ export default definePlugin({
                 },
             ],
             execute([enable], ctx) {
-                // // TODO: There's currently no way to mutate the store yet, silly.
-                // const current = settings.get().silentTypingActive;
-                // settings.set({ silentTypingActive: enable?.value });
+                settings.set(() => ({ silentTypingActive: enable?.value }));
 
                 replyCommand(ctx.channel.id, {
-                    content: `Silent typing mode is now ${enable?.value ? "enabled" : "disabled"}.`,
+                    content: `Silent typing mode is now ${settings.get().silentTypingActive ? "enabled" : "disabled"}.`,
                 });
             },
         }),
